@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>TableOps — Restaurant AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0f0d0a;
+  --card:#1a1710;
+  --card2:#211e18;
+  --border:#2e2a22;
+  --gold:#c9973a;
+  --gold2:#e8b44a;
+  --tx:#f5f0e8;
+  --mut:#9a8f7e;
+  --dim:#5a5248;
+  --red:#e05252;
+  --green:#4caf72;
+  --blue:#4a8fd4;
+  --or:#c9973a;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;height:100dvh;}
+.sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* SIDEBAR HEADER */
+.sb-header{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.sb-logo{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:800;color:var(--tx);margin-bottom:12px;}
+.sb-logo-mark{width:30px;height:30px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+.sb-logo-mark svg{width:17px;height:17px;stroke:#fff;}
+.sb-rest{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.sb-rest-name{font-size:13px;font-weight:600;}
+.sb-rest-sub{font-size:11px;color:var(--mut);}
+.sb-rest-arr{color:var(--mut);font-size:12px;}
+
+/* SIDEBAR NAV */
+.sb-nav{padding:10px 8px;flex:1;overflow-y:auto;}
+.sb-section{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:14px 8px 6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--mut);transition:all .15s;margin-bottom:2px;}
+.sb-item:hover{background:var(--card2);color:var(--tx);}
+.sb-item.active{background:rgba(201,151,58,.12);color:var(--gold2);}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;}
+.sb-badge.green{background:var(--green);}
+
+/* SIDEBAR FOOTER */
+.sb-footer{padding:12px 16px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:9px;}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-user-name{font-size:13px;font-weight:600;}
+.sb-user-role{font-size:11px;color:var(--mut);}
+
+/* MAIN HEADER */
+.main-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.main-title{font-size:17px;font-weight:700;}
+.main-sub{font-size:12px;color:var(--mut);margin-top:2px;}
+.header-actions{display:flex;gap:8px;}
+.hbtn{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--tx);cursor:pointer;font-family:'Inter',sans-serif;}
+.hbtn.primary{background:var(--gold);border-color:var(--gold);color:#fff;}
+
+/* SCREENS */
+.screen{display:none;flex:1;overflow-y:auto;padding:24px;}
+.screen.active{display:block;}
+
+/* DASHBOARD */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.metric-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;}
+.metric-value{font-size:28px;font-weight:800;line-height:1;}
+.metric-sub{font-size:12px;color:var(--mut);margin-top:4px;}
+.metric-sub.up{color:var(--green);}
+.metric-sub.down{color:var(--red);}
+
+.dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.dash-card-title{font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.dash-card-title span{font-size:11px;font-weight:500;color:var(--mut);}
+
+.alert-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.alert-row:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.alert-text{font-size:13px;flex:1;}
+.alert-sub{font-size:11px;color:var(--mut);}
+.alert-action{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;white-space:nowrap;}
+
+.staff-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.staff-row:last-child{border-bottom:none;}
+.staff-av{width:30px;height:30px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.staff-name{font-size:13px;font-weight:600;flex:1;}
+.staff-role{font-size:11px;color:var(--mut);}
+.staff-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;}
+.staff-status.on{background:rgba(76,175,114,.15);color:var(--green);}
+.staff-status.off{background:rgba(90,82,72,.3);color:var(--mut);}
+.staff-status.out{background:rgba(224,82,82,.15);color:var(--red);}
+
+/* INVENTORY */
+.inv-filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.inv-filter{padding:6px 14px;border-radius:999px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;background:none;font-family:'Inter',sans-serif;}
+.inv-filter.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.inv-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.inv-thead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:10px 16px;background:var(--card2);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);}
+.inv-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;}
+.inv-row:hover{background:var(--card2);}
+.inv-name{font-size:13px;font-weight:600;}
+.inv-cat{font-size:11px;color:var(--mut);}
+.inv-num{font-size:13px;font-weight:500;}
+.inv-bar-wrap{height:4px;background:var(--border);border-radius:2px;width:60px;}
+.inv-bar{height:4px;border-radius:2px;}
+.inv-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;text-align:center;}
+.inv-status.ok{background:rgba(76,175,114,.15);color:var(--green);}
+.inv-status.low{background:rgba(232,180,74,.15);color:var(--gold2);}
+.inv-status.critical{background:rgba(224,82,82,.15);color:var(--red);}
+.inv-order{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;}
+
+/* STAFF */
+.staff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.staff-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.staff-card-av{width:44px;height:44px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin-bottom:12px;}
+.staff-card-name{font-size:15px;font-weight:700;margin-bottom:2px;}
+.staff-card-role{font-size:12px;color:var(--mut);margin-bottom:12px;}
+.staff-card-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-top:1px solid var(--border);}
+.staff-card-row span{color:var(--mut);}
+
+/* MENU */
+.menu-cats{display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;padding-bottom:4px;}
+.menu-cat{padding:6px 16px;border-radius:999px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;background:none;font-family:'Inter',sans-serif;white-space:nowrap;}
+.menu-cat.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.menu-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.menu-item-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.menu-item-desc{font-size:12px;color:var(--mut);line-height:1.5;margin-bottom:12px;}
+.menu-item-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-top:1px solid var(--border);}
+.menu-item-row span{color:var(--mut);}
+.menu-margin{font-weight:700;}
+.menu-margin.good{color:var(--green);}
+.menu-margin.ok{color:var(--gold2);}
+.menu-margin.low{color:var(--red);}
+
+/* AI CHAT */
+.ai-screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.ai-screen.active{display:flex;}
+.ai-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+.ai-messages::-webkit-scrollbar{width:0;}
+.msg{display:flex;gap:10px;align-items:flex-start;max-width:780px;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.msg-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.msg.bot .msg-av{background:rgba(201,151,58,.2);color:var(--gold2);}
+.msg.user .msg-av{background:rgba(255,255,255,.1);color:var(--tx);}
+.msg-bubble{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.6;}
+.msg.bot .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--tx);}
+.msg.user .msg-bubble{background:var(--gold);color:#fff;}
+.msg-bubble p{margin-bottom:8px;}
+.msg-bubble p:last-child{margin-bottom:0;}
+.msg-bubble ul{padding-left:16px;margin-top:4px;}
+.msg-bubble li{margin-bottom:4px;}
+.msg-bubble strong{color:var(--gold2);}
+.msg.user .msg-bubble strong{color:#fff;}
+.typing{display:flex;gap:4px;align-items:center;padding:14px 16px;}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--mut);animation:typingDot 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
+
+.ai-input-area{padding:16px 24px;border-top:1px solid var(--border);background:var(--bg);}
+.ai-suggestions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.ai-sug{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:999px;font-size:12px;font-weight:500;color:var(--mut);cursor:pointer;transition:all .15s;}
+.ai-sug:hover{border-color:var(--gold);color:var(--gold);}
+.ai-input-row{display:flex;gap:10px;align-items:flex-end;}
+.ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--tx);font-family:'Inter',sans-serif;resize:none;min-height:48px;max-height:120px;outline:none;line-height:1.5;}
+.ai-input:focus{border-color:var(--gold);}
+.ai-input::placeholder{color:var(--dim);}
+.ai-send{width:44px;height:44px;border-radius:10px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-send svg{width:18px;height:18px;stroke:#fff;}
+.ai-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .metrics{grid-template-columns:1fr 1fr;}
+  .dash-grid{grid-template-columns:1fr;}
+  .staff-grid,.menu-grid{grid-template-columns:1fr;}
+  .inv-thead{display:none;}
+  .inv-row{grid-template-columns:1fr 1fr;gap:4px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo">
+      <div class="sb-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/>
+        </svg>
+      </div>
+      TableOps
+    </div>
+    <div class="sb-rest">
+      <div>
+        <div class="sb-rest-name">Bello Napa</div>
+        <div class="sb-rest-sub">Napa Valley · Italian</div>
+      </div>
+      <div class="sb-rest-arr">▾</div>
+    </div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section">Operations</div>
+    <div class="sb-item active" onclick="showScreen('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+      <span class="sb-badge">3</span>
+    </div>
+    <div class="sb-item" onclick="showScreen('inventory',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Inventory
+      <span class="sb-badge">2</span>
+    </div>
+    <div class="sb-item" onclick="showScreen('staff',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Staff
+    </div>
+    <div class="sb-item" onclick="showScreen('menu',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
+      Menu & Recipes
+    </div>
+    <div class="sb-section">Intelligence</div>
+    <div class="sb-item" onclick="showScreen('ai',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Ask TableOps AI
+      <span class="sb-badge green">AI</span>
+    </div>
+    <div class="sb-section">Finance</div>
+    <div class="sb-item" onclick="showScreen('pnl',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Daily P&L
+    </div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">SK</div>
+      <div>
+        <div class="sb-user-name">Siamak Kalhor</div>
+        <div class="sb-user-role">Owner</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div id="screen-dashboard" class="screen active">
+    <div id="hdr-dashboard" class="main-header">
+      <div>
+        <div class="main-title">Good morning, Siamak ☀️</div>
+        <div class="main-sub">Tuesday, June 27 · Bello Napa · 3 alerts need attention</div>
+      </div>
+      <div class="header-actions">
+        <button class="hbtn" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'))">Ask AI</button>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Last night revenue</div>
+          <div class="metric-value">$8,420</div>
+          <div class="metric-sub up">↑ 12% vs last Tuesday</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Labor cost %</div>
+          <div class="metric-value">31%</div>
+          <div class="metric-sub">Target: &lt;30%</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Food cost %</div>
+          <div class="metric-value">28%</div>
+          <div class="metric-sub up">↓ On target</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Tonight's covers</div>
+          <div class="metric-value">84</div>
+          <div class="metric-sub">Res. open · 6 walk-in est.</div>
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Alerts <span>Tap to resolve</span></div>
+          <div class="alert-row">
+            <div class="alert-dot" style="background:var(--red);"></div>
+            <div style="flex:1;">
+              <div class="alert-text">Salmon filet — critically low</div>
+              <div class="alert-sub">4 portions left · need ~20 for tonight</div>
+            </div>
+            <div class="alert-action" onclick="orderItem('Salmon filet')">Order now</div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-dot" style="background:var(--red);"></div>
+            <div style="flex:1;">
+              <div class="alert-text">Carlos R. called out — FOH short</div>
+              <div class="alert-sub">Friday night · need 1 server</div>
+            </div>
+            <div class="alert-action" onclick="findCover()">Find cover</div>
+          </div>
+          <div class="alert-row">
+            <div class="alert-dot" style="background:var(--gold2);"></div>
+            <div style="flex:1;">
+              <div class="alert-text">Burrata — running low</div>
+              <div class="alert-sub">2 balls left · reorder threshold: 5</div>
+            </div>
+            <div class="alert-action" onclick="orderItem('Burrata')">Order</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Tonight's staff</div>
+          <div class="staff-row">
+            <div class="staff-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div>
+            <div style="flex:1;"><div class="staff-name">Maria R.</div><div class="staff-role">FOH Lead · 5pm–close</div></div>
+            <div class="staff-status on">On shift</div>
+          </div>
+          <div class="staff-row">
+            <div class="staff-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div>
+            <div style="flex:1;"><div class="staff-name">Devon K.</div><div class="staff-role">Server · 5pm–close</div></div>
+            <div class="staff-status on">On shift</div>
+          </div>
+          <div class="staff-row">
+            <div class="staff-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div>
+            <div style="flex:1;"><div class="staff-name">Carlos R.</div><div class="staff-role">Server · Called out</div></div>
+            <div class="staff-status out">Called out</div>
+          </div>
+          <div class="staff-row">
+            <div class="staff-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">JP</div>
+            <div style="flex:1;"><div class="staff-name">Jess P.</div><div class="staff-role">Server · Available</div></div>
+            <div class="staff-status off">Off — text?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div id="screen-inventory" class="screen">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Inventory</div>
+        <div class="main-sub">28 items tracked · 2 critical · last updated 7:42am</div>
+      </div>
+      <div class="header-actions">
+        <button class="hbtn primary" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'));askAI('Draft this week\'s supplier order based on current stock levels')">Auto-order draft</button>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <div class="inv-filters">
+        <button class="inv-filter active">All</button>
+        <button class="inv-filter">Proteins</button>
+        <button class="inv-filter">Produce</button>
+        <button class="inv-filter">Dairy</button>
+        <button class="inv-filter">Dry goods</button>
+        <button class="inv-filter">Beverages</button>
+      </div>
+      <div class="inv-table">
+        <div class="inv-thead">
+          <div>Item</div><div>In stock</div><div>Par level</div><div>Status</div><div>Action</div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Salmon filet</div><div class="inv-cat">Proteins</div></div>
+          <div class="inv-num">4 portions</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:20%;background:var(--red);"></div></div></div>
+          <div class="inv-status critical">Critical</div>
+          <div class="inv-order" onclick="orderItem('Salmon filet')">Order</div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Burrata</div><div class="inv-cat">Dairy</div></div>
+          <div class="inv-num">2 balls</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:25%;background:var(--red);"></div></div></div>
+          <div class="inv-status critical">Critical</div>
+          <div class="inv-order" onclick="orderItem('Burrata')">Order</div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Ribeye 14oz</div><div class="inv-cat">Proteins</div></div>
+          <div class="inv-num">12 portions</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:55%;background:var(--gold2);"></div></div></div>
+          <div class="inv-status low">Low</div>
+          <div class="inv-order" onclick="orderItem('Ribeye')">Order</div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Arugula</div><div class="inv-cat">Produce</div></div>
+          <div class="inv-num">3 lbs</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:60%;background:var(--gold2);"></div></div></div>
+          <div class="inv-status low">Low</div>
+          <div class="inv-order" onclick="orderItem('Arugula')">Order</div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Pappardelle pasta</div><div class="inv-cat">Dry goods</div></div>
+          <div class="inv-num">8 lbs</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:80%;background:var(--green);"></div></div></div>
+          <div class="inv-status ok">Good</div>
+          <div></div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Parmigiano Reggiano</div><div class="inv-cat">Dairy</div></div>
+          <div class="inv-num">4 lbs</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:85%;background:var(--green);"></div></div></div>
+          <div class="inv-status ok">Good</div>
+          <div></div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">San Marzano tomatoes</div><div class="inv-cat">Dry goods</div></div>
+          <div class="inv-num">24 cans</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:90%;background:var(--green);"></div></div></div>
+          <div class="inv-status ok">Good</div>
+          <div></div>
+        </div>
+        <div class="inv-row">
+          <div><div class="inv-name">Olive oil — EVOO</div><div class="inv-cat">Dry goods</div></div>
+          <div class="inv-num">3 liters</div>
+          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:75%;background:var(--green);"></div></div></div>
+          <div class="inv-status ok">Good</div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAFF -->
+  <div id="screen-staff" class="screen">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Staff</div>
+        <div class="main-sub">8 employees · 4 on shift tonight · 1 call-out</div>
+      </div>
+      <div class="header-actions">
+        <button class="hbtn primary">Add employee</button>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <div class="staff-grid">
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div>
+          <div class="staff-card-name">Maria Rodriguez</div>
+          <div class="staff-card-role">FOH Lead · Full-time</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>32h</strong></div>
+          <div class="staff-card-row"><span>Hourly rate</span><strong>$22/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">On shift tonight</strong></div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div>
+          <div class="staff-card-name">Devon Kim</div>
+          <div class="staff-card-role">Server · Part-time</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>18h</strong></div>
+          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">On shift tonight</strong></div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div>
+          <div class="staff-card-name">Carlos Rivera</div>
+          <div class="staff-card-role">Server · Part-time</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>12h</strong></div>
+          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--red);">Called out tonight</strong></div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">JP</div>
+          <div class="staff-card-name">Jessica Park</div>
+          <div class="staff-card-role">Server · On-call</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>8h</strong></div>
+          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--mut);">Available</strong></div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(201,151,58,.15);color:var(--gold);">LM</div>
+          <div class="staff-card-name">Luigi Moretti</div>
+          <div class="staff-card-role">Executive Chef · Full-time</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>44h</strong></div>
+          <div class="staff-card-row"><span>Rate</span><strong>$38/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">In kitchen tonight</strong></div>
+        </div>
+        <div class="staff-card">
+          <div class="staff-card-av" style="background:rgba(90,82,72,.3);color:var(--mut);">AT</div>
+          <div class="staff-card-name">Ana Torres</div>
+          <div class="staff-card-role">Sous Chef · Full-time</div>
+          <div class="staff-card-row"><span>Hours this week</span><strong>40h</strong></div>
+          <div class="staff-card-row"><span>Rate</span><strong>$28/hr</strong></div>
+          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">In kitchen tonight</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div id="screen-menu" class="screen">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Menu & Recipes</div>
+        <div class="main-sub">24 dishes · avg food cost 27% · ask AI for any recipe in the world</div>
+      </div>
+      <div class="header-actions">
+        <button class="hbtn" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'));askAI('Suggest 3 new seasonal dishes for our Italian menu in Napa Valley using local ingredients')">AI suggestions</button>
+        <button class="hbtn primary">Add dish</button>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <div class="menu-cats">
+        <button class="menu-cat active">All</button>
+        <button class="menu-cat">Antipasti</button>
+        <button class="menu-cat">Pasta</button>
+        <button class="menu-cat">Secondi</button>
+        <button class="menu-cat">Dolci</button>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-item">
+          <div class="menu-item-name">Burrata con Prosciutto</div>
+          <div class="menu-item-desc">Fresh burrata, San Daniele prosciutto, heirloom tomatoes, basil oil, aged balsamic</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$6.20</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$22</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">72%</strong></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-name">Pappardelle al Ragù</div>
+          <div class="menu-item-desc">House-made pappardelle, 8-hour braised short rib ragù, Parmigiano, fresh herbs</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$7.80</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$28</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">72%</strong></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-name">Branzino al Limone</div>
+          <div class="menu-item-desc">Pan-roasted sea bass, lemon caper butter, roasted fennel, cherry tomatoes, capers</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$12.40</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$38</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin ok">67%</strong></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-name">Bistecca Fiorentina</div>
+          <div class="menu-item-desc">28-day dry-aged ribeye, rosemary salt, roasted garlic, Tuscan white beans, salsa verde</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$24.00</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$68</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin ok">65%</strong></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-name">Risotto ai Funghi</div>
+          <div class="menu-item-desc">Carnaroli rice, wild mushroom mix, truffle oil, aged Parmigiano, fresh thyme</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$9.20</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$32</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">71%</strong></div>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-name">Tiramisu della Casa</div>
+          <div class="menu-item-desc">Classic tiramisu, Savoiardi, mascarpone, espresso, Marsala, house-made every morning</div>
+          <div class="menu-item-row"><span>Food cost</span><strong>$3.20</strong></div>
+          <div class="menu-item-row"><span>Menu price</span><strong>$14</strong></div>
+          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">77%</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- P&L -->
+  <div id="screen-pnl" class="screen">
+    <div class="main-header">
+      <div>
+        <div class="main-title">Daily P&L</div>
+        <div class="main-sub">Week of June 23–27 · Bello Napa</div>
+      </div>
+      <div class="header-actions">
+        <button class="hbtn primary">Export to Excel</button>
+      </div>
+    </div>
+    <div style="padding:24px;">
+      <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
+        <div class="metric">
+          <div class="metric-label">Week revenue</div>
+          <div class="metric-value">$41,200</div>
+          <div class="metric-sub up">↑ 8% vs last week</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Food cost</div>
+          <div class="metric-value">$11,540</div>
+          <div class="metric-sub">28% of revenue</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Labor cost</div>
+          <div class="metric-value">$12,770</div>
+          <div class="metric-sub down">31% — slightly over</div>
+        </div>
+      </div>
+      <div class="inv-table" style="margin-top:8px;">
+        <div class="inv-thead" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div>Day</div><div>Revenue</div><div>Food cost %</div><div>Labor %</div><div>Net</div>
+        </div>
+        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div class="inv-name">Monday</div><div>$6,820</div><div>27%</div><div>30%</div><div style="color:var(--green);">+$2,934</div>
+        </div>
+        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div class="inv-name">Tuesday</div><div>$7,540</div><div>26%</div><div>29%</div><div style="color:var(--green);">+$3,393</div>
+        </div>
+        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div class="inv-name">Wednesday</div><div>$7,200</div><div>28%</div><div>31%</div><div style="color:var(--green);">+$2,952</div>
+        </div>
+        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div class="inv-name">Thursday</div><div>$8,220</div><div>29%</div><div>32%</div><div style="color:var(--green);">+$3,206</div>
+        </div>
+        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
+          <div class="inv-name">Friday (est.)</div><div>$11,420</div><div>28%</div><div>30%</div><div style="color:var(--green);">+$4,797</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI CHAT -->
+  <div id="screen-ai" class="ai-screen">
+    <div class="main-header">
+      <div>
+        <div class="main-title">TableOps AI</div>
+        <div class="main-sub">Knows your restaurant, your staff, your menu — and every cuisine in the world</div>
+      </div>
+    </div>
+    <div class="ai-messages" id="ai-messages">
+      <div class="msg bot">
+        <div class="msg-av">T</div>
+        <div class="msg-bubble">
+          <p>Good morning, Siamak. Here's your briefing for <strong>Bello Napa — Tuesday June 27</strong>:</p>
+          <ul>
+            <li><strong>🔴 Salmon filet critical</strong> — 4 portions, need ~20 for tonight. Order now?</li>
+            <li><strong>🔴 Carlos R. called out</strong> — Jess P. is available. Text her?</li>
+            <li><strong>🟡 Burrata low</strong> — 2 balls left, par is 5</li>
+            <li><strong>📊 Last night revenue: $8,420</strong> — up 12% vs last Tuesday</li>
+          </ul>
+          <p style="margin-top:8px;">Ask me anything — staff, inventory, recipes, costs, or any dish from any cuisine in the world.</p>
+        </div>
+      </div>
+    </div>
+    <div class="ai-input-area">
+      <div class="ai-suggestions">
+        <div class="ai-sug" onclick="askAI('What\'s my food cost this week?')">Food cost this week</div>
+        <div class="ai-sug" onclick="askAI('Give me the classic recipe for beef bourguignon with professional techniques')">Beef Bourguignon recipe</div>
+        <div class="ai-sug" onclick="askAI('Give me an authentic Persian Ghormeh Sabzi recipe with exact measurements and technique')">Persian Ghormeh Sabzi</div>
+        <div class="ai-sug" onclick="askAI('Who is on shift tonight and what are my labor costs?')">Tonight\'s staff & labor</div>
+        <div class="ai-sug" onclick="askAI('Suggest 3 seasonal specials for a Napa Valley Italian restaurant in summer')">Seasonal specials</div>
+        <div class="ai-sug" onclick="askAI('Give me a traditional Omakase sushi menu for 8 courses with preparation notes')">Omakase sushi menu</div>
+      </div>
+      <div class="ai-input-row">
+        <textarea class="ai-input" id="ai-input" placeholder="Ask anything — recipes, staff, costs, inventory..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="ai-send" id="ai-send-btn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+var SUPABASE_URL='https://rlvibtvyaunuiwizqigj.supabase.co';
+var ANON_KEY='sb_publishable_Q3Amu8Xs1UN2xH0fVPrngQ_BGZy3aye';
+var isTyping=false;
+
+var SYSTEM_PROMPT=`You are TableOps AI — the intelligent operations brain for Bello Napa, an upscale Italian restaurant in Napa Valley, California.
+
+RESTAURANT CONTEXT:
+- Restaurant: Bello Napa — upscale Italian, Napa Valley
+- Owner: Siamak Kalhor
+- Executive Chef: Luigi Moretti
+- Seats: 60 indoor, 20 outdoor patio
+- Open: Tuesday–Sunday, 5pm–10pm
+- Average check: $95/person
+
+CURRENT DATA:
+Staff tonight: Maria R. (FOH Lead, on), Devon K. (Server, on), Carlos R. (Server, CALLED OUT), Jess P. (Server, available), Luigi Moretti (Chef, on), Ana Torres (Sous Chef, on)
+Inventory alerts: Salmon filet CRITICAL (4 portions), Burrata LOW (2 balls), Ribeye LOW (12 portions), Arugula LOW (3 lbs)
+Last night revenue: $8,420 (+12% vs last Tuesday)
+This week revenue: $41,200
+Food cost %: 28% (target 28%)
+Labor cost %: 31% (target <30%)
+Tonight reservations: 84 covers
+
+MENU — Bello Napa:
+Antipasti: Burrata con Prosciutto ($22, 72% margin), Carpaccio di Manzo ($18, 74% margin), Calamari Fritti ($16, 78% margin)
+Pasta: Pappardelle al Ragù ($28, 72%), Cacio e Pepe ($24, 76%), Tagliatelle al Tartufo ($36, 65%), Risotto ai Funghi ($32, 71%)
+Secondi: Branzino al Limone ($38, 67%), Bistecca Fiorentina ($68, 65%), Pollo al Mattone ($32, 70%), Agnello Scottadito ($44, 66%)
+Dolci: Tiramisu della Casa ($14, 77%), Panna Cotta ($12, 79%), Cannoli Siciliani ($11, 80%)
+
+YOUR CAPABILITIES:
+1. OPERATIONS: Answer questions about staff, inventory, revenue, costs, scheduling
+2. RECIPES: You have deep knowledge of every major cuisine — Italian, French, Japanese (sushi/omakase), Chinese (Cantonese, Sichuan, etc), Persian, Middle Eastern (Lebanese, Turkish, Moroccan), Indian, Spanish, Thai, Vietnamese, Korean, Mexican, American, and more. You know classic techniques, ratios, and professional kitchen methods.
+3. MENU CONSULTING: Suggest new dishes, seasonal specials, wine pairings, recipe modifications, food cost optimization
+4. FAMOUS CHEFS: You know the work, philosophy, and signature dishes of: Massimo Bottura, Gordon Ramsay, Thomas Keller, Nobu Matsuhisa, Ferran Adrià, René Redzepi, Joel Robuchon, Marco Pierre White, Alice Waters, Wolfgang Puck, Daniel Boulud, David Chang, Heston Blumenthal, Alain Ducasse, Pierre Gagnaire, and hundreds more.
+5. WORLD CUISINES — key knowledge:
+   - Italian: regional variations (Roman, Tuscan, Sicilian, Venetian, Neapolitan), pasta ratios, risotto technique, pizza Napoletana
+   - Japanese: sushi rice ratios, nigiri technique, ramen broths (tonkotsu, shoyu, miso, shio), omakase flow, katsuobushi dashi
+   - French: mother sauces (béchamel, velouté, espagnole, hollandaise, tomat), classic bistro dishes, pâtisserie
+   - Persian: Ghormeh Sabzi, Fesenjan, Tahdig, Ash Reshteh, Joojeh Kabab, Mast-o-Khiar, Persian rice techniques (kateh vs chelo)
+   - Middle Eastern: Lebanese mezze, hummus ratios, Turkish kebabs, Moroccan tagine, Israeli salads, Egyptian koshari
+   - Chinese: Peking duck, dim sum, mapo tofu, Sichuan peppercorn techniques, Cantonese steaming, Peking opera cake
+   - Indian: curry base techniques, biryani layering, tandoor methods, chaat, South Indian dosas
+   - Spanish: paella (Valenciana, marinera, mixta), gazpacho, tortilla española, tapas, pintxos, Basque cuisine
+   - Thai: curry pastes from scratch, pad thai ratios, tom yum, green papaya salad, mango sticky rice
+   - Korean: kimchi fermentation, Korean BBQ marinades, bibimbap, tteokbokki, doenjang jjigae
+
+Keep responses conversational but precise. For recipes, give professional-level detail with exact measurements. For operations questions, be direct and action-oriented. Always refer to the owner as Siamak.`;
+
+function showScreen(id,el){
+  document.querySelectorAll('.screen,.ai-screen').forEach(function(s){s.classList.remove('active');});
+  var target=document.getElementById('screen-'+id);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+  if(el) el.classList.add('active');
+}
+
+function orderItem(item){
+  showScreen('ai',document.querySelector('[onclick*="ai"]'));
+  setTimeout(function(){askAI('Draft a supplier order for '+item+' — include recommended quantity based on tonight\'s covers and par levels');},100);
+}
+
+function findCover(){
+  showScreen('ai',document.querySelector('[onclick*="ai"]'));
+  setTimeout(function(){askAI('Carlos R. called out tonight. Who can cover? What\'s the best option and what should I text them?');},100);
+}
+
+function askAI(text){
+  document.getElementById('ai-input').value=text;
+  sendMessage();
+}
+
+function handleKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+
+function addMessage(role,html){
+  var msgs=document.getElementById('ai-messages');
+  var div=document.createElement('div');
+  div.className='msg '+role;
+  var av=role==='bot'?'T':'SK';
+  div.innerHTML='<div class="msg-av">'+av+'</div><div class="msg-bubble">'+html+'</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+function showTyping(){
+  var msgs=document.getElementById('ai-messages');
+  var div=document.createElement('div');
+  div.className='msg bot';
+  div.id='typing-indicator';
+  div.innerHTML='<div class="msg-av">T</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function removeTyping(){
+  var t=document.getElementById('typing-indicator');
+  if(t) t.remove();
+}
+
+var chatHistory=[];
+
+function sendMessage(){
+  var input=document.getElementById('ai-input');
+  var text=input.value.trim();
+  if(!text||isTyping) return;
+  isTyping=true;
+  document.getElementById('ai-send-btn').disabled=true;
+  input.value='';
+  input.style.height='auto';
+  addMessage('user',text);
+  chatHistory.push({role:'user',content:text});
+  showTyping();
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1000,
+      system:SYSTEM_PROMPT,
+      messages:chatHistory
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    removeTyping();
+    var reply=(d.content&&d.content[0])?d.content[0].text:'Sorry, I had trouble with that. Try again.';
+    chatHistory.push({role:'assistant',content:reply});
+    var formatted=reply
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\n\n/g,'</p><p>')
+      .replace(/\n- /g,'</p><ul><li>')
+      .replace(/\n\d+\. /g,'</p><ol><li>')
+      .replace(/^/,'<p>')
+      .replace(/$/,'</p>');
+    addMessage('bot',formatted);
+    isTyping=false;
+    document.getElementById('ai-send-btn').disabled=false;
+  })
+  .catch(function(){
+    removeTyping();
+    addMessage('bot','<p>Network error — please try again.</p>');
+    isTyping=false;
+    document.getElementById('ai-send-btn').disabled=false;
+  });
+}
+</script>
+</body>
+</html>
