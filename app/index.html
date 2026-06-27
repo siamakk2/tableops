@@ -224,6 +224,11 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 .report-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .report-name{font-size:13px;font-weight:700;margin-bottom:3px;}
 .report-desc{font-size:11px;color:var(--mut);line-height:1.4;}
+.report-actions{display:flex;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr);}
+.report-actions button{flex:1;background:var(--card2);border:1px solid var(--bdr);border-radius:6px;padding:6px 4px;font-size:11px;font-weight:600;color:var(--mut);cursor:pointer;font-family:'Inter',sans-serif;}
+.report-actions button:hover{border-color:var(--gold);color:var(--gold);}
+.report-actions button:first-child{background:var(--gold);border-color:var(--gold);color:#fff;}
+.report-actions button:first-child:hover{opacity:.9;}
 
 /* MOBILE */
 .mob-header{display:none;padding:12px 16px;border-bottom:1px solid var(--bdr);display:none;align-items:center;gap:10px;}
@@ -772,146 +777,198 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <!-- ── KITCHEN ── -->
     <div id="scr-kitchen" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Kitchen & Prep</h1><p>Tonight's prep list · 84 covers · service at 5pm</p></div>
-        <div class="top-bar-right"><button class="tbtn gold" onclick="aiAsk('Generate full prep list for 84 covers tonight — Italian tasting menu, prioritized by time needed')">Generate prep list</button></div>
+        <div class="top-bar-left"><h1>Kitchen & Prep</h1><p id="kitchen-summary">Tap any item to edit · tap ✕ to delete</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="openAddPrep()">+ Add prep task</button>
+          <button class="tbtn gold" onclick="aiAsk('Generate a complete prep list for tonight at Eiko\'s Napa — 120 covers, sushi restaurant. Include timing, who should do each task, and quantities.')">AI generate prep list</button>
+        </div>
       </div>
       <div style="padding:20px;">
         <div class="g2">
           <div class="card">
-            <div class="card-title">Prep checklist — today</div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;" checked/><div class="a-txt"><div class="a-title">Pasta dough — pappardelle</div><div class="a-sub">Luigi · 3kg · done by 2pm</div></div></div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;" checked/><div class="a-txt"><div class="a-title">Short rib ragù — 8 hour braise</div><div class="a-sub">Ana · started 8am · ready by 4pm</div></div></div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Tiramisu — 40 portions</div><div class="a-sub">Sofia · by 3pm · in walk-in</div></div></div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Bistecca dry-age check & trim</div><div class="a-sub">Luigi · portion 18 ribeyes</div></div></div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Mise en place — all stations</div><div class="a-sub">Full team · by 4:30pm</div></div></div>
-            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">86 board update</div><div class="a-sub">Salmon critical — flag on menu</div></div></div>
+            <div class="card-title">Prep checklist <span class="card-action" onclick="clearPrep()">Clear all</span></div>
+            <div id="prep-list"></div>
+            <div id="prep-empty" style="display:none;text-align:center;padding:24px;color:var(--dim);font-size:13px;">No prep tasks yet — add one or use AI to generate</div>
+            <button onclick="openAddPrep()" style="width:100%;margin-top:12px;background:none;border:1px dashed var(--bdr);border-radius:8px;padding:10px;font-size:13px;color:var(--dim);cursor:pointer;">+ Add prep task</button>
           </div>
           <div class="card">
-            <div class="card-title">86 board — tonight</div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Salmon filet</div><div class="a-sub">86'd — 4 portions only · first come first served</div></div></div>
-            <div style="margin-top:12px;font-size:13px;font-weight:700;color:var(--mut);">Allergy flags tonight</div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Table 5 — shellfish allergy</div><div class="a-sub">Party of 6 · 6:30pm res</div></div></div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Table PDR — gluten free x2</div><div class="a-sub">Birthday party · 7pm</div></div></div>
-            <div style="margin-top:12px;">
-              <button class="tbtn" onclick="aiAsk('What substitutions can I make for the birthday party gluten-free guests at 7pm? We\'re serving Italian — what can be modified?')">AI substitution help</button>
+            <div class="card-title">86 board <span class="card-action" onclick="clearEightySix()">Clear</span></div>
+            <div id="eighty-six-list"></div>
+            <div id="eighty-six-empty" style="display:none;text-align:center;padding:20px;color:var(--dim);font-size:13px;">Nothing 86'd tonight</div>
+            <button onclick="openAdd86()" style="width:100%;margin-top:12px;background:none;border:1px dashed var(--bdr);border-radius:8px;padding:10px;font-size:13px;color:var(--dim);cursor:pointer;">+ 86 an item</button>
+            <div style="margin-top:14px;border-top:1px solid var(--bdr);padding-top:12px;">
+              <div class="card-title" style="margin-bottom:8px;">Allergy flags tonight</div>
+              <div id="allergy-list"></div>
+              <button onclick="openAddAllergy()" style="width:100%;margin-top:8px;background:none;border:1px dashed var(--bdr);border-radius:8px;padding:8px;font-size:12px;color:var(--dim);cursor:pointer;">+ Add allergy flag</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── P&L ── -->
+<!-- ── P&L ── -->
     <div id="scr-pnl" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Daily P&L</h1><p>Real-time financials · Eiko's Napa · June 2026</p></div>
+        <div class="top-bar-left"><h1>Daily P&L</h1><p>Real-time financials · owner eyes only · edit any entry</p></div>
         <div class="top-bar-right">
-          <button class="tbtn" onclick="aiAsk('Analyze this week\'s P&L and tell me where I\'m leaving money on the table')">AI analysis</button>
-          <button class="tbtn gold">Export PDF</button>
+          <button class="tbtn" onclick="openAddPnl()">+ Add entry</button>
+          <button class="tbtn" onclick="aiAsk('Analyze my P&L data and tell me exactly where I am losing money and how to fix it')">AI analysis</button>
+          <button class="tbtn gold" onclick="exportReport('pnl')">⬇ Download PDF</button>
         </div>
       </div>
       <div style="padding:20px;">
-        <div class="metrics">
-          <div class="metric"><div class="metric-lbl">Month revenue</div><div class="metric-val">$186k</div><div class="metric-chg up">↑ 11% vs June '25</div></div>
-          <div class="metric"><div class="metric-lbl">Month food cost</div><div class="metric-val">$51.8k</div><div class="metric-chg up">27.8% ↓ good</div></div>
-          <div class="metric"><div class="metric-lbl">Month labor</div><div class="metric-val">$56.3k</div><div class="metric-chg dn">30.2% slightly over</div></div>
-          <div class="metric"><div class="metric-lbl">Month net</div><div class="metric-val">$42k</div><div class="metric-chg up">22.6% margin</div></div>
+        <div class="metrics" id="pnl-metrics">
+          <div class="metric"><div class="metric-lbl">Week revenue</div><div class="metric-val" id="pnl-revenue">$0</div><div class="metric-chg neutral">editable</div></div>
+          <div class="metric"><div class="metric-lbl">Food cost</div><div class="metric-val" id="pnl-food">$0</div><div class="metric-chg neutral" id="pnl-food-pct">0%</div></div>
+          <div class="metric"><div class="metric-lbl">Labor cost</div><div class="metric-val" id="pnl-labor">$0</div><div class="metric-chg neutral" id="pnl-labor-pct">0%</div></div>
+          <div class="metric"><div class="metric-lbl">Net profit</div><div class="metric-val" id="pnl-net">$0</div><div class="metric-chg neutral" id="pnl-margin">0% margin</div></div>
         </div>
         <div class="card">
-          <div class="card-title">June week-by-week</div>
+          <div class="card-title">Daily entries <span class="card-action" onclick="clearPnlConfirm()">Clear all</span></div>
           <table class="tbl">
-            <thead><tr><th>Week</th><th>Revenue</th><th>Food cost</th><th>Food %</th><th>Labor</th><th>Labor %</th><th>Other</th><th>Net profit</th><th>Margin</th></tr></thead>
-            <tbody>
-              <tr><td>Jun 2–8</td><td>$42,100</td><td>$11,760</td><td class="up">27.9%</td><td>$12,840</td><td class="neutral">30.5%</td><td>$6,400</td><td class="up">$11,100</td><td class="up">26.4%</td></tr>
-              <tr><td>Jun 9–15</td><td>$44,800</td><td>$12,320</td><td class="up">27.5%</td><td>$13,200</td><td class="dn">29.5%</td><td>$6,600</td><td class="up">$12,680</td><td class="up">28.3%</td></tr>
-              <tr><td>Jun 16–22</td><td>$58,200</td><td>$16,400</td><td class="up">28.2%</td><td>$17,100</td><td class="neutral">29.4%</td><td>$8,100</td><td class="up">$16,600</td><td class="up">28.5%</td></tr>
-              <tr><td style="font-weight:700;">Jun 23–27</td><td style="font-weight:700;">$41,200</td><td>$11,540</td><td class="up">28%</td><td>$12,770</td><td class="dn">31%</td><td>$5,800</td><td class="up" style="font-weight:700;">$11,090</td><td class="up">26.9%</td></tr>
-            </tbody>
+            <thead><tr><th>Date</th><th>Revenue</th><th>Food cost</th><th>Labor</th><th>Other costs</th><th>Net</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="pnl-tbody"></tbody>
           </table>
+          <div id="pnl-empty" style="display:none;text-align:center;padding:32px;color:var(--dim);">
+            <div style="font-size:13px;margin-bottom:12px;">No entries yet — add your first day</div>
+            <button class="tbtn gold" onclick="openAddPnl()">+ Add today's numbers</button>
+          </div>
         </div>
-        <div class="g2" style="margin-top:14px;">
-          <div class="card">
-            <div class="card-title">Revenue by day of week (avg)</div>
-            <table class="tbl"><thead><tr><th>Day</th><th>Avg revenue</th><th>Avg covers</th></tr></thead>
-            <tbody>
-              <tr><td>Tuesday</td><td>$7,200</td><td>74</td></tr>
-              <tr><td>Wednesday</td><td>$7,800</td><td>80</td></tr>
-              <tr><td>Thursday</td><td>$9,100</td><td>88</td></tr>
-              <tr><td>Friday</td><td>$13,400</td><td>112</td></tr>
-              <tr><td>Saturday</td><td>$14,200</td><td>118</td></tr>
-              <tr><td>Sunday</td><td>$8,600</td><td>82</td></tr>
-            </tbody></table>
-          </div>
-          <div class="card">
-            <div class="card-title">Cost breakdown this month</div>
-            <div class="alert-row"><div class="a-txt"><div class="a-title">Food & beverage</div></div><div style="font-size:13px;font-weight:700;">$51,800</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">27.8%</div></div>
-            <div class="alert-row"><div class="a-txt"><div class="a-title">Labor (FOH + BOH)</div></div><div style="font-size:13px;font-weight:700;">$56,300</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">30.2%</div></div>
-            <div class="alert-row"><div class="a-txt"><div class="a-title">Rent & occupancy</div></div><div style="font-size:13px;font-weight:700;">$12,000</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">6.5%</div></div>
-            <div class="alert-row"><div class="a-txt"><div class="a-title">Utilities</div></div><div style="font-size:13px;font-weight:700;">$3,200</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">1.7%</div></div>
-            <div class="alert-row"><div class="a-txt"><div class="a-title">Marketing & POS fees</div></div><div style="font-size:13px;font-weight:700;">$4,100</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">2.2%</div></div>
-            <div class="alert-row" style="border-top:2px solid var(--bdr);margin-top:4px;padding-top:10px;"><div class="a-txt"><div class="a-title" style="font-weight:800;">Net profit</div></div><div style="font-size:15px;font-weight:800;color:var(--green);">$42,000</div><div style="font-size:11px;color:var(--green);margin-left:8px;">22.6%</div></div>
-          </div>
+        <div class="card" style="margin-top:14px;">
+          <div class="card-title">Cost breakdown <span style="font-size:11px;font-weight:400;color:var(--mut);">auto-calculated from entries</span></div>
+          <div id="pnl-breakdown"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── REPORTS ── -->
+<!-- ── REPORTS ── -->
     <div id="scr-reports" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Reports</h1><p>Every report a restaurant owner needs — instant, exportable</p></div>
-        <div class="top-bar-right"><button class="tbtn gold" onclick="aiAsk('Generate a full monthly business summary for June 2026 — revenue, costs, staff, top dishes, and recommendations')">AI monthly summary</button></div>
+        <div class="top-bar-left"><h1>Reports</h1><p>Generate · download · print · email — every report a restaurant needs</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn gold" onclick="aiAsk('Generate a complete monthly business summary for Eiko\'s Napa — revenue, all costs, net profit, top dishes, staff performance, and 3 recommendations to improve profitability next month')">AI monthly summary</button>
+        </div>
       </div>
       <div style="padding:20px;">
         <div class="report-grid">
-          <div class="report-card" onclick="aiAsk('Generate a detailed daily P&L report for today — revenue, food cost, labor cost, net profit, and comparison to last week')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(76,175,114,.15);color:var(--green);"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <div class="report-name">Daily P&L</div>
-            <div class="report-desc">Revenue, food cost %, labor cost %, net profit — today vs last week</div>
+            <div class="report-desc">Revenue, food cost %, labor %, net profit vs last week</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Daily P&L Report for Eiko\'s Napa — show revenue, food cost percentage, labor cost percentage, and net profit for each day this week in a clean table format')">Generate</button>
+              <button onclick="printReport('pnl')">Print</button>
+              <button onclick="emailReport('Daily P&L')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a weekly payroll report — hours worked per employee, hourly rates, overtime, and total payroll cost')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(74,143,212,.15);color:var(--blue);"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
             <div class="report-name">Payroll report</div>
-            <div class="report-desc">Hours, rates, overtime — ready to hand to your bookkeeper</div>
+            <div class="report-desc">Hours, rates, overtime — ready for your bookkeeper</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a complete payroll report for Eiko\'s Napa this week — list every staff member with their role, hours worked, hourly rate, regular pay, overtime pay, and total gross pay. Format as a clean table ready to give to a bookkeeper.')">Generate</button>
+              <button onclick="printReport('payroll')">Print</button>
+              <button onclick="emailReport('Payroll Report')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a food cost report — cost per dish, food cost percentage by category, and waste tracking for this month')">
-            <div class="report-icon" style="background:rgba(232,180,74,.15);color:var(--gold2);"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div>
+
+          <div class="report-card">
+            <div class="report-icon" style="background:rgba(232,180,74,.15);color:var(--gold2);"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
             <div class="report-name">Food cost analysis</div>
-            <div class="report-desc">Cost per dish, waste, top margin items vs underperformers</div>
+            <div class="report-desc">Cost per dish, waste, top margin vs underperformers</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a detailed food cost analysis for Eiko\'s Napa — show cost per dish for the top 10 items, food cost percentage per category (sushi rolls, tapas, entrees, desserts), waste estimate, and which items have the best and worst margins. Format as a professional report.')">Generate</button>
+              <button onclick="printReport('food-cost')">Print</button>
+              <button onclick="emailReport('Food Cost Analysis')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate an inventory usage report — what we used this week, what we wasted, and recommended order quantities for next week')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(155,114,212,.15);color:var(--purple);"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
             <div class="report-name">Inventory & waste</div>
-            <div class="report-desc">Usage vs par, waste tracking, reorder recommendations</div>
+            <div class="report-desc">Usage vs par, waste tracking, reorder guide</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate an inventory usage and waste report for Eiko\'s Napa — show current stock levels, what was used this week, estimated waste and its cost, items below par level, and recommended reorder quantities for each supplier.')">Generate</button>
+              <button onclick="printReport('inventory')">Print</button>
+              <button onclick="emailReport('Inventory Report')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a sales mix report — best selling dishes, revenue per dish, covers per item, and suggested menu engineering changes')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(76,175,114,.15);color:var(--green);"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
             <div class="report-name">Sales mix report</div>
-            <div class="report-desc">Stars vs dogs — what to push, what to drop, what to reprice</div>
+            <div class="report-desc">Stars vs dogs — what to push, reprice, or drop</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a menu engineering sales mix report for Eiko\'s Napa — categorize every menu item as Star (high popularity, high margin), Plow Horse (high popularity, low margin), Puzzle (low popularity, high margin), or Dog (low popularity, low margin). Give specific action recommendations for each category.')">Generate</button>
+              <button onclick="printReport('sales-mix')">Print</button>
+              <button onclick="emailReport('Sales Mix Report')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a labor efficiency report — labor cost % by shift, overtime analysis, and recommendations to optimize scheduling')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(224,82,82,.15);color:var(--red);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
             <div class="report-name">Labor efficiency</div>
-            <div class="report-desc">Labor % by shift, overtime alerts, scheduling optimization</div>
+            <div class="report-desc">Labor % by shift, overtime alerts, scheduling tips</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a labor efficiency report for Eiko\'s Napa — show labor cost percentage by day of week, identify which shifts are over-staffed or under-staffed, flag any overtime, and give 3 specific recommendations to optimize the schedule and reduce labor cost.')">Generate</button>
+              <button onclick="printReport('labor')">Print</button>
+              <button onclick="emailReport('Labor Report')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a monthly financial summary suitable for my accountant — revenue, all expenses, net profit, and year-over-year comparison')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(201,151,58,.15);color:var(--gold);"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
             <div class="report-name">Accountant package</div>
-            <div class="report-desc">Full monthly financials — formatted for your CPA or bookkeeper</div>
+            <div class="report-desc">Full monthly financials — formatted for your CPA</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a complete monthly accountant package for Eiko\'s Napa — include total revenue, cost of goods sold, gross profit, labor costs broken down by department, operating expenses (rent, utilities, supplies, marketing), total net profit, and profit margin percentage. Format professionally for a CPA.')">Generate</button>
+              <button onclick="printReport('accountant')">Print</button>
+              <button onclick="emailReport('Accountant Package')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Compare my restaurants this month — give me revenue, margins, and which is performing best — revenue, margins, and which is performing best')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(74,143,212,.15);color:var(--blue);"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="report-name">Multi-location comparison</div>
-            <div class="report-desc">All your restaurants side by side — revenue, costs, best performer</div>
+            <div class="report-desc">All restaurants side by side — who's winning</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Compare all my restaurant locations — show revenue, food cost %, labor cost %, and net profit margin for each location side by side. Identify which location is most profitable, which needs attention, and give specific recommendations for each.')">Generate</button>
+              <button onclick="printReport('multi')">Print</button>
+              <button onclick="emailReport('Multi-Location Report')">Email</button>
+            </div>
           </div>
-          <div class="report-card" onclick="aiAsk('Generate a tax preparation summary for Q2 2026 — total revenue, deductible expenses by category, and estimated quarterly tax')">
+
+          <div class="report-card">
             <div class="report-icon" style="background:rgba(155,114,212,.15);color:var(--purple);"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
             <div class="report-name">Tax prep summary</div>
-            <div class="report-desc">Quarterly revenue, deductible expenses — ready for your CPA</div>
+            <div class="report-desc">Quarterly revenue, deductible expenses — CPA ready</div>
+            <div class="report-actions">
+              <button onclick="generateAndDownload('Generate a quarterly tax preparation summary — show total revenue, all deductible business expenses categorized (food cost, labor, rent, utilities, equipment, marketing, professional services), net taxable income, and a list of commonly missed restaurant tax deductions.')">Generate</button>
+              <button onclick="printReport('tax')">Print</button>
+              <button onclick="emailReport('Tax Summary')">Email</button>
+            </div>
           </div>
+
+        </div>
+
+        <!-- Generated report display -->
+        <div id="report-output" style="display:none;" class="card" style="margin-top:16px;">
+          <div class="card-title">
+            <span id="report-output-title">Report</span>
+            <div style="display:flex;gap:8px;">
+              <button class="tbtn" onclick="window.print()">🖨 Print</button>
+              <button class="tbtn" onclick="downloadCurrentReport()">⬇ Download</button>
+              <button class="tbtn" onclick="document.getElementById('report-output').style.display='none'">✕ Close</button>
+            </div>
+          </div>
+          <div id="report-output-content" style="padding:16px 0;font-size:13px;line-height:1.8;white-space:pre-wrap;color:var(--tx);"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── SUPPLIERS ── -->
+<!-- ── SUPPLIERS ── -->
     <div id="scr-suppliers" class="scr">
       <div class="top-bar">
         <div class="top-bar-left"><h1>Suppliers & Orders</h1><p>6 active suppliers · last order Tuesday</p></div>
@@ -1574,6 +1631,284 @@ function stopVoice(){
   document.getElementById('voice-label').textContent='Tap to speak';
   document.getElementById('voice-label').style.color='var(--mut)';
   setTimeout(function(){document.getElementById('voice-toast').classList.remove('show');},1500);
+}
+
+// ══ KITCHEN / PREP MANAGEMENT ══
+var prepList = [
+  {id:1, task:'Sushi rice — prep 20 cups', assignee:'Kenji', time:'2pm', done:false},
+  {id:2, task:'Slice fish for nigiri & sashimi', assignee:'Yuki', time:'3pm', done:false},
+  {id:3, task:'Make spicy mayo, unagi sauce', assignee:'Yuki', time:'2pm', done:true},
+  {id:4, task:'Prep tempura batter', assignee:'Line Cook', time:'3pm', done:false},
+  {id:5, task:'Mise en place — all stations', assignee:'All kitchen', time:'4:30pm', done:false}
+];
+var prepNextId = 10;
+var eightySixList = [
+  {id:1, item:"Chili Rock Shrimp", reason:"Out of stock"},
+  {id:2, item:"Coffee", reason:"Out of stock"}
+];
+var e86NextId = 10;
+var allergyList = [];
+var allergyNextId = 10;
+
+function renderKitchen(){
+  var prepEl = document.getElementById('prep-list');
+  var emptyEl = document.getElementById('prep-empty');
+  if(!prepEl) return;
+  if(prepList.length === 0){
+    prepEl.innerHTML=''; emptyEl.style.display='block';
+  } else {
+    emptyEl.style.display='none';
+    prepEl.innerHTML = prepList.map(function(p){
+      return '<div class="alert-row" style="'+(p.done?'opacity:.5;':'')+'">' +
+        '<input type="checkbox" '+(p.done?'checked':'')+' onchange="togglePrep('+p.id+')" style="margin-right:10px;cursor:pointer;width:16px;height:16px;"/>' +
+        '<div class="a-txt"><div class="a-title" style="'+(p.done?'text-decoration:line-through;':'')+'">' + p.task + '</div>' +
+        '<div class="a-sub">' + (p.assignee||'') + (p.time?' · '+p.time:'') + '</div></div>' +
+        '<span style="font-size:12px;color:var(--gold);cursor:pointer;margin-right:10px;" onclick="editPrep('+p.id+')">✎</span>' +
+        '<span style="font-size:12px;color:var(--dim);cursor:pointer;" onclick="deletePrep('+p.id+')">✕</span>' +
+        '</div>';
+    }).join('');
+  }
+  var e86El = document.getElementById('eighty-six-list');
+  var e86Empty = document.getElementById('eighty-six-empty');
+  if(eightySixList.length === 0){
+    e86El.innerHTML=''; e86Empty.style.display='block';
+  } else {
+    e86Empty.style.display='none';
+    e86El.innerHTML = eightySixList.map(function(i){
+      return '<div class="alert-row"><div class="a-dot" style="background:var(--red)"></div>' +
+        '<div class="a-txt"><div class="a-title">'+i.item+'</div><div class="a-sub">'+i.reason+'</div></div>' +
+        '<span style="font-size:12px;color:var(--dim);cursor:pointer;" onclick="deleteE86('+i.id+')">✕</span></div>';
+    }).join('');
+  }
+  var alEl = document.getElementById('allergy-list');
+  if(alEl) alEl.innerHTML = allergyList.map(function(a){
+    return '<div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div>' +
+      '<div class="a-txt"><div class="a-title">'+a.table+'</div><div class="a-sub">'+a.allergy+'</div></div>' +
+      '<span style="font-size:12px;color:var(--dim);cursor:pointer;" onclick="deleteAllergy('+a.id+')">✕</span></div>';
+  }).join('');
+}
+function togglePrep(id){var p=prepList.find(function(x){return x.id===id;});if(p)p.done=!p.done;renderKitchen();}
+function deletePrep(id){prepList=prepList.filter(function(x){return x.id!==id;});renderKitchen();}
+function deleteE86(id){eightySixList=eightySixList.filter(function(x){return x.id!==id;});renderKitchen();}
+function deleteAllergy(id){allergyList=allergyList.filter(function(x){return x.id!==id;});renderKitchen();}
+function clearPrep(){if(confirm('Clear all prep tasks?')){prepList=[];renderKitchen();}}
+function clearEightySix(){if(confirm('Clear 86 board?')){eightySixList=[];renderKitchen();}}
+function editPrep(id){
+  var p=prepList.find(function(x){return x.id===id;});
+  if(!p)return;
+  var task=prompt('Edit prep task:',p.task);
+  if(task){p.task=task;renderKitchen();}
+}
+function openAddPrep(){
+  var task=prompt('Prep task:','');
+  if(!task)return;
+  var assignee=prompt('Who does it?','');
+  var time=prompt('By what time?','4pm');
+  prepList.push({id:prepNextId++,task:task,assignee:assignee||'',time:time||'',done:false});
+  renderKitchen();
+}
+function openAdd86(){
+  var item=prompt('Item to 86:','');
+  if(!item)return;
+  var reason=prompt('Reason:','Out of stock');
+  eightySixList.push({id:e86NextId++,item:item,reason:reason||'Out of stock'});
+  renderKitchen();
+}
+function openAddAllergy(){
+  var table=prompt('Table/party name:','');
+  if(!table)return;
+  var allergy=prompt('Allergy/restriction:','');
+  allergyList.push({id:allergyNextId++,table:table,allergy:allergy||''});
+  renderKitchen();
+}
+
+// ══ P&L MANAGEMENT ══
+var pnlList = [
+  {id:1,date:'Mon Jun 23',revenue:4200,food:1302,labor:1176,other:600},
+  {id:2,date:'Tue Jun 24',revenue:5800,food:1856,labor:1682,other:700},
+  {id:3,date:'Wed Jun 25',revenue:6100,food:1891,labor:1708,other:700},
+  {id:4,date:'Thu Jun 26',revenue:7400,food:2442,labor:2220,other:800}
+];
+var pnlNextId = 10;
+
+function renderPnl(){
+  var tbody=document.getElementById('pnl-tbody');
+  var empty=document.getElementById('pnl-empty');
+  if(!tbody)return;
+  if(pnlList.length===0){
+    tbody.innerHTML=''; empty.style.display='block';
+    ['pnl-revenue','pnl-food','pnl-labor','pnl-net'].forEach(function(id){
+      var el=document.getElementById(id); if(el)el.textContent='$0';
+    });
+    return;
+  }
+  empty.style.display='none';
+  var totRev=0,totFood=0,totLabor=0,totOther=0;
+  tbody.innerHTML=pnlList.map(function(p){
+    var net=p.revenue-p.food-p.labor-p.other;
+    totRev+=p.revenue;totFood+=p.food;totLabor+=p.labor;totOther+=p.other;
+    var foodPct=Math.round(p.food/p.revenue*100);
+    var laborPct=Math.round(p.labor/p.revenue*100);
+    return '<tr>'+
+      '<td style="font-weight:600;">'+p.date+'</td>'+
+      '<td>$'+p.revenue.toLocaleString()+'</td>'+
+      '<td>$'+p.food.toLocaleString()+' <span style="font-size:10px;color:'+(foodPct>32?'var(--red)':'var(--green)')+';">'+foodPct+'%</span></td>'+
+      '<td>$'+p.labor.toLocaleString()+' <span style="font-size:10px;color:'+(laborPct>30?'var(--red)':'var(--green)')+';">'+laborPct+'%</span></td>'+
+      '<td>$'+p.other.toLocaleString()+'</td>'+
+      '<td style="font-weight:700;color:'+(net>0?'var(--green)':'var(--red)')+';">'+( net>0?'+':'')+' $'+net.toLocaleString()+'</td>'+
+      '<td style="text-align:right;white-space:nowrap;">'+
+        '<span class="card-action" onclick="editPnl('+p.id+')" style="margin-right:10px;">✎ Edit</span>'+
+        '<span style="font-size:12px;color:var(--dim);cursor:pointer;" onclick="deletePnl('+p.id+')">✕ Delete</span>'+
+      '</td>'+
+    '</tr>';
+  }).join('');
+  var totNet=totRev-totFood-totLabor-totOther;
+  var el;
+  el=document.getElementById('pnl-revenue');if(el)el.textContent='$'+totRev.toLocaleString();
+  el=document.getElementById('pnl-food');if(el)el.textContent='$'+totFood.toLocaleString();
+  el=document.getElementById('pnl-food-pct');if(el)el.textContent=Math.round(totFood/totRev*100)+'% of revenue';
+  el=document.getElementById('pnl-labor');if(el)el.textContent='$'+totLabor.toLocaleString();
+  el=document.getElementById('pnl-labor-pct');if(el)el.textContent=Math.round(totLabor/totRev*100)+'% of revenue';
+  el=document.getElementById('pnl-net');if(el)el.textContent='$'+totNet.toLocaleString();
+  el=document.getElementById('pnl-margin');if(el)el.textContent=Math.round(totNet/totRev*100)+'% margin';
+  el=document.getElementById('pnl-breakdown');
+  if(el) el.innerHTML='<div class="alert-row"><div class="a-txt"><div class="a-title">Food & beverage cost</div></div><div style="font-weight:700;">$'+totFood.toLocaleString()+'</div><div style="margin-left:8px;color:var(--mut);font-size:12px;">'+Math.round(totFood/totRev*100)+'%</div></div>'+
+    '<div class="alert-row"><div class="a-txt"><div class="a-title">Labor cost</div></div><div style="font-weight:700;">$'+totLabor.toLocaleString()+'</div><div style="margin-left:8px;color:var(--mut);font-size:12px;">'+Math.round(totLabor/totRev*100)+'%</div></div>'+
+    '<div class="alert-row"><div class="a-txt"><div class="a-title">Other operating costs</div></div><div style="font-weight:700;">$'+totOther.toLocaleString()+'</div><div style="margin-left:8px;color:var(--mut);font-size:12px;">'+Math.round(totOther/totRev*100)+'%</div></div>'+
+    '<div class="alert-row" style="border-top:2px solid var(--bdr);margin-top:4px;"><div class="a-txt"><div class="a-title" style="font-weight:800;">Net profit</div></div><div style="font-weight:800;font-size:16px;color:var(--green);">$'+totNet.toLocaleString()+'</div><div style="margin-left:8px;color:var(--green);font-size:12px;">'+Math.round(totNet/totRev*100)+'%</div></div>';
+}
+
+function openAddPnl(){
+  var date=prompt('Date (e.g. Fri Jun 27):',new Date().toDateString());
+  if(!date)return;
+  var revenue=parseFloat(prompt('Total revenue ($):',''));
+  if(!revenue)return;
+  var food=parseFloat(prompt('Food cost ($):',''));
+  var labor=parseFloat(prompt('Labor cost ($):',''));
+  var other=parseFloat(prompt('Other costs ($):',''));
+  pnlList.push({id:pnlNextId++,date:date,revenue:revenue,food:food||0,labor:labor||0,other:other||0});
+  renderPnl();
+}
+function editPnl(id){
+  var p=pnlList.find(function(x){return x.id===id;});
+  if(!p)return;
+  var revenue=parseFloat(prompt('Revenue for '+p.date+':',p.revenue));
+  if(!revenue)return;
+  var food=parseFloat(prompt('Food cost:',p.food));
+  var labor=parseFloat(prompt('Labor cost:',p.labor));
+  var other=parseFloat(prompt('Other costs:',p.other));
+  p.revenue=revenue;p.food=food||0;p.labor=labor||0;p.other=other||0;
+  renderPnl();
+}
+function deletePnl(id){
+  if(!confirm('Delete this P&L entry?'))return;
+  pnlList=pnlList.filter(function(x){return x.id!==id;});
+  renderPnl();
+}
+function clearPnlConfirm(){
+  if(!confirm('Delete all P&L entries? This cannot be undone.'))return;
+  pnlList=[];renderPnl();
+}
+
+// ══ REPORTS — generate, download, print, email ══
+var currentReportText='';
+var currentReportTitle='';
+
+function generateAndDownload(prompt_text){
+  var outputDiv=document.getElementById('report-output');
+  var contentDiv=document.getElementById('report-output-content');
+  var titleEl=document.getElementById('report-output-title');
+  if(!outputDiv)return;
+  outputDiv.style.display='block';
+  contentDiv.textContent='Generating report...';
+  // Scroll to report
+  outputDiv.scrollIntoView({behavior:'smooth'});
+  // Extract title from prompt
+  var title = prompt_text.split(' ').slice(1,5).join(' ');
+  titleEl.textContent=title;
+  currentReportTitle=title;
+  // Call AI
+  fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',max_tokens:1500,
+      system:SYS,
+      messages:[{role:'user',content:prompt_text+' Format the report clearly with sections and totals. Do not use markdown symbols like asterisks or pound signs.'}]
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    var text=(d.content&&d.content[0])?d.content[0].text:'Could not generate report.';
+    currentReportText=text;
+    contentDiv.textContent=text;
+    if(ttsEnabled)speak('Report ready. '+text.slice(0,200));
+  }).catch(function(){
+    contentDiv.textContent='Connection error. Please try again.';
+  });
+}
+
+function downloadCurrentReport(){
+  if(!currentReportText)return;
+  var blob=new Blob([currentReportTitle+'\n\n'+currentReportText],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=currentReportTitle.replace(/\s+/g,'-')+'.txt';
+  a.click();
+}
+
+function exportReport(type){
+  var text='TableOps AI Report\n'+new Date().toLocaleDateString()+'\n\n';
+  if(type==='pnl'){
+    text+='DAILY P&L REPORT\n';
+    pnlList.forEach(function(p){
+      var net=p.revenue-p.food-p.labor-p.other;
+      text+=p.date+' | Revenue: $'+p.revenue+' | Food: $'+p.food+' | Labor: $'+p.labor+' | Net: $'+net+'\n';
+    });
+  }
+  var blob=new Blob([text],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='TableOps-'+type+'-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.click();
+}
+
+function printReport(type){
+  var win=window.open('','_blank');
+  var body='<html><head><title>TableOps Report</title>';
+  body+='<style>body{font-family:Arial,sans-serif;padding:40px;color:#000;}';
+  body+='h1{font-size:22px;margin-bottom:4px;}';
+  body+='h2{font-size:16px;margin:20px 0 8px;}';
+  body+='table{width:100%;border-collapse:collapse;margin:12px 0;}';
+  body+='th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px;}';
+  body+='th{background:#f5f5f5;font-weight:bold;}';
+  body+='</style></head><body>';
+  body+="<h1>Eiko's Napa — TableOps AI Report</h1>";
+  body+='<p style="color:#666;font-size:12px;">Generated '+new Date().toLocaleDateString()+'</p>';
+  if(type==='pnl'){
+    body+='<h2>Daily P&L</h2><table><tr><th>Date</th><th>Revenue</th><th>Food Cost</th><th>Labor</th><th>Other</th><th>Net Profit</th></tr>';
+    pnlList.forEach(function(p){
+      var net=p.revenue-p.food-p.labor-p.other;
+      body+='<tr><td>'+p.date+'</td><td>$'+p.revenue+'</td><td>$'+p.food+'</td><td>$'+p.labor+'</td><td>$'+p.other+'</td><td><strong>$'+net+'</strong></td></tr>';
+    });
+    body+='</table>';
+  } else if(type==='payroll'){
+    body+='<h2>Payroll Report</h2><table><tr><th>Name</th><th>Role</th><th>Hours</th><th>Rate</th><th>Gross Pay</th></tr>';
+    staffList.forEach(function(s){
+      body+='<tr><td>'+s.first+' '+s.last+'</td><td>'+s.role+'</td><td>'+s.hours+'h</td><td>$'+s.rate+'/hr</td><td><strong>$'+(s.rate*s.hours).toLocaleString()+'</strong></td></tr>';
+    });
+    body+='</table>';
+  } else if(currentReportText){
+    body+='<h2>'+currentReportTitle+'</h2><pre style="white-space:pre-wrap;font-size:13px;">'+currentReportText+'</pre>';
+  }
+  body+='</body></html>';
+  win.document.write(body);
+  win.document.close();
+  win.print();
+}
+
+function emailReport(title){
+  var subject=encodeURIComponent('TableOps Report: '+title);
+  var body=encodeURIComponent('Please find the '+title+' report from TableOps AI attached.\n\nGenerated: '+new Date().toLocaleDateString());
+  window.location.href='mailto:?subject='+subject+'&body='+body;
 }
 
 function resolveAlerts(){aiAsk('I want to resolve all 3 alerts: order salmon, find cover for Carlos, and give me advice on labor cost. Handle all three.');}
