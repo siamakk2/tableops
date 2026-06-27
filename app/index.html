@@ -3,819 +3,1233 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>TableOps AI — Restaurant Operations</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>TableOps AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
-  --bg:#0f0d0a;
-  --card:#1a1710;
-  --card2:#211e18;
-  --border:#2e2a22;
-  --gold:#c9973a;
-  --gold2:#e8b44a;
-  --tx:#f5f0e8;
-  --mut:#9a8f7e;
-  --dim:#5a5248;
-  --red:#e05252;
-  --green:#4caf72;
-  --blue:#4a8fd4;
-  --or:#c9973a;
+  --bg:#0f0d0a;--card:#1a1710;--card2:#211e18;--bdr:#2e2a22;
+  --gold:#c9973a;--gold2:#e8b44a;--tx:#f5f0e8;--mut:#9a8f7e;--dim:#5a5248;
+  --red:#e05252;--green:#4caf72;--blue:#4a8fd4;--purple:#9b72d4;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;}
+a{color:inherit;text-decoration:none;}
+button,input,select,textarea{font-family:'Inter',sans-serif;}
 
-/* LAYOUT */
-.app{display:flex;height:100vh;height:100dvh;}
-.sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+/* ── AUTH ── */
+#auth-wall{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+#auth-wall.hidden{display:none;}
+.auth-box{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:36px;width:100%;max-width:420px;}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+.auth-logo-mark{width:38px;height:38px;border-radius:9px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+.auth-logo-mark svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.auth-logo span{font-size:22px;font-weight:800;color:var(--tx);}
+.auth-tabs{display:flex;gap:0;background:var(--card2);border-radius:9px;padding:3px;margin-bottom:24px;}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:7px;cursor:pointer;color:var(--mut);transition:all .15s;}
+.auth-tab.active{background:var(--bdr);color:var(--tx);}
+.auth-field{margin-bottom:14px;}
+.auth-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;}
+.auth-field input,.auth-field select{width:100%;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:11px 14px;font-size:14px;color:var(--tx);outline:none;}
+.auth-field input:focus,.auth-field select:focus{border-color:var(--gold);}
+.auth-field select option{background:var(--card2);}
+.auth-btn{width:100%;background:var(--gold);border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
+.auth-btn:hover{opacity:.9;}
+.auth-divider{text-align:center;font-size:12px;color:var(--dim);margin:16px 0;}
+.auth-err{background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
 
-/* SIDEBAR HEADER */
-.sb-header{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
-.sb-logo{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:800;color:var(--tx);margin-bottom:12px;}
-.sb-logo-mark{width:30px;height:30px;border-radius:7px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
-.sb-logo-mark svg{width:17px;height:17px;stroke:#fff;}
-.sb-rest{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
-.sb-rest-name{font-size:13px;font-weight:600;}
-.sb-rest-sub{font-size:11px;color:var(--mut);}
-.sb-rest-arr{color:var(--mut);font-size:12px;}
+/* ── RESTAURANT SETUP WIZARD ── */
+#setup-wall{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+#setup-wall.hidden{display:none;}
+.setup-box{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:36px;width:100%;max-width:540px;}
+.setup-step{display:none;}.setup-step.active{display:block;}
+.setup-progress{display:flex;gap:6px;margin-bottom:28px;}
+.setup-dot{height:4px;flex:1;border-radius:2px;background:var(--bdr);}
+.setup-dot.done{background:var(--gold);}
+.setup-title{font-size:20px;font-weight:800;margin-bottom:6px;}
+.setup-sub{font-size:13px;color:var(--mut);margin-bottom:24px;line-height:1.5;}
+.setup-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.setup-next{background:var(--gold);border:none;border-radius:8px;padding:12px 28px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;margin-top:16px;}
+.setup-back{background:none;border:1px solid var(--bdr);border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;color:var(--mut);cursor:pointer;margin-top:16px;margin-right:10px;}
 
-/* SIDEBAR NAV */
-.sb-nav{padding:10px 8px;flex:1;overflow-y:auto;}
-.sb-section{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:14px 8px 6px;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--mut);transition:all .15s;margin-bottom:2px;}
+/* ── APP SHELL ── */
+#app-shell{display:flex;height:100vh;height:100dvh;}
+#app-shell.hidden{display:none;}
+.sidebar{width:240px;background:var(--card);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;transition:transform .25s;}
+.sb-top{padding:16px 14px 12px;border-bottom:1px solid var(--bdr);}
+.sb-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin-bottom:12px;}
+.sb-lmark{width:28px;height:28px;border-radius:6px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
+.sb-lmark svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Restaurant switcher */
+.rest-switcher{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:9px 11px;cursor:pointer;position:relative;}
+.rest-name{font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.rest-sub{font-size:11px;color:var(--mut);margin-top:1px;}
+.rest-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);border:1px solid var(--bdr);border-radius:10px;z-index:200;display:none;overflow:hidden;}
+.rest-dropdown.open{display:block;}
+.rest-opt{padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--bdr);}
+.rest-opt:last-child{border-bottom:none;}
+.rest-opt:hover{background:var(--card2);}
+.rest-opt.active{color:var(--gold);}
+.rest-add{padding:10px 12px;font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+
+/* Nav */
+.sb-nav{flex:1;overflow-y:auto;padding:8px 6px;}
+.sb-sect{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:12px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:500;margin-bottom:1px;transition:all .12s;}
 .sb-item:hover{background:var(--card2);color:var(--tx);}
-.sb-item.active{background:rgba(201,151,58,.12);color:var(--gold2);}
-.sb-item svg{width:16px;height:16px;flex-shrink:0;}
-.sb-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;}
-.sb-badge.green{background:var(--green);}
+.sb-item.on{background:rgba(201,151,58,.12);color:var(--gold2);}
+.sb-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 5px;border-radius:999px;}
+.sb-badge.red{background:var(--red);color:#fff;}
+.sb-badge.green{background:var(--green);color:#fff;}
+.sb-footer{padding:12px 14px;border-top:1px solid var(--bdr);}
+.sb-user{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.sb-av{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-uname{font-size:12px;font-weight:600;}
+.sb-urole{font-size:11px;color:var(--mut);}
+.sb-logout{font-size:11px;color:var(--dim);margin-left:auto;cursor:pointer;}
+.sb-logout:hover{color:var(--red);}
 
-/* SIDEBAR FOOTER */
-.sb-footer{padding:12px 16px;border-top:1px solid var(--border);}
-.sb-user{display:flex;align-items:center;gap:9px;}
-.sb-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
-.sb-user-name{font-size:13px;font-weight:600;}
-.sb-user-role{font-size:11px;color:var(--mut);}
+/* Main area */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.top-bar{padding:14px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.top-bar-left h1{font-size:16px;font-weight:700;}
+.top-bar-left p{font-size:11px;color:var(--mut);margin-top:1px;}
+.top-bar-right{display:flex;align-items:center;gap:8px;}
+.tbtn{background:var(--card2);border:1px solid var(--bdr);border-radius:7px;padding:7px 13px;font-size:12px;font-weight:600;color:var(--tx);cursor:pointer;}
+.tbtn.gold{background:var(--gold);border-color:var(--gold);color:#fff;}
+.scr{display:none;flex:1;overflow-y:auto;padding:20px;}
+.scr.on{display:block;}
 
-/* MAIN HEADER */
-.main-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.main-title{font-size:17px;font-weight:700;}
-.main-sub{font-size:12px;color:var(--mut);margin-top:2px;}
-.header-actions{display:flex;gap:8px;}
-.hbtn{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:13px;font-weight:600;color:var(--tx);cursor:pointer;font-family:'Inter',sans-serif;}
-.hbtn.primary{background:var(--gold);border-color:var(--gold);color:#fff;}
+/* VOICE BUTTON — floating */
+.voice-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,151,58,.4);z-index:500;transition:transform .15s;}
+.voice-fab:hover{transform:scale(1.08);}
+.voice-fab.recording{background:var(--red);animation:vPulse 1.2s ease-in-out infinite;}
+.voice-fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+@keyframes vPulse{0%,100%{box-shadow:0 4px 20px rgba(224,82,82,.4);}50%{box-shadow:0 4px 36px rgba(224,82,82,.7),0 0 0 10px rgba(224,82,82,.15);}}
+.voice-toast{position:fixed;bottom:88px;right:24px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 16px;font-size:13px;max-width:280px;z-index:500;display:none;}
+.voice-toast.show{display:block;}
+.voice-state{font-weight:700;margin-bottom:3px;}
+.voice-transcript{color:var(--mut);font-style:italic;}
 
-/* SCREENS */
-.screen{display:none;flex:1;overflow-y:auto;padding:24px;}
-.screen.active{display:block;}
+/* CARDS / METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.metric{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:16px;}
+.metric-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);margin-bottom:7px;}
+.metric-val{font-size:26px;font-weight:800;line-height:1;}
+.metric-chg{font-size:11px;margin-top:3px;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+.neutral{color:var(--mut);}
 
-/* DASHBOARD */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.metric{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
-.metric-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:8px;}
-.metric-value{font-size:28px;font-weight:800;line-height:1;}
-.metric-sub{font-size:12px;color:var(--mut);margin-top:4px;}
-.metric-sub.up{color:var(--green);}
-.metric-sub.down{color:var(--red);}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:16px;margin-bottom:14px;}
+.card-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.card-title span{font-size:11px;font-weight:500;color:var(--mut);}
+.card-action{font-size:11px;color:var(--gold);font-weight:600;cursor:pointer;}
 
-.dash-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
-.dash-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
-.dash-card-title{font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.dash-card-title span{font-size:11px;font-weight:500;color:var(--mut);}
+/* TABLES */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr);}
+.tbl td{padding:10px;font-size:13px;border-bottom:1px solid var(--bdr);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--card2);}
 
-.alert-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+/* BADGES */
+.badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;}
+.badge.green{background:rgba(76,175,114,.15);color:var(--green);}
+.badge.red{background:rgba(224,82,82,.15);color:var(--red);}
+.badge.amber{background:rgba(232,180,74,.15);color:var(--gold2);}
+.badge.blue{background:rgba(74,143,212,.15);color:var(--blue);}
+.badge.purple{background:rgba(155,114,212,.15);color:var(--purple);}
+
+/* ALERT ROWS */
+.alert-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr);}
 .alert-row:last-child{border-bottom:none;}
-.alert-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.alert-text{font-size:13px;flex:1;}
-.alert-sub{font-size:11px;color:var(--mut);}
-.alert-action{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;white-space:nowrap;}
-
-.staff-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
-.staff-row:last-child{border-bottom:none;}
-.staff-av{width:30px;height:30px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
-.staff-name{font-size:13px;font-weight:600;flex:1;}
-.staff-role{font-size:11px;color:var(--mut);}
-.staff-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;}
-.staff-status.on{background:rgba(76,175,114,.15);color:var(--green);}
-.staff-status.off{background:rgba(90,82,72,.3);color:var(--mut);}
-.staff-status.out{background:rgba(224,82,82,.15);color:var(--red);}
-
-/* INVENTORY */
-.inv-filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
-.inv-filter{padding:6px 14px;border-radius:999px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;background:none;font-family:'Inter',sans-serif;}
-.inv-filter.active{background:var(--gold);border-color:var(--gold);color:#fff;}
-.inv-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.inv-thead{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:10px 16px;background:var(--card2);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);}
-.inv-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:12px 16px;border-top:1px solid var(--border);align-items:center;}
-.inv-row:hover{background:var(--card2);}
-.inv-name{font-size:13px;font-weight:600;}
-.inv-cat{font-size:11px;color:var(--mut);}
-.inv-num{font-size:13px;font-weight:500;}
-.inv-bar-wrap{height:4px;background:var(--border);border-radius:2px;width:60px;}
-.inv-bar{height:4px;border-radius:2px;}
-.inv-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;text-align:center;}
-.inv-status.ok{background:rgba(76,175,114,.15);color:var(--green);}
-.inv-status.low{background:rgba(232,180,74,.15);color:var(--gold2);}
-.inv-status.critical{background:rgba(224,82,82,.15);color:var(--red);}
-.inv-order{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;}
+.a-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.a-txt{flex:1;}
+.a-title{font-size:13px;font-weight:600;}
+.a-sub{font-size:11px;color:var(--mut);}
+.a-act{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;white-space:nowrap;}
 
 /* STAFF */
-.staff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.staff-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;}
-.staff-card-av{width:44px;height:44px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;margin-bottom:12px;}
-.staff-card-name{font-size:15px;font-weight:700;margin-bottom:2px;}
-.staff-card-role{font-size:12px;color:var(--mut);margin-bottom:12px;}
-.staff-card-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-top:1px solid var(--border);}
-.staff-card-row span{color:var(--mut);}
+.staff-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr);}
+.staff-row:last-child{border-bottom:none;}
+.s-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
 
-/* MENU */
-.menu-cats{display:flex;gap:8px;margin-bottom:18px;overflow-x:auto;padding-bottom:4px;}
-.menu-cat{padding:6px 16px;border-radius:999px;border:1px solid var(--border);font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;background:none;font-family:'Inter',sans-serif;white-space:nowrap;}
-.menu-cat.active{background:var(--gold);border-color:var(--gold);color:#fff;}
-.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.menu-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
-.menu-item-name{font-size:14px;font-weight:700;margin-bottom:4px;}
-.menu-item-desc{font-size:12px;color:var(--mut);line-height:1.5;margin-bottom:12px;}
-.menu-item-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-top:1px solid var(--border);}
-.menu-item-row span{color:var(--mut);}
-.menu-margin{font-weight:700;}
-.menu-margin.good{color:var(--green);}
-.menu-margin.ok{color:var(--gold2);}
-.menu-margin.low{color:var(--red);}
+/* INVENTORY BARS */
+.inv-row{display:grid;grid-template-columns:2fr 80px 80px 90px 60px;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--bdr);}
+.inv-row:last-child{border-bottom:none;}
+.inv-bar-bg{height:4px;background:var(--bdr);border-radius:2px;}
+.inv-bar-fill{height:4px;border-radius:2px;}
+
+/* GRID LAYOUTS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;display:none;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:28px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;}
+.modal h2{font-size:17px;font-weight:800;margin-bottom:18px;}
+.modal-close{float:right;background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;margin-top:-4px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx);outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field select option{background:var(--card2);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:8px;margin-top:18px;}
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;}
+.btn.primary{background:var(--gold);color:#fff;}
+.btn.secondary{background:var(--card2);color:var(--tx);border:1px solid var(--bdr);}
 
 /* AI CHAT */
-.ai-screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
-.ai-screen.active{display:flex;}
-.ai-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
-.ai-messages::-webkit-scrollbar{width:0;}
-.msg{display:flex;gap:10px;align-items:flex-start;max-width:780px;}
-.msg.user{flex-direction:row-reverse;align-self:flex-end;}
-.msg-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
-.msg.bot .msg-av{background:rgba(201,151,58,.2);color:var(--gold2);}
-.msg.user .msg-av{background:rgba(255,255,255,.1);color:var(--tx);}
-.msg-bubble{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.6;}
-.msg.bot .msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--tx);}
-.msg.user .msg-bubble{background:var(--gold);color:#fff;}
-.msg-bubble p{margin-bottom:8px;}
-.msg-bubble p:last-child{margin-bottom:0;}
-.msg-bubble ul{padding-left:16px;margin-top:4px;}
-.msg-bubble li{margin-bottom:4px;}
-.msg-bubble strong{color:var(--gold2);}
-.msg.user .msg-bubble strong{color:#fff;}
-.typing{display:flex;gap:4px;align-items:center;padding:14px 16px;}
-.typing span{width:7px;height:7px;border-radius:50%;background:var(--mut);animation:typingDot 1.2s infinite;}
-.typing span:nth-child(2){animation-delay:.2s;}
-.typing span:nth-child(3){animation-delay:.4s;}
-@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
-
-.ai-input-area{padding:16px 24px;border-top:1px solid var(--border);background:var(--bg);}
-.ai-suggestions{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
-.ai-sug{padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:999px;font-size:12px;font-weight:500;color:var(--mut);cursor:pointer;transition:all .15s;}
+.ai-wrap{display:flex;flex-direction:column;height:100%;}
+.ai-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.ai-msgs::-webkit-scrollbar{width:0;}
+.amsg{display:flex;gap:9px;max-width:720px;}
+.amsg.user{flex-direction:row-reverse;align-self:flex-end;}
+.amsg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.amsg.bot .amsg-av{background:rgba(201,151,58,.2);color:var(--gold2);}
+.amsg.user .amsg-av{background:rgba(255,255,255,.1);color:var(--tx);}
+.amsg-bub{padding:11px 15px;border-radius:13px;font-size:13px;line-height:1.6;}
+.amsg.bot .amsg-bub{background:var(--card);border:1px solid var(--bdr);}
+.amsg.user .amsg-bub{background:var(--gold);color:#fff;}
+.amsg-bub p{margin-bottom:6px;}.amsg-bub p:last-child{margin:0;}
+.amsg-bub ul{padding-left:16px;margin-top:4px;}.amsg-bub li{margin-bottom:3px;}
+.amsg-bub strong{color:var(--gold2);}.amsg.user .amsg-bub strong{color:#fff;}
+.typing-dots{display:flex;gap:4px;padding:14px 15px;}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:td 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-5px);opacity:1;}}
+.ai-foot{padding:12px 20px;border-top:1px solid var(--bdr);}
+.ai-sugs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
+.ai-sug{padding:5px 11px;background:var(--card);border:1px solid var(--bdr);border-radius:999px;font-size:11px;color:var(--mut);cursor:pointer;}
 .ai-sug:hover{border-color:var(--gold);color:var(--gold);}
-.ai-input-row{display:flex;gap:10px;align-items:flex-end;}
-.ai-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--tx);font-family:'Inter',sans-serif;resize:none;min-height:48px;max-height:120px;outline:none;line-height:1.5;}
-.ai-input:focus{border-color:var(--gold);}
-.ai-input::placeholder{color:var(--dim);}
-.ai-send{width:44px;height:44px;border-radius:10px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ai-send svg{width:18px;height:18px;stroke:#fff;}
-.ai-send:disabled{opacity:.4;cursor:not-allowed;}
+.ai-row{display:flex;gap:8px;}
+.ai-in{flex:1;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--tx);resize:none;outline:none;min-height:42px;max-height:100px;line-height:1.5;}
+.ai-in:focus{border-color:var(--gold);}
+.ai-in::placeholder{color:var(--dim);}
+.ai-send{width:40px;height:40px;border-radius:9px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-send svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.ai-send:disabled{opacity:.4;}
+
+/* REPORTS */
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.report-card{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:16px;cursor:pointer;transition:border-color .15s;}
+.report-card:hover{border-color:var(--gold);}
+.report-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.report-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.report-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.report-desc{font-size:11px;color:var(--mut);line-height:1.4;}
 
 /* MOBILE */
+.mob-header{display:none;padding:12px 16px;border-bottom:1px solid var(--bdr);display:none;align-items:center;gap:10px;}
+.mob-menu-btn{background:none;border:none;color:var(--tx);font-size:20px;cursor:pointer;}
 @media(max-width:768px){
-  .sidebar{display:none;}
+  .sidebar{position:fixed;left:-240px;top:0;bottom:0;z-index:600;}
+  .sidebar.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.6);}
+  .mob-header{display:flex;}
   .metrics{grid-template-columns:1fr 1fr;}
-  .dash-grid{grid-template-columns:1fr;}
-  .staff-grid,.menu-grid{grid-template-columns:1fr;}
-  .inv-thead{display:none;}
-  .inv-row{grid-template-columns:1fr 1fr;gap:4px;}
+  .g2,.g3,.g4{grid-template-columns:1fr;}
+  .inv-row{grid-template-columns:1fr 60px 70px;}
+  .report-grid{grid-template-columns:1fr 1fr;}
+  .voice-fab{bottom:16px;right:16px;}
 }
 </style>
 </head>
 <body>
-<div class="app">
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="sb-header">
-    <div class="sb-logo">
-      <div class="sb-logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/>
-        </svg>
+<!-- ══ AUTH WALL ══ -->
+<div id="auth-wall">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
       </div>
-      TableOps
+      <span>TableOps AI</span>
     </div>
-    <div class="sb-rest">
-      <div>
-        <div class="sb-rest-name">Bello Napa</div>
-        <div class="sb-rest-sub">Napa Valley · Italian</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')">Sign in</div>
+      <div class="auth-tab" onclick="switchTab('signup')">Create account</div>
+    </div>
+    <div class="auth-err" id="auth-err"></div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="you@restaurant.com"/></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="login-pw" placeholder="••••••••"/></div>
+      <button class="auth-btn" onclick="doLogin()">Sign in to TableOps</button>
+      <div class="auth-divider">— or try the demo —</div>
+      <button class="auth-btn" style="background:var(--card2);color:var(--tx);border:1px solid var(--bdr);" onclick="demoLogin()">Demo: Bello Napa (owner)</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="tab-signup" style="display:none;">
+      <div class="auth-field"><label>Your name</label><input type="text" id="su-name" placeholder="Siamak Kalhor"/></div>
+      <div class="auth-field"><label>Email</label><input type="email" id="su-email" placeholder="you@restaurant.com"/></div>
+      <div class="auth-field"><label>Password</label><input type="password" id="su-pw" placeholder="min 8 characters"/></div>
+      <div class="auth-field">
+        <label>Your role</label>
+        <select id="su-role">
+          <option value="owner">Owner</option>
+          <option value="manager">General Manager</option>
+          <option value="chef">Executive Chef</option>
+        </select>
       </div>
-      <div class="sb-rest-arr">▾</div>
+      <button class="auth-btn" onclick="doSignup()">Create account &amp; set up restaurant</button>
     </div>
   </div>
+</div>
 
-  <div class="sb-nav">
-    <div class="sb-section">Operations</div>
-    <div class="sb-item active" onclick="showScreen('dashboard',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
-      <span class="sb-badge">3</span>
+<!-- ══ RESTAURANT SETUP WIZARD ══ -->
+<div id="setup-wall" class="hidden">
+  <div class="setup-box">
+    <div class="setup-progress" id="setup-prog">
+      <div class="setup-dot done"></div><div class="setup-dot"></div><div class="setup-dot"></div><div class="setup-dot"></div>
     </div>
-    <div class="sb-item" onclick="showScreen('inventory',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      Inventory
-      <span class="sb-badge">2</span>
-    </div>
-    <div class="sb-item" onclick="showScreen('staff',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Staff
-    </div>
-    <div class="sb-item" onclick="showScreen('menu',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
-      Menu & Recipes
-    </div>
-    <div class="sb-section">Intelligence</div>
-    <div class="sb-item" onclick="showScreen('ai',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Ask TableOps AI
-      <span class="sb-badge green">AI</span>
-    </div>
-    <div class="sb-section">Finance</div>
-    <div class="sb-item" onclick="showScreen('pnl',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Daily P&L
-    </div>
-  </div>
 
-  <div class="sb-footer">
-    <div class="sb-user">
-      <div class="sb-avatar">SK</div>
-      <div>
-        <div class="sb-user-name">Siamak Kalhor</div>
-        <div class="sb-user-role">Owner</div>
+    <!-- Step 1: Restaurant basics -->
+    <div class="setup-step active" id="step-1">
+      <div class="setup-title">Tell us about your restaurant</div>
+      <div class="setup-sub">This sets up your entire account. You can change everything later.</div>
+      <div class="auth-field"><label>Restaurant name</label><input type="text" id="r-name" placeholder="Bello Napa"/></div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Cuisine type</label>
+          <select id="r-cuisine">
+            <option>Italian</option><option>French</option><option>Japanese</option><option>Mexican</option>
+            <option>American</option><option>Mediterranean</option><option>Chinese</option><option>Indian</option>
+            <option>Persian</option><option>Middle Eastern</option><option>Steakhouse</option><option>Seafood</option>
+            <option>Farm to Table</option><option>Wine Bar</option><option>Other</option>
+          </select>
+        </div>
+        <div class="auth-field"><label>City</label><input type="text" id="r-city" placeholder="Napa, CA"/></div>
+      </div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Service style</label>
+          <select id="r-style">
+            <option>Fine dining</option><option>Casual dining</option><option>Fast casual</option>
+            <option>Bistro / wine bar</option><option>Tasting menu</option><option>Hotel restaurant</option>
+          </select>
+        </div>
+        <div class="auth-field"><label>Number of locations</label>
+          <select id="r-locs">
+            <option value="1">1 location</option><option value="2">2 locations</option>
+            <option value="3">3–5 locations</option><option value="6">6+ locations</option>
+          </select>
+        </div>
+      </div>
+      <button class="setup-next" onclick="nextStep(2)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Layout -->
+    <div class="setup-step" id="step-2">
+      <div class="setup-title">Restaurant layout</div>
+      <div class="setup-sub">We use this for seating management and capacity planning.</div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Indoor tables</label><input type="number" id="r-tables-in" value="20" min="1"/></div>
+        <div class="auth-field"><label>Indoor seats</label><input type="number" id="r-seats-in" value="80" min="1"/></div>
+      </div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Patio / outdoor tables</label><input type="number" id="r-tables-out" value="8" min="0"/></div>
+        <div class="auth-field"><label>Patio seats</label><input type="number" id="r-seats-out" value="32" min="0"/></div>
+      </div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Bar seats</label><input type="number" id="r-bar" value="10" min="0"/></div>
+        <div class="auth-field"><label>Private dining rooms</label><input type="number" id="r-pdr" value="1" min="0"/></div>
+      </div>
+      <div class="auth-field"><label>Average covers per night</label><input type="number" id="r-covers" value="90" min="1"/></div>
+      <button class="setup-back" onclick="nextStep(1)">← Back</button>
+      <button class="setup-next" onclick="nextStep(3)">Continue →</button>
+    </div>
+
+    <!-- Step 3: Financials -->
+    <div class="setup-step" id="step-3">
+      <div class="setup-title">Financial targets</div>
+      <div class="setup-sub">Set your targets so TableOps can alert you when you're drifting.</div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Average check per person</label><input type="number" id="r-check" value="95" min="1" placeholder="95"/></div>
+        <div class="auth-field"><label>Target food cost %</label><input type="number" id="r-foodcost" value="28" min="1" max="60" placeholder="28"/></div>
+      </div>
+      <div class="setup-row">
+        <div class="auth-field"><label>Target labor cost %</label><input type="number" id="r-laborcost" value="30" min="1" max="60" placeholder="30"/></div>
+        <div class="auth-field"><label>Open days per week</label>
+          <select id="r-days"><option value="5">5 days</option><option value="6">6 days</option><option value="7">7 days</option></select>
+        </div>
+      </div>
+      <div class="auth-field"><label>Fiscal year start</label>
+        <select id="r-fiscal">
+          <option>January</option><option>April</option><option>July</option><option>October</option>
+        </select>
+      </div>
+      <button class="setup-back" onclick="nextStep(2)">← Back</button>
+      <button class="setup-next" onclick="nextStep(4)">Continue →</button>
+    </div>
+
+    <!-- Step 4: Done -->
+    <div class="setup-step" id="step-4">
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:48px;margin-bottom:16px;">🍽️</div>
+        <div class="setup-title">You're all set!</div>
+        <div class="setup-sub">TableOps AI is ready for your restaurant. You can add staff, inventory, and menu items from the app.</div>
+        <button class="setup-next" onclick="finishSetup()">Open TableOps →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<!-- ══ APP SHELL ══ -->
+<div id="app-shell" class="hidden">
 
-  <!-- DASHBOARD -->
-  <div id="screen-dashboard" class="screen active">
-    <div id="hdr-dashboard" class="main-header">
-      <div>
-        <div class="main-title">Good morning, Siamak ☀️</div>
-        <div class="main-sub">Tuesday, June 27 · Bello Napa · 3 alerts need attention</div>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="sb-lmark">
+          <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
+        </div>
+        TableOps AI
       </div>
-      <div class="header-actions">
-        <button class="hbtn" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'))">Ask AI</button>
+      <div class="rest-switcher" onclick="toggleRestDropdown()">
+        <div class="rest-name"><span id="cur-rest-name">Bello Napa</span> ▾</div>
+        <div class="rest-sub" id="cur-rest-sub">Napa Valley · Italian</div>
+        <div class="rest-dropdown" id="rest-dd">
+          <div class="rest-opt active" onclick="switchRest('Bello Napa','Napa Valley · Italian')">Bello Napa</div>
+          <div class="rest-opt" onclick="switchRest('Osteria Vino','St. Helena · Wine Bar')">Osteria Vino</div>
+          <div class="rest-opt" onclick="switchRest('Rosso Grill','Yountville · Steakhouse')">Rosso Grill</div>
+          <div class="rest-add" onclick="openModal('modal-addrest')">+ Add restaurant</div>
+        </div>
       </div>
     </div>
-    <div style="padding:24px;">
-      <div class="metrics">
-        <div class="metric">
-          <div class="metric-label">Last night revenue</div>
-          <div class="metric-value">$8,420</div>
-          <div class="metric-sub up">↑ 12% vs last Tuesday</div>
+
+    <div class="sb-nav">
+      <div class="sb-sect">Operations</div>
+      <div class="sb-item on" onclick="nav('dashboard',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard <span class="sb-badge red">3</span>
+      </div>
+      <div class="sb-item" onclick="nav('inventory',this)">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Inventory <span class="sb-badge red">2</span>
+      </div>
+      <div class="sb-item" onclick="nav('staff',this)">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Staff & Scheduling
+      </div>
+      <div class="sb-item" onclick="nav('menu',this)">
+        <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
+        Menu & Recipes
+      </div>
+      <div class="sb-item" onclick="nav('tables',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 6V4"/><path d="M16 6V4"/></svg>
+        Tables & Seating
+      </div>
+      <div class="sb-item" onclick="nav('kitchen',this)">
+        <svg viewBox="0 0 24 24"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+        Kitchen & Prep
+      </div>
+      <div class="sb-sect">Intelligence</div>
+      <div class="sb-item" onclick="nav('ai',this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        AI Assistant <span class="sb-badge green">AI</span>
+      </div>
+      <div class="sb-sect">Finance</div>
+      <div class="sb-item" onclick="nav('pnl',this)">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Daily P&L
+      </div>
+      <div class="sb-item" onclick="nav('reports',this)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Reports
+      </div>
+      <div class="sb-item" onclick="nav('suppliers',this)">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Suppliers & Orders
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-av" id="sb-av-txt">SK</div>
+        <div>
+          <div class="sb-uname" id="sb-uname">Siamak Kalhor</div>
+          <div class="sb-urole" id="sb-urole">Owner</div>
         </div>
-        <div class="metric">
-          <div class="metric-label">Labor cost %</div>
-          <div class="metric-value">31%</div>
-          <div class="metric-sub">Target: &lt;30%</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Food cost %</div>
-          <div class="metric-value">28%</div>
-          <div class="metric-sub up">↓ On target</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">Tonight's covers</div>
-          <div class="metric-value">84</div>
-          <div class="metric-sub">Res. open · 6 walk-in est.</div>
+        <div class="sb-logout" onclick="doLogout()">Sign out</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Mobile header -->
+    <div class="mob-header">
+      <button class="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span style="font-size:15px;font-weight:700;">TableOps AI</span>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div id="scr-dashboard" class="scr on">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1 id="dash-greeting">Good evening</h1><p id="dash-date">Tuesday June 27 · Bello Napa · 3 alerts</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="nav('ai',document.querySelector('[onclick*=ai]'));aiAsk('Give me my full evening briefing for tonight')">Evening briefing</button>
         </div>
       </div>
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-card-title">Alerts <span>Tap to resolve</span></div>
-          <div class="alert-row">
-            <div class="alert-dot" style="background:var(--red);"></div>
-            <div style="flex:1;">
-              <div class="alert-text">Salmon filet — critically low</div>
-              <div class="alert-sub">4 portions left · need ~20 for tonight</div>
+      <div class="scr" style="display:block;padding:20px;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-lbl">Tonight revenue est.</div><div class="metric-val">$11,400</div><div class="metric-chg up">↑ 16% vs last Tue</div></div>
+          <div class="metric"><div class="metric-lbl">Labor cost %</div><div class="metric-val">31%</div><div class="metric-chg dn">↑ 1pt over target</div></div>
+          <div class="metric"><div class="metric-lbl">Food cost %</div><div class="metric-val">27%</div><div class="metric-chg up">↓ On target</div></div>
+          <div class="metric"><div class="metric-lbl">Covers tonight</div><div class="metric-val">84</div><div class="metric-chg neutral">+ walk-ins est. 12</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-title">Live alerts <span class="card-action" onclick="resolveAlerts()">Resolve all</span></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Salmon — critically low (4 portions)</div><div class="a-sub">Need ~20 for tonight · 84 covers booked</div></div><div class="a-act" onclick="aiAsk('Order more salmon — need 20 portions for tonight, contact Sysco')">Order now</div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Carlos R. called out — FOH short</div><div class="a-sub">Friday night · need 1 server urgently</div></div><div class="a-act" onclick="aiAsk('Carlos R. called out tonight. Who can cover? Draft a text to Jess P.')">Find cover</div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Labor trending 1% over target</div><div class="a-sub">$12,770 this week · target &lt;30%</div></div><div class="a-act" onclick="aiAsk('How can I reduce labor cost this week without cutting service quality?')">AI advice</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Tonight's floor</div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Maria Rodriguez</div><div style="font-size:11px;color:var(--mut);">FOH Lead · 5pm–close</div></div><div class="badge green">On shift</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Devon Kim</div><div style="font-size:11px;color:var(--mut);">Server · 5pm–close</div></div><div class="badge green">On shift</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Carlos Rivera</div><div style="font-size:11px;color:var(--mut);">Called out</div></div><div class="badge red">Out</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">LM</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Luigi Moretti</div><div style="font-size:11px;color:var(--mut);">Executive Chef · Kitchen</div></div><div class="badge green">On shift</div></div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:14px;">
+          <div class="card">
+            <div class="card-title">Week at a glance</div>
+            <table class="tbl"><thead><tr><th>Day</th><th>Revenue</th><th>Food %</th><th>Labor %</th><th>Net</th></tr></thead>
+            <tbody>
+              <tr><td>Mon</td><td>$6,820</td><td>27%</td><td>29%</td><td class="up">+$3,000</td></tr>
+              <tr><td>Tue</td><td>$7,540</td><td>26%</td><td>30%</td><td class="up">+$3,318</td></tr>
+              <tr><td>Wed</td><td>$7,200</td><td>28%</td><td>31%</td><td class="up">+$2,952</td></tr>
+              <tr><td>Thu</td><td>$8,220</td><td>29%</td><td>31%</td><td class="up">+$3,288</td></tr>
+              <tr><td style="font-weight:700;">Fri est.</td><td style="font-weight:700;">$11,400</td><td>28%</td><td>30%</td><td class="up" style="font-weight:700;">+$4,788</td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="card-title">Top dishes tonight</div>
+            <table class="tbl"><thead><tr><th>Dish</th><th>Ordered</th><th>Margin</th></tr></thead>
+            <tbody>
+              <tr><td>Pappardelle al Ragù</td><td>24</td><td class="up">72%</td></tr>
+              <tr><td>Bistecca Fiorentina</td><td>18</td><td class="up">65%</td></tr>
+              <tr><td>Burrata con Prosciutto</td><td>31</td><td class="up">72%</td></tr>
+              <tr><td>Risotto ai Funghi</td><td>16</td><td class="up">71%</td></tr>
+              <tr><td>Tiramisu della Casa</td><td>28</td><td class="up">77%</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INVENTORY ── -->
+    <div id="scr-inventory" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Inventory</h1><p>32 items · 2 critical · last count 7:42am</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="openModal('modal-additem')">+ Add item</button>
+          <button class="tbtn gold" onclick="aiAsk('Draft this week\'s full supplier order based on current stock levels and tonight\'s 84 covers')">Auto-order draft</button>
+        </div>
+      </div>
+      <div style="padding:20px;">
+        <div class="card">
+          <div class="card-title">Stock levels <span>Tap item to log count</span></div>
+          <div class="inv-row" style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:5px 0;">
+            <div>Item</div><div>In stock</div><div>Par</div><div>Status</div><div>Action</div>
+          </div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Salmon filet</div><div style="font-size:11px;color:var(--mut);">Proteins</div></div><div>4 portions</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:20%;background:var(--red);"></div></div></div><div><span class="badge red">Critical</span></div><div><span class="card-action" onclick="aiAsk('Order salmon — 20 portions urgently for tonight')">Order</span></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Burrata</div><div style="font-size:11px;color:var(--mut);">Dairy</div></div><div>2 balls</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:20%;background:var(--red);"></div></div></div><div><span class="badge red">Critical</span></div><div><span class="card-action" onclick="aiAsk('Order burrata — 8 balls from local supplier')">Order</span></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Ribeye 14oz</div><div style="font-size:11px;color:var(--mut);">Proteins</div></div><div>12 portions</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:50%;background:var(--gold2);"></div></div></div><div><span class="badge amber">Low</span></div><div><span class="card-action">Order</span></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Pappardelle pasta</div><div style="font-size:11px;color:var(--mut);">Dry goods</div></div><div>8 lbs</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:80%;background:var(--green);"></div></div></div><div><span class="badge green">Good</span></div><div></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Parmigiano Reggiano</div><div style="font-size:11px;color:var(--mut);">Dairy</div></div><div>4 lbs</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:85%;background:var(--green);"></div></div></div><div><span class="badge green">Good</span></div><div></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">EVOO — Arbequina</div><div style="font-size:11px;color:var(--mut);">Dry goods</div></div><div>3 liters</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:75%;background:var(--green);"></div></div></div><div><span class="badge green">Good</span></div><div></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Arugula</div><div style="font-size:11px;color:var(--mut);">Produce</div></div><div>2 lbs</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:35%;background:var(--gold2);"></div></div></div><div><span class="badge amber">Low</span></div><div><span class="card-action">Order</span></div></div>
+          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">San Marzano tomatoes</div><div style="font-size:11px;color:var(--mut);">Dry goods</div></div><div>24 cans</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:90%;background:var(--green);"></div></div></div><div><span class="badge green">Good</span></div><div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STAFF ── -->
+    <div id="scr-staff" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Staff & Scheduling</h1><p>9 employees · 4 on tonight · 1 call-out</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="openModal('modal-addstaff')">+ Add staff</button>
+          <button class="tbtn gold" onclick="aiAsk('Export payroll hours for this week — show each staff member, their hours, rate, and total pay')">Payroll export</button>
+        </div>
+      </div>
+      <div style="padding:20px;">
+        <div class="g2" style="margin-bottom:14px;">
+          <div class="metric"><div class="metric-lbl">Labor this week</div><div class="metric-val">$12,770</div><div class="metric-chg dn">31% of revenue</div></div>
+          <div class="metric"><div class="metric-lbl">Hours worked</div><div class="metric-val">218h</div><div class="metric-chg neutral">vs 210h last week</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Team roster</div>
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Role</th><th>Access level</th><th>Hours (wk)</th><th>Rate</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:600;">Luigi Moretti</div></td><td>Executive Chef</td><td><span class="badge purple">Chef</span></td><td>44h</td><td>$38/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Ana Torres</div></td><td>Sous Chef</td><td><span class="badge purple">Chef</span></td><td>40h</td><td>$28/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Maria Rodriguez</div></td><td>FOH Lead</td><td><span class="badge blue">Manager</span></td><td>32h</td><td>$22/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Devon Kim</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>18h</td><td>$18/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Carlos Rivera</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>12h</td><td>$18/hr</td><td><span class="badge red">Called out</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Jessica Park</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>8h</td><td>$18/hr</td><td><span class="badge amber">On-call</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Marco Bianchi</div></td><td>Line Cook</td><td><span class="badge purple">Chef</span></td><td>40h</td><td>$24/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Sofia Chen</div></td><td>Pastry Chef</td><td><span class="badge purple">Chef</span></td><td>30h</td><td>$26/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+              <tr><td><div style="font-weight:600;">Tony Valdez</div></td><td>Busser</td><td><span class="badge amber">Staff</span></td><td>14h</td><td>$16/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MENU ── -->
+    <div id="scr-menu" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Menu & Recipes</h1><p>24 dishes · avg food cost 27% · AI knows every cuisine</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="aiAsk('Suggest 3 seasonal summer specials for an Italian restaurant in Napa Valley using local produce')">AI suggestions</button>
+          <button class="tbtn gold" onclick="openModal('modal-adddish')">+ Add dish</button>
+        </div>
+      </div>
+      <div style="padding:20px;">
+        <div class="g3">
+          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Antipasti</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Burrata con Prosciutto</div><div class="a-sub">Food cost $6.20 · Menu $22</div></div><div class="badge green">72%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Carpaccio di Manzo</div><div class="a-sub">Food cost $5.40 · Menu $18</div></div><div class="badge green">70%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Calamari Fritti</div><div class="a-sub">Food cost $3.40 · Menu $16</div></div><div class="badge green">79%</div></div>
+          </div>
+          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Pasta</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Pappardelle al Ragù</div><div class="a-sub">Food cost $7.80 · Menu $28</div></div><div class="badge green">72%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Cacio e Pepe</div><div class="a-sub">Food cost $5.80 · Menu $24</div></div><div class="badge green">76%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Tagliatelle al Tartufo</div><div class="a-sub">Food cost $12.60 · Menu $36</div></div><div class="badge amber">65%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Risotto ai Funghi</div><div class="a-sub">Food cost $9.20 · Menu $32</div></div><div class="badge green">71%</div></div>
+          </div>
+          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Secondi</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Bistecca Fiorentina</div><div class="a-sub">Food cost $24 · Menu $68</div></div><div class="badge amber">65%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Branzino al Limone</div><div class="a-sub">Food cost $12.40 · Menu $38</div></div><div class="badge amber">67%</div></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Pollo al Mattone</div><div class="a-sub">Food cost $9.60 · Menu $32</div></div><div class="badge green">70%</div></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:4px;">
+          <div class="card-title">Ask AI for any recipe in the world</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="tbtn" onclick="aiAsk('Give me the authentic Persian Ghormeh Sabzi recipe with exact measurements and professional technique')">Persian Ghormeh Sabzi</button>
+            <button class="tbtn" onclick="aiAsk('Give me a 10-course Omakase sushi menu with preparation notes and sourcing recommendations')">Omakase sushi menu</button>
+            <button class="tbtn" onclick="aiAsk('What is the classic French technique for beef bourguignon? Give me the full recipe with wine selection advice')">Beef Bourguignon</button>
+            <button class="tbtn" onclick="aiAsk('Give me 5 authentic Moroccan tagine recipes with spice blends and slow-cooking techniques')">Moroccan tagines</button>
+            <button class="tbtn" onclick="aiAsk('What are the key dishes and techniques of Sichuan cuisine? Give me mapo tofu and dan dan noodles recipes')">Sichuan cuisine</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TABLES ── -->
+    <div id="scr-tables" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Tables & Seating</h1><p>28 indoor · 8 patio · 10 bar · 1 private dining room</p></div>
+        <div class="top-bar-right"><button class="tbtn gold">Edit layout</button></div>
+      </div>
+      <div style="padding:20px;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-lbl">Total capacity</div><div class="metric-val">122</div><div class="metric-chg neutral">seats across all areas</div></div>
+          <div class="metric"><div class="metric-lbl">Tonight booked</div><div class="metric-val">84</div><div class="metric-chg up">69% capacity</div></div>
+          <div class="metric"><div class="metric-lbl">Avg turn time</div><div class="metric-val">78 min</div><div class="metric-chg neutral">2 turns possible</div></div>
+          <div class="metric"><div class="metric-lbl">PDR status</div><div class="metric-val">Booked</div><div class="metric-chg neutral">Party of 12 · 7pm</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-title">Indoor dining room</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T1<div style="font-size:10px;font-weight:400;color:var(--mut);">2-top</div></div>
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T2<div style="font-size:10px;font-weight:400;color:var(--mut);">2-top</div></div>
+              <div style="padding:8px;background:rgba(232,180,74,.15);border:1px solid rgba(232,180,74,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--gold2);">T3<div style="font-size:10px;font-weight:400;color:var(--mut);">4-top</div></div>
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T4<div style="font-size:10px;font-weight:400;color:var(--mut);">4-top</div></div>
+              <div style="padding:8px;background:rgba(224,82,82,.15);border:1px solid rgba(224,82,82,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--red);">T5<div style="font-size:10px;font-weight:400;color:var(--mut);">6-top</div></div>
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T6<div style="font-size:10px;font-weight:400;color:var(--mut);">4-top</div></div>
+              <div style="padding:8px;background:rgba(232,180,74,.15);border:1px solid rgba(232,180,74,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--gold2);">T7<div style="font-size:10px;font-weight:400;color:var(--mut);">4-top</div></div>
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T8<div style="font-size:10px;font-weight:400;color:var(--mut);">2-top</div></div>
+              <div style="padding:8px;background:rgba(76,175,114,.15);border:1px solid rgba(76,175,114,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--green);">T9<div style="font-size:10px;font-weight:400;color:var(--mut);">2-top</div></div>
+              <div style="padding:8px;background:rgba(224,82,82,.15);border:1px solid rgba(224,82,82,.3);border-radius:7px;text-align:center;font-size:12px;font-weight:700;color:var(--red);">T10<div style="font-size:10px;font-weight:400;color:var(--mut);">8-top</div></div>
             </div>
-            <div class="alert-action" onclick="orderItem('Salmon filet')">Order now</div>
-          </div>
-          <div class="alert-row">
-            <div class="alert-dot" style="background:var(--red);"></div>
-            <div style="flex:1;">
-              <div class="alert-text">Carlos R. called out — FOH short</div>
-              <div class="alert-sub">Friday night · need 1 server</div>
+            <div style="display:flex;gap:14px;margin-top:12px;font-size:11px;">
+              <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;"></span>Available</span>
+              <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--gold2);display:inline-block;"></span>Reserved</span>
+              <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;"></span>Seated</span>
             </div>
-            <div class="alert-action" onclick="findCover()">Find cover</div>
           </div>
-          <div class="alert-row">
-            <div class="alert-dot" style="background:var(--gold2);"></div>
-            <div style="flex:1;">
-              <div class="alert-text">Burrata — running low</div>
-              <div class="alert-sub">2 balls left · reorder threshold: 5</div>
+          <div class="card">
+            <div class="card-title">Tonight's reservations</div>
+            <table class="tbl"><thead><tr><th>Time</th><th>Party</th><th>Table</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>5:30pm</td><td>2</td><td>T1</td><td style="color:var(--mut);">Anniversary</td></tr>
+              <tr><td>6:00pm</td><td>4</td><td>T3</td><td style="color:var(--mut);">—</td></tr>
+              <tr><td>6:30pm</td><td>6</td><td>T5</td><td style="color:var(--mut);">Allergy: shellfish</td></tr>
+              <tr><td>7:00pm</td><td>12</td><td>PDR</td><td style="color:var(--mut);">Birthday party · prix fixe</td></tr>
+              <tr><td>7:30pm</td><td>4</td><td>T7</td><td style="color:var(--mut);">Wine pairing</td></tr>
+              <tr><td>8:00pm</td><td>8</td><td>T10</td><td style="color:var(--mut);">VIP · regular guests</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── KITCHEN ── -->
+    <div id="scr-kitchen" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Kitchen & Prep</h1><p>Tonight's prep list · 84 covers · service at 5pm</p></div>
+        <div class="top-bar-right"><button class="tbtn gold" onclick="aiAsk('Generate full prep list for 84 covers tonight — Italian tasting menu, prioritized by time needed')">Generate prep list</button></div>
+      </div>
+      <div style="padding:20px;">
+        <div class="g2">
+          <div class="card">
+            <div class="card-title">Prep checklist — today</div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;" checked/><div class="a-txt"><div class="a-title">Pasta dough — pappardelle</div><div class="a-sub">Luigi · 3kg · done by 2pm</div></div></div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;" checked/><div class="a-txt"><div class="a-title">Short rib ragù — 8 hour braise</div><div class="a-sub">Ana · started 8am · ready by 4pm</div></div></div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Tiramisu — 40 portions</div><div class="a-sub">Sofia · by 3pm · in walk-in</div></div></div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Bistecca dry-age check & trim</div><div class="a-sub">Luigi · portion 18 ribeyes</div></div></div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">Mise en place — all stations</div><div class="a-sub">Full team · by 4:30pm</div></div></div>
+            <div class="alert-row"><input type="checkbox" style="margin-right:8px;"/><div class="a-txt"><div class="a-title">86 board update</div><div class="a-sub">Salmon critical — flag on menu</div></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">86 board — tonight</div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Salmon filet</div><div class="a-sub">86'd — 4 portions only · first come first served</div></div></div>
+            <div style="margin-top:12px;font-size:13px;font-weight:700;color:var(--mut);">Allergy flags tonight</div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Table 5 — shellfish allergy</div><div class="a-sub">Party of 6 · 6:30pm res</div></div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Table PDR — gluten free x2</div><div class="a-sub">Birthday party · 7pm</div></div></div>
+            <div style="margin-top:12px;">
+              <button class="tbtn" onclick="aiAsk('What substitutions can I make for the birthday party gluten-free guests at 7pm? We\'re serving Italian — what can be modified?')">AI substitution help</button>
             </div>
-            <div class="alert-action" onclick="orderItem('Burrata')">Order</div>
-          </div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-title">Tonight's staff</div>
-          <div class="staff-row">
-            <div class="staff-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div>
-            <div style="flex:1;"><div class="staff-name">Maria R.</div><div class="staff-role">FOH Lead · 5pm–close</div></div>
-            <div class="staff-status on">On shift</div>
-          </div>
-          <div class="staff-row">
-            <div class="staff-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div>
-            <div style="flex:1;"><div class="staff-name">Devon K.</div><div class="staff-role">Server · 5pm–close</div></div>
-            <div class="staff-status on">On shift</div>
-          </div>
-          <div class="staff-row">
-            <div class="staff-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div>
-            <div style="flex:1;"><div class="staff-name">Carlos R.</div><div class="staff-role">Server · Called out</div></div>
-            <div class="staff-status out">Called out</div>
-          </div>
-          <div class="staff-row">
-            <div class="staff-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">JP</div>
-            <div style="flex:1;"><div class="staff-name">Jess P.</div><div class="staff-role">Server · Available</div></div>
-            <div class="staff-status off">Off — text?</div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- INVENTORY -->
-  <div id="screen-inventory" class="screen">
-    <div class="main-header">
-      <div>
-        <div class="main-title">Inventory</div>
-        <div class="main-sub">28 items tracked · 2 critical · last updated 7:42am</div>
+    <!-- ── P&L ── -->
+    <div id="scr-pnl" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Daily P&L</h1><p>Real-time financials · Bello Napa · June 2026</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn" onclick="aiAsk('Analyze this week\'s P&L and tell me where I\'m leaving money on the table')">AI analysis</button>
+          <button class="tbtn gold">Export PDF</button>
+        </div>
       </div>
-      <div class="header-actions">
-        <button class="hbtn primary" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'));askAI('Draft this week\'s supplier order based on current stock levels')">Auto-order draft</button>
-      </div>
-    </div>
-    <div style="padding:24px;">
-      <div class="inv-filters">
-        <button class="inv-filter active">All</button>
-        <button class="inv-filter">Proteins</button>
-        <button class="inv-filter">Produce</button>
-        <button class="inv-filter">Dairy</button>
-        <button class="inv-filter">Dry goods</button>
-        <button class="inv-filter">Beverages</button>
-      </div>
-      <div class="inv-table">
-        <div class="inv-thead">
-          <div>Item</div><div>In stock</div><div>Par level</div><div>Status</div><div>Action</div>
+      <div style="padding:20px;">
+        <div class="metrics">
+          <div class="metric"><div class="metric-lbl">Month revenue</div><div class="metric-val">$186k</div><div class="metric-chg up">↑ 11% vs June '25</div></div>
+          <div class="metric"><div class="metric-lbl">Month food cost</div><div class="metric-val">$51.8k</div><div class="metric-chg up">27.8% ↓ good</div></div>
+          <div class="metric"><div class="metric-lbl">Month labor</div><div class="metric-val">$56.3k</div><div class="metric-chg dn">30.2% slightly over</div></div>
+          <div class="metric"><div class="metric-lbl">Month net</div><div class="metric-val">$42k</div><div class="metric-chg up">22.6% margin</div></div>
         </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Salmon filet</div><div class="inv-cat">Proteins</div></div>
-          <div class="inv-num">4 portions</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:20%;background:var(--red);"></div></div></div>
-          <div class="inv-status critical">Critical</div>
-          <div class="inv-order" onclick="orderItem('Salmon filet')">Order</div>
+        <div class="card">
+          <div class="card-title">June week-by-week</div>
+          <table class="tbl">
+            <thead><tr><th>Week</th><th>Revenue</th><th>Food cost</th><th>Food %</th><th>Labor</th><th>Labor %</th><th>Other</th><th>Net profit</th><th>Margin</th></tr></thead>
+            <tbody>
+              <tr><td>Jun 2–8</td><td>$42,100</td><td>$11,760</td><td class="up">27.9%</td><td>$12,840</td><td class="neutral">30.5%</td><td>$6,400</td><td class="up">$11,100</td><td class="up">26.4%</td></tr>
+              <tr><td>Jun 9–15</td><td>$44,800</td><td>$12,320</td><td class="up">27.5%</td><td>$13,200</td><td class="dn">29.5%</td><td>$6,600</td><td class="up">$12,680</td><td class="up">28.3%</td></tr>
+              <tr><td>Jun 16–22</td><td>$58,200</td><td>$16,400</td><td class="up">28.2%</td><td>$17,100</td><td class="neutral">29.4%</td><td>$8,100</td><td class="up">$16,600</td><td class="up">28.5%</td></tr>
+              <tr><td style="font-weight:700;">Jun 23–27</td><td style="font-weight:700;">$41,200</td><td>$11,540</td><td class="up">28%</td><td>$12,770</td><td class="dn">31%</td><td>$5,800</td><td class="up" style="font-weight:700;">$11,090</td><td class="up">26.9%</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Burrata</div><div class="inv-cat">Dairy</div></div>
-          <div class="inv-num">2 balls</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:25%;background:var(--red);"></div></div></div>
-          <div class="inv-status critical">Critical</div>
-          <div class="inv-order" onclick="orderItem('Burrata')">Order</div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Ribeye 14oz</div><div class="inv-cat">Proteins</div></div>
-          <div class="inv-num">12 portions</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:55%;background:var(--gold2);"></div></div></div>
-          <div class="inv-status low">Low</div>
-          <div class="inv-order" onclick="orderItem('Ribeye')">Order</div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Arugula</div><div class="inv-cat">Produce</div></div>
-          <div class="inv-num">3 lbs</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:60%;background:var(--gold2);"></div></div></div>
-          <div class="inv-status low">Low</div>
-          <div class="inv-order" onclick="orderItem('Arugula')">Order</div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Pappardelle pasta</div><div class="inv-cat">Dry goods</div></div>
-          <div class="inv-num">8 lbs</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:80%;background:var(--green);"></div></div></div>
-          <div class="inv-status ok">Good</div>
-          <div></div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Parmigiano Reggiano</div><div class="inv-cat">Dairy</div></div>
-          <div class="inv-num">4 lbs</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:85%;background:var(--green);"></div></div></div>
-          <div class="inv-status ok">Good</div>
-          <div></div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">San Marzano tomatoes</div><div class="inv-cat">Dry goods</div></div>
-          <div class="inv-num">24 cans</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:90%;background:var(--green);"></div></div></div>
-          <div class="inv-status ok">Good</div>
-          <div></div>
-        </div>
-        <div class="inv-row">
-          <div><div class="inv-name">Olive oil — EVOO</div><div class="inv-cat">Dry goods</div></div>
-          <div class="inv-num">3 liters</div>
-          <div><div class="inv-bar-wrap"><div class="inv-bar" style="width:75%;background:var(--green);"></div></div></div>
-          <div class="inv-status ok">Good</div>
-          <div></div>
+        <div class="g2" style="margin-top:14px;">
+          <div class="card">
+            <div class="card-title">Revenue by day of week (avg)</div>
+            <table class="tbl"><thead><tr><th>Day</th><th>Avg revenue</th><th>Avg covers</th></tr></thead>
+            <tbody>
+              <tr><td>Tuesday</td><td>$7,200</td><td>74</td></tr>
+              <tr><td>Wednesday</td><td>$7,800</td><td>80</td></tr>
+              <tr><td>Thursday</td><td>$9,100</td><td>88</td></tr>
+              <tr><td>Friday</td><td>$13,400</td><td>112</td></tr>
+              <tr><td>Saturday</td><td>$14,200</td><td>118</td></tr>
+              <tr><td>Sunday</td><td>$8,600</td><td>82</td></tr>
+            </tbody></table>
+          </div>
+          <div class="card">
+            <div class="card-title">Cost breakdown this month</div>
+            <div class="alert-row"><div class="a-txt"><div class="a-title">Food & beverage</div></div><div style="font-size:13px;font-weight:700;">$51,800</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">27.8%</div></div>
+            <div class="alert-row"><div class="a-txt"><div class="a-title">Labor (FOH + BOH)</div></div><div style="font-size:13px;font-weight:700;">$56,300</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">30.2%</div></div>
+            <div class="alert-row"><div class="a-txt"><div class="a-title">Rent & occupancy</div></div><div style="font-size:13px;font-weight:700;">$12,000</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">6.5%</div></div>
+            <div class="alert-row"><div class="a-txt"><div class="a-title">Utilities</div></div><div style="font-size:13px;font-weight:700;">$3,200</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">1.7%</div></div>
+            <div class="alert-row"><div class="a-txt"><div class="a-title">Marketing & POS fees</div></div><div style="font-size:13px;font-weight:700;">$4,100</div><div style="font-size:11px;color:var(--mut);margin-left:8px;">2.2%</div></div>
+            <div class="alert-row" style="border-top:2px solid var(--bdr);margin-top:4px;padding-top:10px;"><div class="a-txt"><div class="a-title" style="font-weight:800;">Net profit</div></div><div style="font-size:15px;font-weight:800;color:var(--green);">$42,000</div><div style="font-size:11px;color:var(--green);margin-left:8px;">22.6%</div></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- STAFF -->
-  <div id="screen-staff" class="screen">
-    <div class="main-header">
-      <div>
-        <div class="main-title">Staff</div>
-        <div class="main-sub">8 employees · 4 on shift tonight · 1 call-out</div>
+    <!-- ── REPORTS ── -->
+    <div id="scr-reports" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Reports</h1><p>Every report a restaurant owner needs — instant, exportable</p></div>
+        <div class="top-bar-right"><button class="tbtn gold" onclick="aiAsk('Generate a full monthly business summary for June 2026 — revenue, costs, staff, top dishes, and recommendations')">AI monthly summary</button></div>
       </div>
-      <div class="header-actions">
-        <button class="hbtn primary">Add employee</button>
-      </div>
-    </div>
-    <div style="padding:24px;">
-      <div class="staff-grid">
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div>
-          <div class="staff-card-name">Maria Rodriguez</div>
-          <div class="staff-card-role">FOH Lead · Full-time</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>32h</strong></div>
-          <div class="staff-card-row"><span>Hourly rate</span><strong>$22/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">On shift tonight</strong></div>
-        </div>
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div>
-          <div class="staff-card-name">Devon Kim</div>
-          <div class="staff-card-role">Server · Part-time</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>18h</strong></div>
-          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">On shift tonight</strong></div>
-        </div>
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div>
-          <div class="staff-card-name">Carlos Rivera</div>
-          <div class="staff-card-role">Server · Part-time</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>12h</strong></div>
-          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--red);">Called out tonight</strong></div>
-        </div>
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">JP</div>
-          <div class="staff-card-name">Jessica Park</div>
-          <div class="staff-card-role">Server · On-call</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>8h</strong></div>
-          <div class="staff-card-row"><span>Hourly rate</span><strong>$18/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--mut);">Available</strong></div>
-        </div>
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(201,151,58,.15);color:var(--gold);">LM</div>
-          <div class="staff-card-name">Luigi Moretti</div>
-          <div class="staff-card-role">Executive Chef · Full-time</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>44h</strong></div>
-          <div class="staff-card-row"><span>Rate</span><strong>$38/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">In kitchen tonight</strong></div>
-        </div>
-        <div class="staff-card">
-          <div class="staff-card-av" style="background:rgba(90,82,72,.3);color:var(--mut);">AT</div>
-          <div class="staff-card-name">Ana Torres</div>
-          <div class="staff-card-role">Sous Chef · Full-time</div>
-          <div class="staff-card-row"><span>Hours this week</span><strong>40h</strong></div>
-          <div class="staff-card-row"><span>Rate</span><strong>$28/hr</strong></div>
-          <div class="staff-card-row"><span>Status</span><strong style="color:var(--green);">In kitchen tonight</strong></div>
+      <div style="padding:20px;">
+        <div class="report-grid">
+          <div class="report-card" onclick="aiAsk('Generate a detailed daily P&L report for today — revenue, food cost, labor cost, net profit, and comparison to last week')">
+            <div class="report-icon" style="background:rgba(76,175,114,.15);color:var(--green);"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="report-name">Daily P&L</div>
+            <div class="report-desc">Revenue, food cost %, labor cost %, net profit — today vs last week</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a weekly payroll report — hours worked per employee, hourly rates, overtime, and total payroll cost')">
+            <div class="report-icon" style="background:rgba(74,143,212,.15);color:var(--blue);"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="report-name">Payroll report</div>
+            <div class="report-desc">Hours, rates, overtime — ready to hand to your bookkeeper</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a food cost report — cost per dish, food cost percentage by category, and waste tracking for this month')">
+            <div class="report-icon" style="background:rgba(232,180,74,.15);color:var(--gold2);"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div>
+            <div class="report-name">Food cost analysis</div>
+            <div class="report-desc">Cost per dish, waste, top margin items vs underperformers</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate an inventory usage report — what we used this week, what we wasted, and recommended order quantities for next week')">
+            <div class="report-icon" style="background:rgba(155,114,212,.15);color:var(--purple);"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="report-name">Inventory & waste</div>
+            <div class="report-desc">Usage vs par, waste tracking, reorder recommendations</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a sales mix report — best selling dishes, revenue per dish, covers per item, and suggested menu engineering changes')">
+            <div class="report-icon" style="background:rgba(76,175,114,.15);color:var(--green);"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="report-name">Sales mix report</div>
+            <div class="report-desc">Stars vs dogs — what to push, what to drop, what to reprice</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a labor efficiency report — labor cost % by shift, overtime analysis, and recommendations to optimize scheduling')">
+            <div class="report-icon" style="background:rgba(224,82,82,.15);color:var(--red);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+            <div class="report-name">Labor efficiency</div>
+            <div class="report-desc">Labor % by shift, overtime alerts, scheduling optimization</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a monthly financial summary suitable for my accountant — revenue, all expenses, net profit, and year-over-year comparison')">
+            <div class="report-icon" style="background:rgba(201,151,58,.15);color:var(--gold);"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="report-name">Accountant package</div>
+            <div class="report-desc">Full monthly financials — formatted for your CPA or bookkeeper</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Compare all 3 of my restaurants this month — Bello Napa, Osteria Vino, and Rosso Grill — revenue, margins, and which is performing best')">
+            <div class="report-icon" style="background:rgba(74,143,212,.15);color:var(--blue);"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="report-name">Multi-location comparison</div>
+            <div class="report-desc">All your restaurants side by side — revenue, costs, best performer</div>
+          </div>
+          <div class="report-card" onclick="aiAsk('Generate a tax preparation summary for Q2 2026 — total revenue, deductible expenses by category, and estimated quarterly tax')">
+            <div class="report-icon" style="background:rgba(155,114,212,.15);color:var(--purple);"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="report-name">Tax prep summary</div>
+            <div class="report-desc">Quarterly revenue, deductible expenses — ready for your CPA</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- MENU -->
-  <div id="screen-menu" class="screen">
-    <div class="main-header">
-      <div>
-        <div class="main-title">Menu & Recipes</div>
-        <div class="main-sub">24 dishes · avg food cost 27% · ask AI for any recipe in the world</div>
+    <!-- ── SUPPLIERS ── -->
+    <div id="scr-suppliers" class="scr">
+      <div class="top-bar">
+        <div class="top-bar-left"><h1>Suppliers & Orders</h1><p>6 active suppliers · last order Tuesday</p></div>
+        <div class="top-bar-right">
+          <button class="tbtn gold" onclick="aiAsk('Draft a complete supplier order for this week based on current inventory levels, tonight\'s 84 covers, and weekend projections')">Draft weekly order</button>
+        </div>
       </div>
-      <div class="header-actions">
-        <button class="hbtn" onclick="showScreen('ai',document.querySelector('[onclick*=ai]'));askAI('Suggest 3 new seasonal dishes for our Italian menu in Napa Valley using local ingredients')">AI suggestions</button>
-        <button class="hbtn primary">Add dish</button>
-      </div>
-    </div>
-    <div style="padding:24px;">
-      <div class="menu-cats">
-        <button class="menu-cat active">All</button>
-        <button class="menu-cat">Antipasti</button>
-        <button class="menu-cat">Pasta</button>
-        <button class="menu-cat">Secondi</button>
-        <button class="menu-cat">Dolci</button>
-      </div>
-      <div class="menu-grid">
-        <div class="menu-item">
-          <div class="menu-item-name">Burrata con Prosciutto</div>
-          <div class="menu-item-desc">Fresh burrata, San Daniele prosciutto, heirloom tomatoes, basil oil, aged balsamic</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$6.20</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$22</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">72%</strong></div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-name">Pappardelle al Ragù</div>
-          <div class="menu-item-desc">House-made pappardelle, 8-hour braised short rib ragù, Parmigiano, fresh herbs</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$7.80</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$28</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">72%</strong></div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-name">Branzino al Limone</div>
-          <div class="menu-item-desc">Pan-roasted sea bass, lemon caper butter, roasted fennel, cherry tomatoes, capers</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$12.40</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$38</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin ok">67%</strong></div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-name">Bistecca Fiorentina</div>
-          <div class="menu-item-desc">28-day dry-aged ribeye, rosemary salt, roasted garlic, Tuscan white beans, salsa verde</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$24.00</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$68</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin ok">65%</strong></div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-name">Risotto ai Funghi</div>
-          <div class="menu-item-desc">Carnaroli rice, wild mushroom mix, truffle oil, aged Parmigiano, fresh thyme</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$9.20</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$32</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">71%</strong></div>
-        </div>
-        <div class="menu-item">
-          <div class="menu-item-name">Tiramisu della Casa</div>
-          <div class="menu-item-desc">Classic tiramisu, Savoiardi, mascarpone, espresso, Marsala, house-made every morning</div>
-          <div class="menu-item-row"><span>Food cost</span><strong>$3.20</strong></div>
-          <div class="menu-item-row"><span>Menu price</span><strong>$14</strong></div>
-          <div class="menu-item-row"><span>Margin</span><strong class="menu-margin good">77%</strong></div>
+      <div style="padding:20px;">
+        <div class="card">
+          <div class="card-title">Active suppliers</div>
+          <table class="tbl">
+            <thead><tr><th>Supplier</th><th>Category</th><th>Last order</th><th>Total spent (mo)</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div style="font-weight:600;">Sysco Northern CA</div></td><td>Proteins, dry goods</td><td>Jun 24</td><td>$18,400</td><td><span class="badge green">Active</span></td><td><span class="card-action" onclick="aiAsk('Draft a Sysco order for this week — need salmon 20 portions, ribeye 15 portions, and any other low items')">Order now</span></td></tr>
+              <tr><td><div style="font-weight:600;">Fresh Point</div></td><td>Produce, herbs</td><td>Jun 25</td><td>$4,200</td><td><span class="badge green">Active</span></td><td><span class="card-action" onclick="aiAsk('Draft a Fresh Point produce order — need arugula 5 lbs, fresh herbs mix, heirloom tomatoes 10 lbs')">Order now</span></td></tr>
+              <tr><td><div style="font-weight:600;">BelGioioso Cheese</div></td><td>Dairy, cheese</td><td>Jun 22</td><td>$3,100</td><td><span class="badge green">Active</span></td><td><span class="card-action" onclick="aiAsk('Draft a cheese order — need burrata 10 balls, fresh mozzarella 5 lbs, mascarpone 3 lbs')">Order now</span></td></tr>
+              <tr><td><div style="font-weight:600;">Dalla Terra Winery</div></td><td>Wine, beverages</td><td>Jun 20</td><td>$6,800</td><td><span class="badge green">Active</span></td><td><span class="card-action">Order now</span></td></tr>
+              <tr><td><div style="font-weight:600;">Pasta Fresca Co.</div></td><td>Specialty pasta</td><td>Jun 18</td><td>$1,200</td><td><span class="badge amber">Low use</span></td><td><span class="card-action">Order now</span></td></tr>
+              <tr><td><div style="font-weight:600;">Napa Bread Co.</div></td><td>Bread, pastry</td><td>Jun 26</td><td>$900</td><td><span class="badge green">Active</span></td><td><span class="card-action">Order now</span></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- P&L -->
-  <div id="screen-pnl" class="screen">
-    <div class="main-header">
-      <div>
-        <div class="main-title">Daily P&L</div>
-        <div class="main-sub">Week of June 23–27 · Bello Napa</div>
-      </div>
-      <div class="header-actions">
-        <button class="hbtn primary">Export to Excel</button>
-      </div>
-    </div>
-    <div style="padding:24px;">
-      <div class="metrics" style="grid-template-columns:repeat(3,1fr);">
-        <div class="metric">
-          <div class="metric-label">Week revenue</div>
-          <div class="metric-value">$41,200</div>
-          <div class="metric-sub up">↑ 8% vs last week</div>
+    <!-- ── AI ── -->
+    <div id="scr-ai" class="scr" style="display:none;padding:0;">
+      <div class="ai-wrap" style="height:calc(100vh - 53px);">
+        <div class="top-bar">
+          <div class="top-bar-left"><h1>TableOps AI</h1><p>Your restaurant brain — operations, recipes, finances, every cuisine</p></div>
         </div>
-        <div class="metric">
-          <div class="metric-label">Food cost</div>
-          <div class="metric-value">$11,540</div>
-          <div class="metric-sub">28% of revenue</div>
+        <div class="ai-msgs" id="ai-msgs">
+          <div class="amsg bot">
+            <div class="amsg-av">T</div>
+            <div class="amsg-bub">
+              <p>Good evening. Here's your briefing for <strong>Bello Napa — Tuesday June 27</strong>:</p>
+              <ul>
+                <li><strong>🔴 Salmon critical</strong> — 4 portions, need 20 for tonight. Order now?</li>
+                <li><strong>🔴 Carlos R. called out</strong> — Jess P. available. Want me to draft a text?</li>
+                <li><strong>🟡 Labor at 31%</strong> — 1pt over target this week</li>
+                <li><strong>📊 Tonight est. $11,400</strong> — up 16% vs last Tuesday</li>
+              </ul>
+              <p>Ask me anything — staff, recipes, financials, inventory, or any cuisine in the world.</p>
+            </div>
+          </div>
         </div>
-        <div class="metric">
-          <div class="metric-label">Labor cost</div>
-          <div class="metric-value">$12,770</div>
-          <div class="metric-sub down">31% — slightly over</div>
-        </div>
-      </div>
-      <div class="inv-table" style="margin-top:8px;">
-        <div class="inv-thead" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div>Day</div><div>Revenue</div><div>Food cost %</div><div>Labor %</div><div>Net</div>
-        </div>
-        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div class="inv-name">Monday</div><div>$6,820</div><div>27%</div><div>30%</div><div style="color:var(--green);">+$2,934</div>
-        </div>
-        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div class="inv-name">Tuesday</div><div>$7,540</div><div>26%</div><div>29%</div><div style="color:var(--green);">+$3,393</div>
-        </div>
-        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div class="inv-name">Wednesday</div><div>$7,200</div><div>28%</div><div>31%</div><div style="color:var(--green);">+$2,952</div>
-        </div>
-        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div class="inv-name">Thursday</div><div>$8,220</div><div>29%</div><div>32%</div><div style="color:var(--green);">+$3,206</div>
-        </div>
-        <div class="inv-row" style="grid-template-columns:1fr 1fr 1fr 1fr 1fr;">
-          <div class="inv-name">Friday (est.)</div><div>$11,420</div><div>28%</div><div>30%</div><div style="color:var(--green);">+$4,797</div>
+        <div class="ai-foot">
+          <div class="ai-sugs">
+            <div class="ai-sug" onclick="aiAsk('What\'s my food cost this month and how can I improve it?')">Food cost analysis</div>
+            <div class="ai-sug" onclick="aiAsk('Give me authentic Persian Ghormeh Sabzi recipe with professional technique')">Persian Ghormeh Sabzi</div>
+            <div class="ai-sug" onclick="aiAsk('Compare my 3 restaurants this month — which is most profitable?')">Compare restaurants</div>
+            <div class="ai-sug" onclick="aiAsk('Generate a full 10-course omakase sushi menu with wine pairings')">Omakase menu</div>
+            <div class="ai-sug" onclick="aiAsk('What are the top 5 ways restaurants lose money without realizing it?')">Where money leaks</div>
+            <div class="ai-sug" onclick="aiAsk('Suggest seasonal menu changes for August — what\'s in season in Northern California?')">August specials</div>
+          </div>
+          <div class="ai-row">
+            <textarea class="ai-in" id="ai-in" placeholder="Ask anything — type or use the mic button →" onkeydown="aiKey(event)" oninput="aiResize(this)"></textarea>
+            <button class="ai-send" id="ai-send" onclick="aiSend()">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- AI CHAT -->
-  <div id="screen-ai" class="ai-screen">
-    <div class="main-header">
-      <div>
-        <div class="main-title">TableOps AI</div>
-        <div class="main-sub">Knows your restaurant, your staff, your menu — and every cuisine in the world</div>
-      </div>
-    </div>
-    <div class="ai-messages" id="ai-messages">
-      <div class="msg bot">
-        <div class="msg-av">T</div>
-        <div class="msg-bubble">
-          <p>Good morning, Siamak. Here's your briefing for <strong>Bello Napa — Tuesday June 27</strong>:</p>
-          <ul>
-            <li><strong>🔴 Salmon filet critical</strong> — 4 portions, need ~20 for tonight. Order now?</li>
-            <li><strong>🔴 Carlos R. called out</strong> — Jess P. is available. Text her?</li>
-            <li><strong>🟡 Burrata low</strong> — 2 balls left, par is 5</li>
-            <li><strong>📊 Last night revenue: $8,420</strong> — up 12% vs last Tuesday</li>
-          </ul>
-          <p style="margin-top:8px;">Ask me anything — staff, inventory, recipes, costs, or any dish from any cuisine in the world.</p>
-        </div>
-      </div>
-    </div>
-    <div class="ai-input-area">
-      <div class="ai-suggestions">
-        <div class="ai-sug" onclick="askAI('What\'s my food cost this week?')">Food cost this week</div>
-        <div class="ai-sug" onclick="askAI('Give me the classic recipe for beef bourguignon with professional techniques')">Beef Bourguignon recipe</div>
-        <div class="ai-sug" onclick="askAI('Give me an authentic Persian Ghormeh Sabzi recipe with exact measurements and technique')">Persian Ghormeh Sabzi</div>
-        <div class="ai-sug" onclick="askAI('Who is on shift tonight and what are my labor costs?')">Tonight\'s staff & labor</div>
-        <div class="ai-sug" onclick="askAI('Suggest 3 seasonal specials for a Napa Valley Italian restaurant in summer')">Seasonal specials</div>
-        <div class="ai-sug" onclick="askAI('Give me a traditional Omakase sushi menu for 8 courses with preparation notes')">Omakase sushi menu</div>
-      </div>
-      <div class="ai-input-row">
-        <textarea class="ai-input" id="ai-input" placeholder="Ask anything — recipes, staff, costs, inventory..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="ai-send" id="ai-send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
+  </div><!-- /main -->
+</div><!-- /app-shell -->
 
+<!-- VOICE FAB -->
+<button class="voice-fab" id="voice-fab" onclick="toggleVoice()" style="display:none;" aria-label="Voice input">
+  <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+</button>
+<div class="voice-toast" id="voice-toast">
+  <div class="voice-state" id="voice-state">Listening...</div>
+  <div class="voice-transcript" id="voice-tx">Say anything — I'm listening</div>
 </div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-addstaff">
+  <div class="modal">
+    <h2>Add staff member <button class="modal-close" onclick="closeModal('modal-addstaff')">×</button></h2>
+    <div class="field-row">
+      <div class="field"><label>First name</label><input type="text" placeholder="Maria"/></div>
+      <div class="field"><label>Last name</label><input type="text" placeholder="Rodriguez"/></div>
+    </div>
+    <div class="field"><label>Email (for login)</label><input type="email" placeholder="maria@bellorestaurant.com"/></div>
+    <div class="field-row">
+      <div class="field"><label>Role</label>
+        <select><option>Server</option><option>Bartender</option><option>Host/Hostess</option><option>Busser</option><option>Line Cook</option><option>Sous Chef</option><option>Executive Chef</option><option>Pastry Chef</option><option>Dishwasher</option><option>Manager</option></select>
+      </div>
+      <div class="field"><label>Access level</label>
+        <select><option value="staff">Staff (clock in/out, see schedule)</option><option value="chef">Chef (kitchen + menu)</option><option value="manager">Manager (all except finance)</option><option value="owner">Owner (full access)</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Hourly rate ($)</label><input type="number" placeholder="18.00"/></div>
+      <div class="field"><label>Employment type</label>
+        <select><option>Full-time</option><option>Part-time</option><option>On-call</option><option>Seasonal</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Phone (for shift texts)</label><input type="tel" placeholder="(707) 555-0100"/></div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="closeModal('modal-addstaff')">Add to roster</button>
+      <button class="btn secondary" onclick="closeModal('modal-addstaff')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-additem">
+  <div class="modal">
+    <h2>Add inventory item <button class="modal-close" onclick="closeModal('modal-additem')">×</button></h2>
+    <div class="field"><label>Item name</label><input type="text" placeholder="Salmon filet"/></div>
+    <div class="field-row">
+      <div class="field"><label>Category</label>
+        <select><option>Proteins</option><option>Produce</option><option>Dairy</option><option>Dry goods</option><option>Beverages</option><option>Bread & Pastry</option></select>
+      </div>
+      <div class="field"><label>Unit</label>
+        <select><option>portions</option><option>lbs</option><option>kg</option><option>each</option><option>cans</option><option>liters</option><option>bottles</option></select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Current stock</label><input type="number" placeholder="20"/></div>
+      <div class="field"><label>Par level (reorder at)</label><input type="number" placeholder="10"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Cost per unit ($)</label><input type="number" placeholder="8.50"/></div>
+      <div class="field"><label>Supplier</label>
+        <select><option>Sysco</option><option>Fresh Point</option><option>BelGioioso</option><option>Dalla Terra</option><option>Other</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="closeModal('modal-additem')">Add item</button>
+      <button class="btn secondary" onclick="closeModal('modal-additem')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-adddish">
+  <div class="modal">
+    <h2>Add dish <button class="modal-close" onclick="closeModal('modal-adddish')">×</button></h2>
+    <div class="field"><label>Dish name</label><input type="text" placeholder="Pappardelle al Ragù"/></div>
+    <div class="field"><label>Description</label><textarea rows="2" placeholder="House-made pappardelle, 8-hour braised short rib..."></textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Course</label>
+        <select><option>Antipasti</option><option>Pasta</option><option>Secondi</option><option>Contorni</option><option>Dolci</option><option>Drinks</option></select>
+      </div>
+      <div class="field"><label>Menu price ($)</label><input type="number" placeholder="28"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Food cost ($)</label><input type="number" placeholder="7.80"/></div>
+      <div class="field"><label>Allergens</label><input type="text" placeholder="gluten, dairy"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="closeModal('modal-adddish')">Add dish</button>
+      <button class="btn secondary" onclick="closeModal('modal-adddish')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-addrest">
+  <div class="modal">
+    <h2>Add restaurant <button class="modal-close" onclick="closeModal('modal-addrest')">×</button></h2>
+    <div class="field"><label>Restaurant name</label><input type="text" placeholder="Osteria Vino"/></div>
+    <div class="field-row">
+      <div class="field"><label>Cuisine</label><input type="text" placeholder="Italian, Wine Bar..."/></div>
+      <div class="field"><label>City</label><input type="text" placeholder="St. Helena, CA"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="closeModal('modal-addrest')">Add &amp; set up</button>
+      <button class="btn secondary" onclick="closeModal('modal-addrest')">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
-var SUPABASE_URL='https://rlvibtvyaunuiwizqigj.supabase.co';
-var ANON_KEY='sb_publishable_Q3Amu8Xs1UN2xH0fVPrngQ_BGZy3aye';
-var isTyping=false;
+var SB_URL='https://rlvibtvyaunuiwizqigj.supabase.co';
+var SB_KEY='sb_publishable_Q3Amu8Xs1UN2xH0fVPrngQ_BGZy3aye';
+var curUser=null;
+var aiHistory=[];
+var isAiBusy=false;
+var voiceRec=null;
+var isRecording=false;
 
-var SYSTEM_PROMPT=`You are TableOps AI — the intelligent operations brain for Bello Napa, an upscale Italian restaurant in Napa Valley, California.
+var SYS=`You are TableOps AI — the intelligence layer for a restaurant operations platform.
 
-RESTAURANT CONTEXT:
-- Restaurant: Bello Napa — upscale Italian, Napa Valley
-- Owner: Siamak Kalhor
-- Executive Chef: Luigi Moretti
-- Seats: 60 indoor, 20 outdoor patio
-- Open: Tuesday–Sunday, 5pm–10pm
-- Average check: $95/person
+CURRENT RESTAURANT: Bello Napa — upscale Italian, Napa Valley, CA
+Owner: Siamak Kalhor · Chef: Luigi Moretti · Seats: 80 indoor + 32 patio + 10 bar + 1 PDR (12)
+Open Tue–Sun 5–10pm · Avg check $95/person
 
-CURRENT DATA:
-Staff tonight: Maria R. (FOH Lead, on), Devon K. (Server, on), Carlos R. (Server, CALLED OUT), Jess P. (Server, available), Luigi Moretti (Chef, on), Ana Torres (Sous Chef, on)
-Inventory alerts: Salmon filet CRITICAL (4 portions), Burrata LOW (2 balls), Ribeye LOW (12 portions), Arugula LOW (3 lbs)
-Last night revenue: $8,420 (+12% vs last Tuesday)
-This week revenue: $41,200
-Food cost %: 28% (target 28%)
-Labor cost %: 31% (target <30%)
-Tonight reservations: 84 covers
+TONIGHT: 84 covers · Est. revenue $11,400
+ALERTS: Salmon CRITICAL (4 portions), Carlos R. called out, Labor 31% (1pt over target)
+STAFF: Maria R. (FOH Lead ✓), Devon K. (Server ✓), Carlos R. (out), Jess P. (on-call), Luigi M. (chef ✓), Ana T. (sous chef ✓), Marco B. (line cook ✓), Sofia C. (pastry ✓), Tony V. (busser ✓)
+INVENTORY LOW: Salmon (4), Burrata (2), Ribeye (12), Arugula (2 lbs)
+WEEK REVENUE: $41,200 · Food cost 28% · Labor 31%
+MONTH: $186k revenue · 22.6% net margin
 
-MENU — Bello Napa:
-Antipasti: Burrata con Prosciutto ($22, 72% margin), Carpaccio di Manzo ($18, 74% margin), Calamari Fritti ($16, 78% margin)
-Pasta: Pappardelle al Ragù ($28, 72%), Cacio e Pepe ($24, 76%), Tagliatelle al Tartufo ($36, 65%), Risotto ai Funghi ($32, 71%)
-Secondi: Branzino al Limone ($38, 67%), Bistecca Fiorentina ($68, 65%), Pollo al Mattone ($32, 70%), Agnello Scottadito ($44, 66%)
-Dolci: Tiramisu della Casa ($14, 77%), Panna Cotta ($12, 79%), Cannoli Siciliani ($11, 80%)
+MULTI-LOCATION: Also managing Osteria Vino (St. Helena, wine bar) and Rosso Grill (Yountville, steakhouse)
 
-YOUR CAPABILITIES:
-1. OPERATIONS: Answer questions about staff, inventory, revenue, costs, scheduling
-2. RECIPES: You have deep knowledge of every major cuisine — Italian, French, Japanese (sushi/omakase), Chinese (Cantonese, Sichuan, etc), Persian, Middle Eastern (Lebanese, Turkish, Moroccan), Indian, Spanish, Thai, Vietnamese, Korean, Mexican, American, and more. You know classic techniques, ratios, and professional kitchen methods.
-3. MENU CONSULTING: Suggest new dishes, seasonal specials, wine pairings, recipe modifications, food cost optimization
-4. FAMOUS CHEFS: You know the work, philosophy, and signature dishes of: Massimo Bottura, Gordon Ramsay, Thomas Keller, Nobu Matsuhisa, Ferran Adrià, René Redzepi, Joel Robuchon, Marco Pierre White, Alice Waters, Wolfgang Puck, Daniel Boulud, David Chang, Heston Blumenthal, Alain Ducasse, Pierre Gagnaire, and hundreds more.
-5. WORLD CUISINES — key knowledge:
-   - Italian: regional variations (Roman, Tuscan, Sicilian, Venetian, Neapolitan), pasta ratios, risotto technique, pizza Napoletana
-   - Japanese: sushi rice ratios, nigiri technique, ramen broths (tonkotsu, shoyu, miso, shio), omakase flow, katsuobushi dashi
-   - French: mother sauces (béchamel, velouté, espagnole, hollandaise, tomat), classic bistro dishes, pâtisserie
-   - Persian: Ghormeh Sabzi, Fesenjan, Tahdig, Ash Reshteh, Joojeh Kabab, Mast-o-Khiar, Persian rice techniques (kateh vs chelo)
-   - Middle Eastern: Lebanese mezze, hummus ratios, Turkish kebabs, Moroccan tagine, Israeli salads, Egyptian koshari
-   - Chinese: Peking duck, dim sum, mapo tofu, Sichuan peppercorn techniques, Cantonese steaming, Peking opera cake
-   - Indian: curry base techniques, biryani layering, tandoor methods, chaat, South Indian dosas
-   - Spanish: paella (Valenciana, marinera, mixta), gazpacho, tortilla española, tapas, pintxos, Basque cuisine
-   - Thai: curry pastes from scratch, pad thai ratios, tom yum, green papaya salad, mango sticky rice
-   - Korean: kimchi fermentation, Korean BBQ marinades, bibimbap, tteokbokki, doenjang jjigae
+CAPABILITIES:
+1. OPERATIONS — staff, scheduling, inventory, P&L, alerts, covers
+2. FINANCE — food cost %, labor %, net margins, weekly/monthly P&L, payroll, tax prep
+3. RECIPES — deep knowledge of every major cuisine: Italian (all regions), French (classical + modern), Japanese (sushi, ramen, omakase, kaiseki), Persian (Ghormeh Sabzi, Fesenjan, Tahdig, Joojeh kabab, Ash Reshteh), Chinese (Cantonese, Sichuan, Shanghainese, dim sum), Indian (North/South, tandoor, curry base mastery), Middle Eastern (Lebanese, Turkish, Moroccan, Israeli, Egyptian), Spanish (Basque, Catalan, paella), Thai, Vietnamese, Korean, Mexican, American (regional BBQ, New American)
+4. CHEFS — know work of Massimo Bottura, Thomas Keller, Nobu, Ferran Adrià, René Redzepi, Gordon Ramsay, Alice Waters, David Chang, Heston Blumenthal, Daniel Boulud, Joel Robuchon, Wolfgang Puck, Marco Pierre White, Grant Achatz, Dominique Crenn, and 100+ more
+5. REPORTS — generate any report: P&L, payroll, food cost, inventory, sales mix, labor efficiency, tax prep, multi-location comparison
+6. MENU ENGINEERING — dish costing, margin analysis, what to push/drop/reprice
+7. SUPPLIER ORDERS — draft orders per supplier based on stock + covers
 
-Keep responses conversational but precise. For recipes, give professional-level detail with exact measurements. For operations questions, be direct and action-oriented. Always refer to the owner as Siamak.`;
+Be direct and action-oriented. For recipes give professional detail with exact measurements. Generate reports as formatted text tables. Always address owner as Siamak.`;
 
-function showScreen(id,el){
-  document.querySelectorAll('.screen,.ai-screen').forEach(function(s){s.classList.remove('active');});
-  var target=document.getElementById('screen-'+id);
-  if(target) target.classList.add('active');
-  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
-  if(el) el.classList.add('active');
+// ── AUTH ──
+function switchTab(t){
+  document.querySelectorAll('.auth-tab').forEach(function(el,i){el.classList.toggle('active',i===(t==='login'?0:1));});
+  document.getElementById('tab-login').style.display=t==='login'?'':'none';
+  document.getElementById('tab-signup').style.display=t==='signup'?'':'none';
 }
 
-function orderItem(item){
-  showScreen('ai',document.querySelector('[onclick*="ai"]'));
-  setTimeout(function(){askAI('Draft a supplier order for '+item+' — include recommended quantity based on tonight\'s covers and par levels');},100);
+function showErr(msg){var e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
+function hideErr(){document.getElementById('auth-err').style.display='none';}
+
+async function doLogin(){
+  var email=document.getElementById('login-email').value.trim();
+  var pw=document.getElementById('login-pw').value;
+  if(!email||!pw){showErr('Enter your email and password.');return;}
+  hideErr();
+  try{
+    var r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},body:JSON.stringify({email:email,password:pw})});
+    var d=await r.json();
+    if(d.error){showErr(d.error_description||d.error);return;}
+    curUser={email:email,name:email.split('@')[0],role:'owner'};
+    enterApp();
+  }catch(e){showErr('Connection error. Please try again.');}
 }
 
-function findCover(){
-  showScreen('ai',document.querySelector('[onclick*="ai"]'));
-  setTimeout(function(){askAI('Carlos R. called out tonight. Who can cover? What\'s the best option and what should I text them?');},100);
+async function doSignup(){
+  var name=document.getElementById('su-name').value.trim();
+  var email=document.getElementById('su-email').value.trim();
+  var pw=document.getElementById('su-pw').value;
+  var role=document.getElementById('su-role').value;
+  if(!name||!email||!pw){showErr('Please fill in all fields.');return;}
+  if(pw.length<8){showErr('Password must be at least 8 characters.');return;}
+  hideErr();
+  try{
+    var r=await fetch(SB_URL+'/auth/v1/signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},body:JSON.stringify({email:email,password:pw,data:{name:name,role:role}})});
+    var d=await r.json();
+    if(d.error){showErr(d.error_description||d.error);return;}
+    curUser={email:email,name:name,role:role};
+    document.getElementById('auth-wall').classList.add('hidden');
+    document.getElementById('setup-wall').classList.remove('hidden');
+  }catch(e){showErr('Connection error. Please try again.');}
 }
 
-function askAI(text){
-  document.getElementById('ai-input').value=text;
-  sendMessage();
+function demoLogin(){
+  curUser={email:'demo@bellorestaurant.com',name:'Siamak Kalhor',role:'owner'};
+  enterApp();
 }
 
-function handleKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+function enterApp(){
+  document.getElementById('auth-wall').classList.add('hidden');
+  document.getElementById('setup-wall').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  document.getElementById('voice-fab').style.display='flex';
+  // Set user info
+  var initials=curUser.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2);
+  document.getElementById('sb-av-txt').textContent=initials;
+  document.getElementById('sb-uname').textContent=curUser.name;
+  document.getElementById('sb-urole').textContent=curUser.role.charAt(0).toUpperCase()+curUser.role.slice(1);
+  // Greeting
+  var h=new Date().getHours();
+  var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('dash-greeting').textContent=g+', '+curUser.name.split(' ')[0];
 }
 
-function autoResize(el){
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,120)+'px';
+function doLogout(){
+  curUser=null;
+  document.getElementById('app-shell').classList.add('hidden');
+  document.getElementById('voice-fab').style.display='none';
+  document.getElementById('auth-wall').classList.remove('hidden');
 }
 
-function addMessage(role,html){
-  var msgs=document.getElementById('ai-messages');
-  var div=document.createElement('div');
-  div.className='msg '+role;
-  var av=role==='bot'?'T':'SK';
-  div.innerHTML='<div class="msg-av">'+av+'</div><div class="msg-bubble">'+html+'</div>';
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
-  return div;
+// ── SETUP WIZARD ──
+var curStep=1;
+function nextStep(n){
+  document.getElementById('step-'+curStep).classList.remove('active');
+  curStep=n;
+  document.getElementById('step-'+n).classList.add('active');
+  document.querySelectorAll('.setup-dot').forEach(function(d,i){d.classList.toggle('done',i<n);});
+}
+function finishSetup(){enterApp();}
+
+// ── NAV ──
+function nav(id,el){
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('on');s.style.display='';});
+  var t=document.getElementById('scr-'+id);
+  if(t){t.classList.add('on');if(id==='ai')t.style.display='block';}
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('on');});
+  if(el)el.classList.add('on');
+  // Close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
 }
 
-function showTyping(){
-  var msgs=document.getElementById('ai-messages');
-  var div=document.createElement('div');
-  div.className='msg bot';
-  div.id='typing-indicator';
-  div.innerHTML='<div class="msg-av">T</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
-  msgs.appendChild(div);
-  msgs.scrollTop=msgs.scrollHeight;
+// ── RESTAURANT SWITCHER ──
+function toggleRestDropdown(){document.getElementById('rest-dd').classList.toggle('open');}
+function switchRest(name,sub){
+  document.getElementById('cur-rest-name').textContent=name;
+  document.getElementById('cur-rest-sub').textContent=sub;
+  document.getElementById('rest-dd').classList.remove('open');
+  document.getElementById('dash-date').textContent='Tuesday June 27 · '+name+' · live data';
+}
+document.addEventListener('click',function(e){if(!e.target.closest('.rest-switcher'))document.getElementById('rest-dd').classList.remove('open');});
+
+// ── MODALS ──
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-bg').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});});
+
+// ── AI CHAT ──
+function aiResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function aiKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();aiSend();}}
+
+function aiMsg(role,html){
+  var c=document.getElementById('ai-msgs');
+  var d=document.createElement('div');
+  d.className='amsg '+role;
+  d.innerHTML='<div class="amsg-av">'+(role==='bot'?'T':curUser?curUser.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2):'SK')+'</div><div class="amsg-bub">'+html+'</div>';
+  c.appendChild(d);
+  c.scrollTop=c.scrollHeight;
+  return d;
+}
+function aiTyping(){var d=aiMsg('bot','<div class="typing-dots"><span></span><span></span><span></span></div>');d.id='ai-typing';return d;}
+function aiRemoveTyping(){var t=document.getElementById('ai-typing');if(t)t.remove();}
+
+function aiAsk(text){
+  // Switch to AI screen
+  nav('ai',document.querySelector('.sb-item:nth-child(7)'));
+  setTimeout(function(){document.getElementById('ai-in').value=text;aiSend();},100);
 }
 
-function removeTyping(){
-  var t=document.getElementById('typing-indicator');
-  if(t) t.remove();
-}
-
-var chatHistory=[];
-
-function sendMessage(){
-  var input=document.getElementById('ai-input');
-  var text=input.value.trim();
-  if(!text||isTyping) return;
-  isTyping=true;
-  document.getElementById('ai-send-btn').disabled=true;
-  input.value='';
-  input.style.height='auto';
-  addMessage('user',text);
-  chatHistory.push({role:'user',content:text});
-  showTyping();
-
+function aiSend(){
+  var inp=document.getElementById('ai-in');
+  var text=inp.value.trim();
+  if(!text||isAiBusy)return;
+  isAiBusy=true;
+  document.getElementById('ai-send').disabled=true;
+  inp.value='';inp.style.height='auto';
+  aiMsg('user',text);
+  aiHistory.push({role:'user',content:text});
+  aiTyping();
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-6',
-      max_tokens:1000,
-      system:SYSTEM_PROMPT,
-      messages:chatHistory
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    removeTyping();
-    var reply=(d.content&&d.content[0])?d.content[0].text:'Sorry, I had trouble with that. Try again.';
-    chatHistory.push({role:'assistant',content:reply});
-    var formatted=reply
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/\n\n/g,'</p><p>')
-      .replace(/\n- /g,'</p><ul><li>')
-      .replace(/\n\d+\. /g,'</p><ol><li>')
-      .replace(/^/,'<p>')
-      .replace(/$/,'</p>');
-    addMessage('bot',formatted);
-    isTyping=false;
-    document.getElementById('ai-send-btn').disabled=false;
-  })
-  .catch(function(){
-    removeTyping();
-    addMessage('bot','<p>Network error — please try again.</p>');
-    isTyping=false;
-    document.getElementById('ai-send-btn').disabled=false;
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:SYS,messages:aiHistory})
+  }).then(function(r){return r.json();}).then(function(d){
+    aiRemoveTyping();
+    var reply=(d.content&&d.content[0])?d.content[0].text:'Sorry, try again.';
+    aiHistory.push({role:'assistant',content:reply});
+    var fmt=reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'</p><p>').replace(/\n- /g,'</p><ul><li>').replace(/\n(\d+)\. /g,'</li><li>').replace(/^/,'<p>').replace(/$/,'</p>');
+    aiMsg('bot',fmt);
+    isAiBusy=false;document.getElementById('ai-send').disabled=false;
+  }).catch(function(){
+    aiRemoveTyping();aiMsg('bot','<p>Connection error — please try again.</p>');
+    isAiBusy=false;document.getElementById('ai-send').disabled=false;
   });
 }
+
+// ── VOICE ──
+function toggleVoice(){
+  if(isRecording){stopVoice();}else{startVoice();}
+}
+
+function startVoice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Voice requires Chrome on desktop or Safari on iPhone.');return;}
+  isRecording=true;
+  document.getElementById('voice-fab').classList.add('recording');
+  document.getElementById('voice-toast').classList.add('show');
+  document.getElementById('voice-state').textContent='Listening...';
+  document.getElementById('voice-tx').textContent='Say anything — staff, orders, questions';
+  voiceRec=new SR();voiceRec.continuous=false;voiceRec.interimResults=true;voiceRec.lang='en-US';
+  voiceRec.onresult=function(e){
+    var interim='',final='';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    if(interim)document.getElementById('voice-tx').textContent='"'+interim+'"';
+    if(final.trim()){
+      document.getElementById('voice-tx').textContent='"'+final.trim()+'"';
+      stopVoice();
+      nav('ai',document.querySelector('.sb-item:nth-child(7)'));
+      setTimeout(function(){document.getElementById('ai-in').value=final.trim();aiSend();},300);
+    }
+  };
+  voiceRec.onerror=function(e){
+    document.getElementById('voice-state').textContent='Mic error: '+e.error;
+    setTimeout(stopVoice,2000);
+  };
+  voiceRec.onend=function(){if(isRecording)stopVoice();};
+  try{voiceRec.start();}catch(e){stopVoice();}
+}
+
+function stopVoice(){
+  isRecording=false;
+  if(voiceRec){try{voiceRec.abort();}catch(e){}voiceRec=null;}
+  document.getElementById('voice-fab').classList.remove('recording');
+  setTimeout(function(){document.getElementById('voice-toast').classList.remove('show');},1500);
+}
+
+function resolveAlerts(){aiAsk('I want to resolve all 3 alerts: order salmon, find cover for Carlos, and give me advice on labor cost. Handle all three.');}
 </script>
 </body>
 </html>
