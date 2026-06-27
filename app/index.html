@@ -1338,247 +1338,187 @@ Keep responses focused and not too long — under 300 words unless a full recipe
 Always end with one helpful follow-up suggestion.`;
 
 // ── AUTH ──
-function switchTab(t){
-  var isLogin = (t === 'login');
+// Simple, reliable auth using localStorage + optional Supabase sync
+
+var ACCOUNTS_KEY = 'to_accounts';
+
+function getAccounts(){
+  try{ return JSON.parse(localStorage.getItem(ACCOUNTS_KEY)||'{}'); }
+  catch(e){ return {}; }
+}
+
+function saveAccount(email, data){
+  var accts = getAccounts();
+  accts[email.toLowerCase()] = data;
+  try{ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accts)); }catch(e){}
+}
+
+function showTab(t){
+  var isLogin = t === 'login';
+  document.getElementById('tab-login').style.display = isLogin ? '' : 'none';
+  document.getElementById('tab-signup').style.display = isLogin ? 'none' : '';
   document.querySelectorAll('.auth-tab').forEach(function(el, i){
     el.classList.toggle('active', isLogin ? i===0 : i===1);
   });
-  document.getElementById('tab-login').style.display = isLogin ? '' : 'none';
-  document.getElementById('tab-signup').style.display = isLogin ? 'none' : '';
-  hideErr();
+  authMsg('');
 }
 
-function showErr(msg){
-  var e = document.getElementById('auth-err');
-  if(e){ e.textContent = msg; e.style.display = 'block'; }
+function authMsg(msg, isError){
+  var el = document.getElementById('auth-msg');
+  if(!msg){ el.style.display='none'; return; }
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = isError ? '#fff5f5' : '#f0fdf4';
+  el.style.border = isError ? '1.5px solid #feb2b2' : '1.5px solid #86efac';
+  el.style.color = isError ? '#e53e3e' : '#166534';
 }
 
-function hideErr(){
-  var e = document.getElementById('auth-err');
-  if(e) e.style.display = 'none';
+function setBtnLoading(btnId, loading, label){
+  var btn = document.getElementById(btnId);
+  if(!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Please wait...' : label;
 }
 
-function cleanName(email){
-  return (email||'').split('@')[0]
-    .replace(/[._\-0-9]/g,' ')
-    .replace(/\w/g, function(l){ return l.toUpperCase(); })
-    .trim() || 'User';
-}
-
-function setAuthBtn(loading){
-  var btn = document.getElementById('login-btn');
-  if(btn){ btn.disabled = loading; btn.textContent = loading ? 'Signing in...' : 'Sign in to TableOps'; }
-  var btn2 = document.getElementById('signup-btn');
-  if(btn2){ btn2.disabled = loading; btn2.textContent = loading ? 'Creating account...' : 'Create account'; }
-}
-
-// DEMO — always works, no server needed
+// DEMO - always works
 function demoLogin(){
-  curUser = {
-    email: 'demo@eikosnapa.com',
-    name: 'Siamak Kalhor',
-    role: 'owner'
-  };
-  window._demoRest = {
-    name: "Eiko's Napa",
-    cuisine: 'Japanese · Sushi',
-    city: 'Napa, CA',
-    covers: 120,
-    check: 45
-  };
+  curUser = { email:'demo@eikosnapa.com', name:'Siamak Kalhor', role:'owner', isDemo:true };
+  window._demoRest = { name:"Eiko's Napa", cuisine:'Japanese · Sushi', city:'Napa, CA' };
   enterApp();
 }
 
-// LOGIN
-async function doLogin(){
-  var email = document.getElementById('login-email').value.trim();
-  var pw = document.getElementById('login-pw').value;
-  if(!email || !pw){ showErr('Enter your email and password.'); return; }
-  hideErr();
-  setAuthBtn(true);
-  try {
-    var r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SB_KEY,
-        'Authorization': 'Bearer ' + SB_KEY
-      },
-      body: JSON.stringify({ email: email, password: pw })
-    });
-    var d = await r.json();
-    setAuthBtn(false);
-    if(d.error || d.error_code || d.msg){
-      var msg = d.error_description || d.msg || d.error || '';
-      if(msg.toLowerCase().indexOf('invalid') >= 0 || msg.toLowerCase().indexOf('wrong') >= 0){
-        showErr('Wrong email or password. Try the demo button, or create a new account.');
-        return;
-      }
-      if(msg.toLowerCase().indexOf('confirm') >= 0 || msg.toLowerCase().indexOf('email not confirmed') >= 0){
-        showErr('Please check your email and click the confirmation link first.');
-        return;
-      }
-      // Unknown error — still let them in
-      curUser = { email: email, name: cleanName(email), role: 'owner' };
+// SIGN IN
+function doLogin(){
+  var email = (document.getElementById('login-email').value||'').trim().toLowerCase();
+  var pw = document.getElementById('login-pw').value || '';
+  if(!email){ authMsg('Please enter your email.', true); return; }
+  if(!pw){ authMsg('Please enter your password.', true); return; }
+
+  authMsg('');
+  setBtnLoading('btn-login', true, 'Sign in');
+
+  // Check local accounts first (instant)
+  var accts = getAccounts();
+  if(accts[email]){
+    if(accts[email].pw === pw){
+      curUser = { email:email, name:accts[email].name, role:accts[email].role||'owner' };
+      setBtnLoading('btn-login', false, 'Sign in');
       enterApp();
       return;
+    } else {
+      setBtnLoading('btn-login', false, 'Sign in');
+      authMsg('Wrong password. Try again or use the demo button.', true);
+      return;
     }
-    // Success
-    var meta = (d.user && d.user.user_metadata) || {};
-    curUser = {
-      email: email,
-      name: meta.name || cleanName(email),
-      role: meta.role || 'owner',
-      token: d.access_token,
-      supabase_id: d.user && d.user.id
-    };
-    enterApp();
-  } catch(e) {
-    setAuthBtn(false);
-    // Network error — let them in anyway
-    curUser = { email: email, name: cleanName(email), role: 'owner' };
-    enterApp();
   }
+
+  // Try Supabase for accounts created there
+  trySupabaseLogin(email, pw);
 }
 
-// SIGNUP
-async function doSignup(){
-  var name = document.getElementById('su-name').value.trim();
-  var email = document.getElementById('su-email').value.trim();
-  var pw = document.getElementById('su-pw').value;
-  var role = document.getElementById('su-role').value || 'owner';
-  if(!name){ showErr('Please enter your name.'); return; }
-  if(!email){ showErr('Please enter your email.'); return; }
-  if(pw.length < 8){ showErr('Password needs to be at least 8 characters.'); return; }
-  hideErr();
-  setAuthBtn(true);
-  try {
-    var r = await fetch(SB_URL + '/auth/v1/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SB_KEY,
-        'Authorization': 'Bearer ' + SB_KEY
-      },
-      body: JSON.stringify({
-        email: email,
-        password: pw,
-        data: { name: name, role: role }
-      })
+async function trySupabaseLogin(email, pw){
+  try{
+    var r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({email:email, password:pw})
     });
     var d = await r.json();
-    setAuthBtn(false);
-    if(d.error || d.error_code){
-      var msg = d.error_description || d.msg || d.error || '';
-      if(msg.toLowerCase().indexOf('already') >= 0 || msg.toLowerCase().indexOf('registered') >= 0){
-        showErr('This email already has an account. Sign in instead.');
-        switchTab('login');
-        document.getElementById('login-email').value = email;
-        return;
+    setBtnLoading('btn-login', false, 'Sign in');
+    if(d.access_token){
+      var meta = (d.user&&d.user.user_metadata)||{};
+      curUser = {
+        email:email, name:meta.name||nameFromEmail(email),
+        role:meta.role||'owner', token:d.access_token,
+        supabase_id:d.user&&d.user.id
+      };
+      saveAccount(email, {name:curUser.name, role:curUser.role, pw:pw});
+      enterApp();
+    } else {
+      var msg = d.error_description||d.msg||d.error||'';
+      if(msg.toLowerCase().indexOf('confirm')>=0){
+        authMsg('Check your email for a confirmation link first, then sign in.', true);
+      } else {
+        authMsg('No account found. Please create one below.', true);
+        showTab('signup');
+        document.getElementById('su-email').value=email;
       }
-      // Other error — create local account
-      curUser = { email: email, name: name, role: role };
-      goToSetup();
-      return;
     }
-    // Check if needs email confirmation
-    if(d.user && !d.access_token){
-      curUser = { email: email, name: name, role: role };
-      showErr('Account created! Check your email (' + email + ') for a confirmation link, then sign in.');
-      switchTab('login');
-      document.getElementById('login-email').value = email;
-      setAuthBtn(false);
-      return;
-    }
-    // Fully signed up
-    curUser = {
-      email: email,
-      name: name,
-      role: role,
-      token: d.access_token,
-      supabase_id: d.user && d.user.id
-    };
-    goToSetup();
-  } catch(e) {
-    setAuthBtn(false);
-    // Network error — still create local account
-    curUser = { email: email, name: name, role: role };
-    goToSetup();
+  } catch(e){
+    setBtnLoading('btn-login', false, 'Sign in');
+    authMsg('Cannot connect. Check your internet and try again.', true);
   }
 }
 
-function goToSetup(){
+// CREATE ACCOUNT
+function doSignup(){
+  var name = (document.getElementById('su-name').value||'').trim();
+  var email = (document.getElementById('su-email').value||'').trim().toLowerCase();
+  var pw = document.getElementById('su-pw').value || '';
+  var role = document.getElementById('su-role').value || 'owner';
+
+  if(!name){ authMsg('Please enter your name.', true); return; }
+  if(!email || email.indexOf('@')<0){ authMsg('Please enter a valid email.', true); return; }
+  if(pw.length < 8){ authMsg('Password must be at least 8 characters.', true); return; }
+
+  // Check if already exists locally
+  var accts = getAccounts();
+  if(accts[email]){
+    authMsg('This email already has an account. Sign in instead.', true);
+    showTab('login');
+    document.getElementById('login-email').value = email;
+    return;
+  }
+
+  authMsg('');
+  setBtnLoading('btn-signup', true, 'Create account');
+
+  // Save locally immediately - account works right away
+  curUser = { email:email, name:name, role:role };
+  saveAccount(email, { name:name, role:role, pw:pw });
+
+  // Also try Supabase in background
+  trySupabaseSignup(email, pw, name, role);
+}
+
+async function trySupabaseSignup(email, pw, name, role){
+  try{
+    var r = await fetch(SB_URL + '/auth/v1/signup', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
+    });
+    var d = await r.json();
+    if(d.access_token){
+      curUser.token = d.access_token;
+      curUser.supabase_id = d.user && d.user.id;
+    }
+  } catch(e){ /* silently fail - local account works */ }
+  setBtnLoading('btn-signup', false, 'Create account');
+  // Go to setup wizard
   document.getElementById('auth-wall').classList.add('hidden');
   document.getElementById('setup-wall').classList.remove('hidden');
 }
 
-function enterApp(){
-  document.getElementById('auth-wall').classList.add('hidden');
-  document.getElementById('setup-wall').classList.add('hidden');
-  document.getElementById('app-shell').classList.remove('hidden');
-
-  // Show voice button
-  var vw = document.getElementById('voice-fab-wrap');
-  if(vw) vw.style.display = 'flex';
-  var vf = document.getElementById('voice-fab');
-  if(vf) vf.style.display = 'flex';
-
-  // Apply restaurant from setup or demo
-  var rest = window._setupRest || window._demoRest;
-  if(rest){
-    var nameEl = document.getElementById('cur-rest-name');
-    var subEl = document.getElementById('cur-rest-sub');
-    var dateEl = document.getElementById('dash-date');
-    if(nameEl) nameEl.textContent = rest.name;
-    if(subEl) subEl.textContent = (rest.city ? rest.city + ' · ' : '') + rest.cuisine;
-    if(dateEl) dateEl.textContent = "Welcome to " + rest.name + " · TableOps AI";
-    if(rest.name) SYS = SYS.replace(/Eiko's Napa/g, rest.name);
-    window._setupRest = null;
-    window._demoRest = null;
-  }
-
-  // Set user display
-  if(curUser){
-    var initials = (curUser.name || 'U').split(' ').map(function(n){ return n[0] || ''; }).join('').toUpperCase().slice(0,2) || 'U';
-    var avEl = document.getElementById('sb-av-txt');
-    var unEl = document.getElementById('sb-uname');
-    var urEl = document.getElementById('sb-urole');
-    if(avEl) avEl.textContent = initials;
-    if(unEl) unEl.textContent = curUser.name || curUser.email || 'User';
-    if(urEl) urEl.textContent = (curUser.role || 'owner').charAt(0).toUpperCase() + (curUser.role || 'owner').slice(1);
-  }
-
-  // Greeting
-  var h = new Date().getHours();
-  var greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-  var greetEl = document.getElementById('dash-greeting');
-  if(greetEl && curUser) greetEl.textContent = greet + ', ' + (curUser.name || '').split(' ')[0];
-
-  // Dismiss voice tip if seen before
-  if(localStorage.getItem('to_vtip')){
-    var tip = document.getElementById('voice-tip');
-    if(tip) tip.style.display = 'none';
-  }
-
-  // Init TTS and load data
-  initTTS();
-  loadStaffFromStorage();
-  renderStaff();
-  renderKitchen();
-  renderPnl();
+function nameFromEmail(email){
+  return (email||'').split('@')[0]
+    .replace(/[._\-]/g,' ')
+    .split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); })
+    .join(' ') || 'User';
 }
-
 
 function doLogout(){
   curUser = null;
-  document.getElementById('app-shell').classList.add('hidden');
-  document.getElementById('voice-fab-wrap').style.display = 'none';
-  document.getElementById('auth-wall').classList.remove('hidden');
-  hideErr();
   if(window.speechSynthesis) speechSynthesis.cancel();
+  document.getElementById('app-shell').classList.add('hidden');
+  var vw = document.getElementById('voice-fab-wrap');
+  if(vw) vw.style.display = 'none';
+  document.getElementById('auth-wall').classList.remove('hidden');
+  authMsg('');
 }
 
 // ── SETUP WIZARD ──
+
 var curStep=1;
 function nextStep(n){
   document.getElementById('step-'+curStep).classList.remove('active');
@@ -1593,6 +1533,55 @@ function finishSetup(){
   // Update sidebar restaurant display
   window._setupRest={name:rname,cuisine:rcuisine,city:rcity};
   enterApp();
+}
+
+
+// ── ENTER APP ──
+function enterApp(){
+  document.getElementById('auth-wall').classList.add('hidden');
+  document.getElementById('setup-wall').classList.add('hidden');
+  var shell = document.getElementById('app-shell');
+  if(shell) shell.classList.remove('hidden');
+
+  // Show voice button
+  var vw = document.getElementById('voice-fab-wrap');
+  if(vw) vw.style.display = 'flex';
+
+  // Apply restaurant name
+  var rest = window._setupRest || window._demoRest;
+  if(rest){
+    var el;
+    el=document.getElementById('cur-rest-name'); if(el) el.textContent=rest.name;
+    el=document.getElementById('cur-rest-sub'); if(el) el.textContent=(rest.city?rest.city+' · ':'')+rest.cuisine;
+    el=document.getElementById('dash-date'); if(el) el.textContent='Welcome to '+rest.name+' · TableOps AI';
+    SYS = SYS.replace(/Eiko's Napa/g, rest.name);
+    window._setupRest=null; window._demoRest=null;
+  }
+
+  // Set user info in sidebar
+  if(curUser){
+    var initials = (curUser.name||'U').split(' ').map(function(n){return (n||'').charAt(0).toUpperCase();}).join('').slice(0,2)||'U';
+    var el;
+    el=document.getElementById('sb-av-txt'); if(el) el.textContent=initials;
+    el=document.getElementById('sb-uname'); if(el) el.textContent=curUser.name||curUser.email||'User';
+    el=document.getElementById('sb-urole'); if(el) el.textContent=(curUser.role||'owner').charAt(0).toUpperCase()+(curUser.role||'owner').slice(1);
+  }
+
+  // Greeting
+  var h=new Date().getHours();
+  var greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  var gEl=document.getElementById('dash-greeting');
+  if(gEl&&curUser) gEl.textContent=greet+', '+((curUser.name||'').split(' ')[0]||'there');
+
+  // Hide voice tip if seen
+  if(localStorage.getItem('to_vtip')){ var t=document.getElementById('voice-tip'); if(t)t.style.display='none'; }
+
+  // Init TTS and render data
+  initTTS();
+  loadStaffFromStorage();
+  renderStaff();
+  renderKitchen();
+  renderPnl();
 }
 
 // ── NAV ──
@@ -2405,4 +2394,75 @@ function emailReport(title){
 function resolveAlerts(){aiAsk('I want to resolve all 3 alerts: order salmon, find cover for Carlos, and give me advice on labor cost. Handle all three.');}
 </script>
 </body>
-</html>
+</html><!-- ── AUTH WALL ── -->
+<div id="auth-wall">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/>
+          <path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/>
+        </svg>
+      </div>
+      <span>TableOps AI</span>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="showTab('login')">Sign in</div>
+      <div class="auth-tab" onclick="showTab('signup')">Create account</div>
+    </div>
+
+    <div id="auth-msg" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;line-height:1.5;"></div>
+
+    <!-- SIGN IN -->
+    <div id="tab-login">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@restaurant.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="login-pw" placeholder="Your password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="auth-btn" onclick="doLogin()" id="btn-login">Sign in</button>
+      <div style="text-align:center;color:#9ca3af;font-size:12px;margin:16px 0 12px;">— or skip login —</div>
+      <button class="auth-btn" onclick="demoLogin()"
+        style="background:#f1f3f5;color:#374151;border:1.5px solid #d1d5db;">
+        👀 Try demo instantly — no account needed
+      </button>
+    </div>
+
+    <!-- CREATE ACCOUNT -->
+    <div id="tab-signup" style="display:none;">
+      <div class="auth-field">
+        <label>Your name</label>
+        <input type="text" id="su-name" placeholder="Siamak Kalhor" autocomplete="name"/>
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="su-email" placeholder="you@restaurant.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label>Password (min 8 characters)</label>
+        <input type="password" id="su-pw" placeholder="Create a password" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter')doSignup()"/>
+      </div>
+      <div class="auth-field">
+        <label>Your role</label>
+        <select id="su-role">
+          <option value="owner">Owner</option>
+          <option value="manager">General Manager</option>
+          <option value="chef">Executive Chef</option>
+        </select>
+      </div>
+      <button class="auth-btn" onclick="doSignup()" id="btn-signup">Create account &amp; set up restaurant</button>
+    </div>
+
+    <div style="text-align:center;margin-top:18px;font-size:12px;color:#9ca3af;">
+      tableopsai.com · Your data is private and secure
+    </div>
+  </div>
+</div>
+
+
