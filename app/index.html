@@ -295,7 +295,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <div class="setup-step active" id="step-1">
       <div class="setup-title">Tell us about your restaurant</div>
       <div class="setup-sub">This sets up your entire account. You can change everything later.</div>
-      <div class="auth-field"><label>Restaurant name</label><input type="text" id="r-name" placeholder="Bello Napa"/></div>
+      <div class="auth-field"><label>Restaurant name</label><input type="text" id="r-name" placeholder="Eiko's Napa"/></div>
       <div class="setup-row">
         <div class="auth-field"><label>Cuisine type</label>
           <select id="r-cuisine">
@@ -393,8 +393,8 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
         TableOps AI
       </div>
       <div class="rest-switcher" onclick="toggleRestDropdown()">
-        <div class="rest-name"><span id="cur-rest-name">Bello Napa</span> ▾</div>
-        <div class="rest-sub" id="cur-rest-sub">Napa Valley · Italian</div>
+        <div class="rest-name"><span id="cur-rest-name">Eiko's Napa</span> ▾</div>
+        <div class="rest-sub" id="cur-rest-sub">Napa, CA · Japanese · Sushi</div>
         <div class="rest-dropdown" id="rest-dd">
           <div class="rest-opt active" onclick="switchRest('Eiko\'s Napa','Napa, CA · Japanese · Sushi')">Eiko's Napa</div>
           <div class="rest-opt" onclick="switchRest('Eiko\'s To Go','Napa, CA · Sushi & Takeout')">Eiko's To Go</div>
@@ -473,7 +473,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <!-- ── DASHBOARD ── -->
     <div id="scr-dashboard" class="scr on">
       <div class="top-bar">
-        <div class="top-bar-left"><h1 id="dash-greeting">Good evening</h1><p id="dash-date">Tuesday June 27 · Bello Napa · 3 alerts</p></div>
+        <div class="top-bar-left"><h1 id="dash-greeting">Good evening</h1><p id="dash-date">Welcome to Eiko's Napa · TableOps AI</p></div>
         <div class="top-bar-right">
           <button class="tbtn" onclick="nav('ai',document.querySelector('[onclick*=ai]'));aiAsk('Give me my full evening briefing for tonight')">Evening briefing</button>
         </div>
@@ -803,7 +803,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <!-- ── P&L ── -->
     <div id="scr-pnl" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Daily P&L</h1><p>Real-time financials · Bello Napa · June 2026</p></div>
+        <div class="top-bar-left"><h1>Daily P&L</h1><p>Real-time financials · Eiko's Napa · June 2026</p></div>
         <div class="top-bar-right">
           <button class="tbtn" onclick="aiAsk('Analyze this week\'s P&L and tell me where I\'m leaving money on the table')">AI analysis</button>
           <button class="tbtn gold">Export PDF</button>
@@ -897,7 +897,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
             <div class="report-name">Accountant package</div>
             <div class="report-desc">Full monthly financials — formatted for your CPA or bookkeeper</div>
           </div>
-          <div class="report-card" onclick="aiAsk('Compare all 3 of my restaurants this month — Bello Napa, Osteria Vino, and Rosso Grill — revenue, margins, and which is performing best')">
+          <div class="report-card" onclick="aiAsk('Compare my restaurants this month — give me revenue, margins, and which is performing best — revenue, margins, and which is performing best')">
             <div class="report-icon" style="background:rgba(74,143,212,.15);color:var(--blue);"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="report-name">Multi-location comparison</div>
             <div class="report-desc">All your restaurants side by side — revenue, costs, best performer</div>
@@ -954,7 +954,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
           <div class="amsg bot">
             <div class="amsg-av">T</div>
             <div class="amsg-bub">
-              <p>Good evening. Here's your briefing for <strong>Bello Napa — Tuesday June 27</strong>:</p>
+              <p>Good evening. Here's your briefing for <strong>Eiko's Napa</strong>:</p>
               <ul>
                 <li><strong>🔴 Salmon critical</strong> — 4 portions, need 20 for tonight. Order now?</li>
                 <li><strong>🔴 Carlos R. called out</strong> — Jess P. available. Want me to draft a text?</li>
@@ -1019,7 +1019,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
       <div class="field"><label>First name</label><input type="text" placeholder="Maria"/></div>
       <div class="field"><label>Last name</label><input type="text" placeholder="Rodriguez"/></div>
     </div>
-    <div class="field"><label>Email (for login)</label><input type="email" placeholder="maria@bellorestaurant.com"/></div>
+    <div class="field"><label>Email (for login)</label><input type="email" placeholder="staff@eikosnapa.com"/></div>
     <div class="field-row">
       <div class="field"><label>Role</label>
         <select><option>Server</option><option>Bartender</option><option>Host/Hostess</option><option>Busser</option><option>Line Cook</option><option>Sous Chef</option><option>Executive Chef</option><option>Pastry Chef</option><option>Dishwasher</option><option>Manager</option></select>
@@ -1121,9 +1121,11 @@ var SYS=`You are TableOps AI — the most knowledgeable restaurant operations as
 
 PERSONALITY: Warm, direct, creative, encouraging. Talk like a brilliant friend who happens to know everything about restaurants. Never robotic. Never use markdown symbols like ** or ## or -- in your responses. Write in clean plain paragraphs. Use numbered lists when giving steps. Keep responses conversational but expert.
 
-CURRENT RESTAURANT: Bello Napa — upscale Italian, Napa Valley, CA
-Owner: Siamak Kalhor · Chef: Luigi Moretti · 80 indoor + 32 patio + 10 bar seats
-Open Tue–Sun 5–10pm · Average check $95/person · 3 locations total
+CURRENT RESTAURANT: Eiko's Napa — Japanese · Sushi · Napa Valley, CA
+Location: 1300 1st St Ste 385, Napa CA · eikosnapa.com
+Seating: 60 indoor + patio + sushi bar
+Open daily · Average check $45/person
+Specialties: Sushi rolls, nigiri, sashimi, Japanese tapas, ramen, entrees
 
 TONIGHT: 84 covers · Salmon CRITICAL (4 portions) · Carlos R. called out · Labor 31%
 
@@ -1258,7 +1260,7 @@ function enterApp(){
     document.getElementById('cur-rest-name').textContent=rest.name;
     document.getElementById('cur-rest-sub').textContent=(rest.city?rest.city+' · ':'')+rest.cuisine;
     document.getElementById('dash-date').textContent='Welcome to '+rest.name+' · TableOps AI';
-    SYS=SYS.replace(/Bello Napa/g,rest.name);
+    SYS=SYS.replace(/Eiko's Napa/g,rest.name);
     if(rest.cuisine)SYS=SYS.replace('upscale Italian',rest.cuisine);
     window._setupRest=null;window._demoRest=null;
   }
