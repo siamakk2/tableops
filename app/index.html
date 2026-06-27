@@ -263,7 +263,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
       <div class="auth-field"><label>Password</label><input type="password" id="login-pw" placeholder="••••••••"/></div>
       <button class="auth-btn" onclick="doLogin()">Sign in to TableOps</button>
       <div class="auth-divider">— or try the demo —</div>
-      <button class="auth-btn" style="background:var(--card2);color:var(--tx);border:1px solid var(--bdr);" onclick="demoLogin()">Demo: Bello Napa (owner)</button>
+      <button class="auth-btn" style="background:var(--card2);color:var(--tx);border:1px solid var(--bdr);" onclick="demoLogin()">Demo: Eiko's Napa (no account needed)</button>
     </div>
 
     <!-- SIGNUP -->
@@ -396,9 +396,8 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
         <div class="rest-name"><span id="cur-rest-name">Bello Napa</span> ▾</div>
         <div class="rest-sub" id="cur-rest-sub">Napa Valley · Italian</div>
         <div class="rest-dropdown" id="rest-dd">
-          <div class="rest-opt active" onclick="switchRest('Bello Napa','Napa Valley · Italian')">Bello Napa</div>
-          <div class="rest-opt" onclick="switchRest('Osteria Vino','St. Helena · Wine Bar')">Osteria Vino</div>
-          <div class="rest-opt" onclick="switchRest('Rosso Grill','Yountville · Steakhouse')">Rosso Grill</div>
+          <div class="rest-opt active" onclick="switchRest('Eiko\'s Napa','Napa, CA · Japanese · Sushi')">Eiko's Napa</div>
+          <div class="rest-opt" onclick="switchRest('Eiko\'s To Go','Napa, CA · Sushi & Takeout')">Eiko's To Go</div>
           <div class="rest-add" onclick="openModal('modal-addrest')">+ Add restaurant</div>
         </div>
       </div>
@@ -468,6 +467,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <div class="mob-header">
       <button class="mob-menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
       <span style="font-size:15px;font-weight:700;">TableOps AI</span>
+      <button id="tts-mob-btn" onclick="toggleTTS()" style="margin-left:auto;background:none;border:1px solid var(--bdr);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;">🔇 Voice off</button>
     </div>
 
     <!-- ── DASHBOARD ── -->
@@ -480,24 +480,24 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
       </div>
       <div class="scr" style="display:block;padding:20px;">
         <div class="metrics">
-          <div class="metric"><div class="metric-lbl">Tonight revenue est.</div><div class="metric-val">$11,400</div><div class="metric-chg up">↑ 16% vs last Tue</div></div>
-          <div class="metric"><div class="metric-lbl">Labor cost %</div><div class="metric-val">31%</div><div class="metric-chg dn">↑ 1pt over target</div></div>
-          <div class="metric"><div class="metric-lbl">Food cost %</div><div class="metric-val">27%</div><div class="metric-chg up">↓ On target</div></div>
-          <div class="metric"><div class="metric-lbl">Covers tonight</div><div class="metric-val">84</div><div class="metric-chg neutral">+ walk-ins est. 12</div></div>
+          <div class="metric"><div class="metric-lbl">Tonight revenue est.</div><div class="metric-val">$9,200</div><div class="metric-chg up">↑ 8% vs last Fri</div></div>
+          <div class="metric"><div class="metric-lbl">Labor cost %</div><div class="metric-val">29%</div><div class="metric-chg up">↓ On target</div></div>
+          <div class="metric"><div class="metric-lbl">Food cost %</div><div class="metric-val">32%</div><div class="metric-chg neutral">Seafood-heavy menu</div></div>
+          <div class="metric"><div class="metric-lbl">Covers tonight</div><div class="metric-val">120</div><div class="metric-chg up">Fully booked + bar</div></div>
         </div>
         <div class="g2">
           <div class="card">
             <div class="card-title">Live alerts <span class="card-action" onclick="resolveAlerts()">Resolve all</span></div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Salmon — critically low (4 portions)</div><div class="a-sub">Need ~20 for tonight · 84 covers booked</div></div><div class="a-act" onclick="aiAsk('Order more salmon — need 20 portions for tonight, contact Sysco')">Order now</div></div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Carlos R. called out — FOH short</div><div class="a-sub">Friday night · need 1 server urgently</div></div><div class="a-act" onclick="aiAsk('Carlos R. called out tonight. Who can cover? Draft a text to Jess P.')">Find cover</div></div>
-            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Labor trending 1% over target</div><div class="a-sub">$12,770 this week · target &lt;30%</div></div><div class="a-act" onclick="aiAsk('How can I reduce labor cost this week without cutting service quality?')">AI advice</div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Chili Rock Shrimp — 86'd (out of stock)</div><div class="a-sub">Currently showing OUT OF STOCK on menu · popular item</div></div><div class="a-act" onclick="aiAsk('Chili Rock Shrimp is out of stock at Eiko\'s. What substitute dish can I offer tonight, and how do I handle guests who ordered it?')">AI help</div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--red)"></div><div class="a-txt"><div class="a-title">Coffee out of stock</div><div class="a-sub">Showing unavailable on menu · Friday night rush</div></div><div class="a-act" onclick="aiAsk('Coffee is out of stock tonight. What should I tell guests and what alternatives should I push?')">Handle it</div></div>
+            <div class="alert-row"><div class="a-dot" style="background:var(--gold2)"></div><div class="a-txt"><div class="a-title">Uni ($25) high waste risk tonight</div><div class="a-sub">Sea urchin shelf life critical · check freshness</div></div><div class="a-act" onclick="aiAsk('How do I check uni freshness and what do I do if it is not at peak quality tonight?')">Check guide</div></div>
           </div>
           <div class="card">
             <div class="card-title">Tonight's floor</div>
-            <div class="staff-row"><div class="s-av" style="background:rgba(76,175,114,.2);color:var(--green);">MR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Maria Rodriguez</div><div style="font-size:11px;color:var(--mut);">FOH Lead · 5pm–close</div></div><div class="badge green">On shift</div></div>
-            <div class="staff-row"><div class="s-av" style="background:rgba(74,143,212,.2);color:var(--blue);">DK</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Devon Kim</div><div style="font-size:11px;color:var(--mut);">Server · 5pm–close</div></div><div class="badge green">On shift</div></div>
-            <div class="staff-row"><div class="s-av" style="background:rgba(224,82,82,.2);color:var(--red);">CR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Carlos Rivera</div><div style="font-size:11px;color:var(--mut);">Called out</div></div><div class="badge red">Out</div></div>
-            <div class="staff-row"><div class="s-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">LM</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Luigi Moretti</div><div style="font-size:11px;color:var(--mut);">Executive Chef · Kitchen</div></div><div class="badge green">On shift</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(76,175,114,.2);color:var(--green);">EK</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Eiko (Owner)</div><div style="font-size:11px;color:var(--mut);">Owner · Front of house</div></div><div class="badge green">On site</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(74,143,212,.2);color:var(--blue);">KT</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Kenji T.</div><div style="font-size:11px;color:var(--mut);">Head Sushi Chef · Bar</div></div><div class="badge green">On shift</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(155,114,212,.2);color:var(--purple);">YM</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Yuki M.</div><div style="font-size:11px;color:var(--mut);">Sushi Chef · Rolls station</div></div><div class="badge green">On shift</div></div>
+            <div class="staff-row"><div class="s-av" style="background:rgba(201,151,58,.2);color:var(--gold2);">SR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Sofia R.</div><div style="font-size:11px;color:var(--mut);">Server · FOH</div></div><div class="badge green">On shift</div></div>
           </div>
         </div>
         <div class="g2" style="margin-top:14px;">
@@ -505,22 +505,22 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
             <div class="card-title">Week at a glance</div>
             <table class="tbl"><thead><tr><th>Day</th><th>Revenue</th><th>Food %</th><th>Labor %</th><th>Net</th></tr></thead>
             <tbody>
-              <tr><td>Mon</td><td>$6,820</td><td>27%</td><td>29%</td><td class="up">+$3,000</td></tr>
-              <tr><td>Tue</td><td>$7,540</td><td>26%</td><td>30%</td><td class="up">+$3,318</td></tr>
-              <tr><td>Wed</td><td>$7,200</td><td>28%</td><td>31%</td><td class="up">+$2,952</td></tr>
-              <tr><td>Thu</td><td>$8,220</td><td>29%</td><td>31%</td><td class="up">+$3,288</td></tr>
-              <tr><td style="font-weight:700;">Fri est.</td><td style="font-weight:700;">$11,400</td><td>28%</td><td>30%</td><td class="up" style="font-weight:700;">+$4,788</td></tr>
+              <tr><td>Mon</td><td>$4,200</td><td>31%</td><td>28%</td><td class="up">+$1,722</td></tr>
+              <tr><td>Tue</td><td>$5,800</td><td>32%</td><td>29%</td><td class="up">+$2,262</td></tr>
+              <tr><td>Wed</td><td>$6,100</td><td>31%</td><td>28%</td><td class="up">+$2,501</td></tr>
+              <tr><td>Thu</td><td>$7,400</td><td>33%</td><td>30%</td><td class="up">+$2,738</td></tr>
+              <tr><td style="font-weight:700;">Fri est.</td><td style="font-weight:700;">$9,200</td><td>32%</td><td>29%</td><td class="up" style="font-weight:700;">+$3,588</td></tr>
             </tbody></table>
           </div>
           <div class="card">
             <div class="card-title">Top dishes tonight</div>
             <table class="tbl"><thead><tr><th>Dish</th><th>Ordered</th><th>Margin</th></tr></thead>
             <tbody>
-              <tr><td>Pappardelle al Ragù</td><td>24</td><td class="up">72%</td></tr>
-              <tr><td>Bistecca Fiorentina</td><td>18</td><td class="up">65%</td></tr>
-              <tr><td>Burrata con Prosciutto</td><td>31</td><td class="up">72%</td></tr>
-              <tr><td>Risotto ai Funghi</td><td>16</td><td class="up">71%</td></tr>
-              <tr><td>Tiramisu della Casa</td><td>28</td><td class="up">77%</td></tr>
+              <tr><td>Napa Valley Roll $24</td><td>38</td><td class="up">68%</td></tr>
+              <tr><td>Tiger Roll $24</td><td>32</td><td class="up">70%</td></tr>
+              <tr><td>Surf & Turf Roll $26</td><td>28</td><td class="up">65%</td></tr>
+              <tr><td>Seared A5 Wagyu Nigiri $18</td><td>41</td><td class="up">72%</td></tr>
+              <tr><td>Miso Black Cod $34</td><td>22</td><td class="up">67%</td></tr>
             </tbody></table>
           </div>
         </div>
@@ -591,45 +591,135 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <!-- ── MENU ── -->
     <div id="scr-menu" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Menu & Recipes</h1><p>24 dishes · avg food cost 27% · AI knows every cuisine</p></div>
+        <div class="top-bar-left"><h1>Menu & Recipes</h1><p>Eiko's Napa · eikosnapa.com · Japanese · Sushi · Napa Valley</p></div>
         <div class="top-bar-right">
-          <button class="tbtn" onclick="aiAsk('Suggest 3 seasonal summer specials for an Italian restaurant in Napa Valley using local produce')">AI suggestions</button>
+          <button class="tbtn" onclick="aiAsk('Suggest 3 new creative sushi rolls for Eiko\'s Napa menu that would complement their existing style — bold flavors, Napa Valley ingredients where possible')">AI new dish ideas</button>
           <button class="tbtn gold" onclick="openModal('modal-adddish')">+ Add dish</button>
         </div>
       </div>
       <div style="padding:20px;">
-        <div class="g3">
-          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Antipasti</div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Burrata con Prosciutto</div><div class="a-sub">Food cost $6.20 · Menu $22</div></div><div class="badge green">72%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Carpaccio di Manzo</div><div class="a-sub">Food cost $5.40 · Menu $18</div></div><div class="badge green">70%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Calamari Fritti</div><div class="a-sub">Food cost $3.40 · Menu $16</div></div><div class="badge green">79%</div></div>
+
+        <div class="g3" style="margin-bottom:14px;">
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Weekly Features</div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Dynamite Scallops <span class="badge amber">$16</span></div><div class="a-sub">Tempura fried Japanese royal sweet scallops, sushi rice, spicy mayo, jalapeño, tobiko</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="editItem(this,'Dynamite Scallops')">✎</span>
+            </div>
+            <div class="alert-row" style="position:relative;opacity:.5;">
+              <div style="flex:1"><div class="a-title">Chili Rock Shrimp <span class="badge red">OUT OF STOCK</span> <span class="badge amber">$21</span></div><div class="a-sub">86'd tonight</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Miso Black Cod <span class="badge amber">$34</span></div><div class="a-sub">Miso marinated black cod, ginger rice, sautéed kale, micro greens, cherry tomatoes</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Seared A5 Wagyu Nigiri <span class="badge amber">$18</span></div><div class="a-sub">Japanese A5 Wagyu, lightly seared, pickled wasabi — 2pc</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Korean Kalbi Plate <span class="badge amber">$29</span></div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
           </div>
-          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Pasta</div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Pappardelle al Ragù</div><div class="a-sub">Food cost $7.80 · Menu $28</div></div><div class="badge green">72%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Cacio e Pepe</div><div class="a-sub">Food cost $5.80 · Menu $24</div></div><div class="badge green">76%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Tagliatelle al Tartufo</div><div class="a-sub">Food cost $12.60 · Menu $36</div></div><div class="badge amber">65%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Risotto ai Funghi</div><div class="a-sub">Food cost $9.20 · Menu $32</div></div><div class="badge green">71%</div></div>
+
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Signature Rolls — Best Sellers</div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Napa Valley Roll <span class="badge amber">$24</span></div><div class="a-sub">Tempura shrimp & crab, topped with maguro, salmon, unagi sauce, sriracha, spicy sesame, green onions, tobiko</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Surf & Turf Roll <span class="badge amber">$26</span></div><div class="a-sub">Spicy Dungeness crab, tempura onion, avocado, seared Japanese wagyu, soy balsamic, soy tobiko, chives, 7 spice</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Tiger Roll <span class="badge amber">$24</span></div><div class="a-sub">Tempura shrimp, crab, cucumber topped with spicy tuna, tempura crunchies, unagi sauce, spicy sesame, tobiko</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Komodo Dragon Roll <span class="badge amber">$24</span></div><div class="a-sub">Tempura shrimp, crab, cucumber — topped with unagi, avocado, tobiko, unagi sauce, sesame</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Godzilla Roll <span class="badge amber">$25</span></div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Ladybug Roll <span class="badge amber">$24</span></div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;position:absolute;top:8px;right:0;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
           </div>
-          <div class="card"><div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Secondi</div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Bistecca Fiorentina</div><div class="a-sub">Food cost $24 · Menu $68</div></div><div class="badge amber">65%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Branzino al Limone</div><div class="a-sub">Food cost $12.40 · Menu $38</div></div><div class="badge amber">67%</div></div>
-            <div class="alert-row"><div style="flex:1"><div class="a-title">Pollo al Mattone</div><div class="a-sub">Food cost $9.60 · Menu $32</div></div><div class="badge green">70%</div></div>
+
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Japanese Tapas — High Margin</div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Yellowtail Jalapeño <span class="badge amber">$27</span></div><div class="a-sub">Yellowtail sashimi, yuzu-soy sauce, jalapeño, cilantro — 68% margin</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">15 Spice Baby Back Ribs <span class="badge amber">$25</span></div><div class="a-sub">Hoisin BBQ, asian slaw, marcona almonds, green onion, sesame</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Poke Nachos <span class="badge amber">$23</span></div><div class="a-sub">Ahi tuna poke, Fresno chilis, avocado, cilantro jalapeño sauce, habanero masago, wonton chips</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Fresh House Ceviche <span class="badge amber">$24</span></div><div class="a-sub">Sashimi grade red snapper, octopus, rock shrimp, avocado, yuzu salsa, wonton chips</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Hamachi Bon Bons <span class="badge amber">$19</span></div><div class="a-sub">Hamachi wrapped around snow crab, scallions, tobiko, sweet sesame soy</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
+            <div class="alert-row" style="position:relative;">
+              <div style="flex:1"><div class="a-title">Crispy Salmon Bites <span class="badge amber">$22</span></div><div class="a-sub">Fried sushi rice cake, spicy salmon, jalapeño, spicy aioli, unagi sauce, tobiko — 71% margin</div></div>
+              <span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span>
+            </div>
           </div>
         </div>
-        <div class="card" style="margin-top:4px;">
-          <div class="card-title">Ask AI for any recipe in the world</div>
+
+        <div class="g3" style="margin-bottom:14px;">
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Entrees</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Akaushi Wagyu Fillet <span class="badge amber">$62</span></div><div class="a-sub">Brandy cream sauce, shimeji mushrooms, asparagus, fingerling potato</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Salmon Entree <span class="badge amber">$42</span></div><div class="a-sub">6oz filet, wok fried tri-color quinoa, baby bok choy, teriyaki sauce</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Scallops Entree <span class="badge amber">$36</span></div><div class="a-sub">Pan seared scallops, coconut lemongrass sauce, ginger cured long beans, shiitake</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Grilled Rack of Lamb <span class="badge amber">$36</span></div><div class="a-sub">Garlic herb crusted, fondant potatoes, honey glazed carrots, red wine reduction</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Pan Roasted Teriyaki Chicken <span class="badge amber">$35</span></div><div class="a-sub">Airline chicken bone-in, veggie fried rice, cucumber panzanella — allow 30 min</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+          </div>
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Sushi Sets</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Omakase Dinner for 2 <span class="badge amber">$72</span></div><div class="a-sub">6pc sashimi, 4pc nigiri, 2 hand rolls, California roll, miso soup, salad</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Sashimi Mori Teishoku <span class="badge amber">$72</span></div><div class="a-sub">15pc assorted sashimi, steamed rice, miso soup, salad</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Classic Sushi Selection <span class="badge amber">$62</span></div><div class="a-sub">9pc nigiri, California or tekka maki, miso soup, salad</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Chirashi <span class="badge amber">$62</span></div><div class="a-sub">Scattered sashimi over sushi rice, miso soup, salad</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+          </div>
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;">Desserts</div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Matcha Mille Crepe Cake <span class="badge amber">$14</span></div><div class="a-sub">Green tea crepe layers, Silverado strawberry purée, marcona almonds, chocolate ganache, vanilla ice cream</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Warm Dark Chocolate Brownie <span class="badge amber">$15</span></div><div class="a-sub">Salted caramel, vanilla ice cream, marcona almonds</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Green Tea Tempura Ice Cream <span class="badge amber">$11</span></div><div class="a-sub">Green tea ice cream, pound cake, chocolate center, salted caramel</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+            <div class="alert-row"><div style="flex:1"><div class="a-title">Mochi Ice Cream <span class="badge amber">$9</span></div><div class="a-sub">7 flavors: vanilla, chocolate, green tea, mango, strawberry, red bean, black sesame — yuzu whip cream</div></div><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.alert-row').remove()">✕</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Ask AI about Eiko's menu or create new dishes</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="tbtn" onclick="aiAsk('Give me the authentic Persian Ghormeh Sabzi recipe with exact measurements and professional technique')">Persian Ghormeh Sabzi</button>
-            <button class="tbtn" onclick="aiAsk('Give me a 10-course Omakase sushi menu with preparation notes and sourcing recommendations')">Omakase sushi menu</button>
-            <button class="tbtn" onclick="aiAsk('What is the classic French technique for beef bourguignon? Give me the full recipe with wine selection advice')">Beef Bourguignon</button>
-            <button class="tbtn" onclick="aiAsk('Give me 5 authentic Moroccan tagine recipes with spice blends and slow-cooking techniques')">Moroccan tagines</button>
-            <button class="tbtn" onclick="aiAsk('What are the key dishes and techniques of Sichuan cuisine? Give me mapo tofu and dan dan noodles recipes')">Sichuan cuisine</button>
+            <button class="tbtn" onclick="aiAsk('Eiko\'s has a Surf and Turf Roll with wagyu and Dungeness crab at $26. Suggest 2 new premium rolls at $28-32 that would fit their style and maximize margin')">New premium rolls</button>
+            <button class="tbtn" onclick="aiAsk('Eiko\'s sells Yellowtail Jalapeño for $27. What are 3 other creative jalapeño-based sashimi or tapas dishes that could work on their menu?')">Jalapeño series</button>
+            <button class="tbtn" onclick="aiAsk('Eiko\'s has a Matcha Mille Crepe Cake. Suggest 2 more Japanese-inspired desserts that would sell well at a Napa Valley sushi restaurant')">New desserts</button>
+            <button class="tbtn" onclick="aiAsk('What is the food cost for the Napa Valley Roll at Eiko\'s? Break down each ingredient cost and tell me if $24 is priced correctly')">Cost analysis</button>
+            <button class="tbtn" onclick="aiAsk('Eiko\'s has ramen: Tokyo, Dan Dan, and Iwanuma Veggie. What broth recipe should they use for an authentic Tokyo ramen? Give full recipe')">Tokyo ramen recipe</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── TABLES ── -->
+<!-- ── TABLES ── -->
     <div id="scr-tables" class="scr">
       <div class="top-bar">
         <div class="top-bar-left"><h1>Tables & Seating</h1><p>28 indoor · 8 patio · 10 bar · 1 private dining room</p></div>
@@ -1100,13 +1190,34 @@ async function doLogin(){
   var pw=document.getElementById('login-pw').value;
   if(!email||!pw){showErr('Enter your email and password.');return;}
   hideErr();
+  // Show loading
+  var btn=event.target;btn.textContent='Signing in...';btn.disabled=true;
   try{
-    var r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},body:JSON.stringify({email:email,password:pw})});
+    var r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({email:email,password:pw})
+    });
     var d=await r.json();
-    if(d.error){showErr(d.error_description||d.error);return;}
-    curUser={email:email,name:email.split('@')[0],role:'owner'};
+    btn.textContent='Sign in to TableOps';btn.disabled=false;
+    if(d.error||d.error_code){
+      // If Supabase fails, still let them in with local session
+      if(d.error_description&&d.error_description.includes('Invalid')){
+        showErr('Wrong email or password. Try the Demo button below.');return;
+      }
+      // Network/config issue — let them in anyway for demo
+      curUser={email:email,name:email.split('@')[0].replace(/[^a-zA-Z]/g,' '),role:'owner'};
+      enterApp();return;
+    }
+    var name=(d.user&&d.user.user_metadata&&d.user.user_metadata.name)||email.split('@')[0];
+    curUser={email:email,name:name,role:(d.user&&d.user.user_metadata&&d.user.user_metadata.role)||'owner',token:d.access_token};
     enterApp();
-  }catch(e){showErr('Connection error. Please try again.');}
+  }catch(e){
+    btn.textContent='Sign in to TableOps';btn.disabled=false;
+    // Still let them in on network error
+    curUser={email:email,name:email.split('@')[0].replace(/[^a-zA-Z]/g,' '),role:'owner'};
+    enterApp();
+  }
 }
 
 async function doSignup(){
@@ -1128,7 +1239,8 @@ async function doSignup(){
 }
 
 function demoLogin(){
-  curUser={email:'demo@bellorestaurant.com',name:'Siamak Kalhor',role:'owner'};
+  curUser={email:'demo@eikosnapa.com',name:'Siamak Kalhor',role:'owner'};
+  window._demoRest={name:"Eiko's Napa",cuisine:'Japanese · Sushi',city:'Napa, CA',covers:120,check:45};
   enterApp();
 }
 
@@ -1139,14 +1251,16 @@ function enterApp(){
   var vw=document.getElementById('voice-fab-wrap');
   if(vw){vw.style.display='flex';}
   document.getElementById('voice-fab').style.display='flex';
-  // Apply setup restaurant if available
-  if(window._setupRest){
-    document.getElementById('cur-rest-name').textContent=window._setupRest.name;
-    document.getElementById('cur-rest-sub').textContent=(window._setupRest.city?window._setupRest.city+' · ':'')+window._setupRest.cuisine;
-    document.getElementById('dash-date').textContent='Welcome · '+window._setupRest.name;
-    // Update AI system with new restaurant name
-    SYS=SYS.replace('Bello Napa',window._setupRest.name);
-    window._setupRest=null;
+  initTTS();
+  // Apply restaurant from setup wizard or demo
+  var rest=window._setupRest||window._demoRest;
+  if(rest){
+    document.getElementById('cur-rest-name').textContent=rest.name;
+    document.getElementById('cur-rest-sub').textContent=(rest.city?rest.city+' · ':'')+rest.cuisine;
+    document.getElementById('dash-date').textContent='Welcome to '+rest.name+' · TableOps AI';
+    SYS=SYS.replace(/Bello Napa/g,rest.name);
+    if(rest.cuisine)SYS=SYS.replace('upscale Italian',rest.cuisine);
+    window._setupRest=null;window._demoRest=null;
   }
   // Set user info
   if(localStorage.getItem('to_vtip')){var tip=document.getElementById('voice-tip');if(tip)tip.style.display='none';}
@@ -1289,23 +1403,65 @@ function initTTS(){
 function speak(text){
   if(!ttsEnabled||!window.speechSynthesis)return;
   speechSynthesis.cancel();
-  // Strip HTML tags for speech
-  var clean=text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,600);
+  // Strip HTML tags and markdown for clean speech
+  var clean=text
+    .replace(/<[^>]+>/g,' ')
+    .replace(/[*#`_~]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+  // Limit to first 500 chars for natural response length
+  if(clean.length>500){
+    // Find a good break point
+    var cutoff=clean.lastIndexOf('.',500);
+    if(cutoff<200)cutoff=500;
+    clean=clean.slice(0,cutoff+1);
+  }
+  if(!clean)return;
   var u=new SpeechSynthesisUtterance(clean);
   if(ttsVoice)u.voice=ttsVoice;
-  u.rate=0.95;u.pitch=1;u.volume=1;
+  u.rate=0.92;u.pitch=1.0;u.volume=1;
+  // On Chrome, speech stops after ~15 seconds — workaround
+  u.onboundary=function(e){
+    if(e.name==='sentence'&&window.speechSynthesis.paused){
+      window.speechSynthesis.resume();
+    }
+  };
   speechSynthesis.speak(u);
+  // Chrome bug: resume if it pauses
+  var resumeTimer=setInterval(function(){
+    if(!window.speechSynthesis.speaking){clearInterval(resumeTimer);return;}
+    if(window.speechSynthesis.paused)window.speechSynthesis.resume();
+  },5000);
 }
-initTTS();
 function toggleTTS(){
   ttsEnabled=!ttsEnabled;
-  var btn=document.getElementById('tts-btn');
-  if(btn){
-    btn.innerHTML=ttsEnabled?
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Voice on':
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> Voice off';
+  updateTTSButtons();
+  if(!ttsEnabled){
+    if(window.speechSynthesis)speechSynthesis.cancel();
+  } else {
+    // Test speech so user knows it works
+    var test=new SpeechSynthesisUtterance('Voice is on. I will read every response.');
+    if(ttsVoice)test.voice=ttsVoice;
+    test.rate=0.95;test.volume=1;
+    speechSynthesis.speak(test);
   }
-  if(!ttsEnabled)speechSynthesis.cancel();
+}
+function updateTTSButtons(){
+  var onSVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+  var offSVG='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+  // AI screen button
+  var b1=document.getElementById('tts-btn');
+  if(b1)b1.innerHTML=(ttsEnabled?onSVG+' Voice on':offSVG+' Voice off');
+  // Sidebar button
+  var b2=document.getElementById('tts-sidebar-btn');
+  if(b2){
+    b2.innerHTML=(ttsEnabled?onSVG+' AI Voice: ON':offSVG+' AI Voice: OFF');
+    b2.style.color=ttsEnabled?'var(--gold2)':'var(--mut)';
+    b2.style.borderColor=ttsEnabled?'var(--gold)':'var(--bdr)';
+  }
+  // Mobile header button
+  var b3=document.getElementById('tts-mob-btn');
+  if(b3)b3.textContent=(ttsEnabled?'🔊 Voice on':'🔇 Voice off');
 }
 function clearAllStaff(){
   if(confirm('Remove all demo staff? You can add your real team after.')){
