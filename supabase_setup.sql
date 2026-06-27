@@ -1,76 +1,88 @@
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey, Prefer');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+-- Run this in Supabase SQL Editor:
+-- https://supabase.com/dashboard/project/dfytyzgbihqggkwuzkfx/sql/new
 
-  const SB_URL = 'https://dfytyzgbihqggkwuzkfx.supabase.co';
-  const KEY = process.env.SUPABASE_SERVICE_KEY
-    || process.env.SUPABASE_ANON_KEY
-    || 'sb_publishable_4WA8MeOaniWhLWU2C2DGQQ_VkMN30lx';
+CREATE TABLE IF NOT EXISTS to_staff (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  restaurant_id TEXT DEFAULT '',
+  first_name TEXT NOT NULL,
+  last_name TEXT DEFAULT '',
+  role TEXT DEFAULT 'Staff',
+  access_level TEXT DEFAULT 'staff',
+  hourly_rate NUMERIC DEFAULT 0,
+  weekly_hours INTEGER DEFAULT 0,
+  employment_type TEXT DEFAULT 'Full-time',
+  status TEXT DEFAULT 'active',
+  phone TEXT DEFAULT '',
+  email TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-  try {
-    let body = req.body;
-    if (typeof body === 'string') { try { body = JSON.parse(body); } catch(e) { body = {}; } }
-    if (!body || typeof body !== 'object') body = {};
+CREATE TABLE IF NOT EXISTS to_pnl (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  restaurant_id TEXT DEFAULT '',
+  entry_date TEXT NOT NULL,
+  revenue NUMERIC DEFAULT 0,
+  food_cost NUMERIC DEFAULT 0,
+  labor_cost NUMERIC DEFAULT 0,
+  other_costs NUMERIC DEFAULT 0,
+  notes TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-    const { action, table, data, id, filters, user_id, token } = body;
-    const authToken = token || KEY;
+CREATE TABLE IF NOT EXISTS to_prep (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  restaurant_id TEXT DEFAULT '',
+  task TEXT NOT NULL,
+  assignee TEXT DEFAULT '',
+  due_time TEXT DEFAULT '',
+  done BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-    const headers = {
-      'Content-Type': 'application/json',
-      'apikey': KEY,
-      'Authorization': 'Bearer ' + authToken,
-      'Prefer': 'return=representation'
-    };
+CREATE TABLE IF NOT EXISTS to_inventory (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  restaurant_id TEXT DEFAULT '',
+  name TEXT NOT NULL,
+  category TEXT DEFAULT 'Other',
+  unit TEXT DEFAULT 'each',
+  quantity NUMERIC DEFAULT 0,
+  par_level NUMERIC DEFAULT 0,
+  cost_per_unit NUMERIC DEFAULT 0,
+  status TEXT DEFAULT 'ok',
+  notes TEXT DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-    let url, method, sbBody;
+CREATE TABLE IF NOT EXISTS to_menu_items (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  restaurant_id TEXT DEFAULT '',
+  name TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  category TEXT DEFAULT 'Other',
+  price NUMERIC DEFAULT 0,
+  food_cost NUMERIC DEFAULT 0,
+  is_available BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
 
-    if (action === 'select') {
-      let query = `${SB_URL}/rest/v1/${table}?`;
-      if (user_id) query += `user_id=eq.${encodeURIComponent(user_id)}&`;
-      if (filters) Object.keys(filters).forEach(k => {
-        query += `${k}=eq.${encodeURIComponent(filters[k])}&`;
-      });
-      query += 'order=created_at.asc&limit=500';
-      const r = await fetch(query, { headers });
-      if (!r.ok) { const err = await r.text(); return res.status(200).json({ data: [], error: err }); }
-      const d = await r.json();
-      return res.status(200).json({ data: Array.isArray(d) ? d : [], error: null });
-
-    } else if (action === 'insert') {
-      url = `${SB_URL}/rest/v1/${table}`;
-      method = 'POST';
-      sbBody = JSON.stringify(Array.isArray(data) ? data : [data]);
-
-    } else if (action === 'update') {
-      url = `${SB_URL}/rest/v1/${table}?id=eq.${id}`;
-      method = 'PATCH';
-      sbBody = JSON.stringify(data);
-
-    } else if (action === 'delete') {
-      url = `${SB_URL}/rest/v1/${table}?id=eq.${id}`;
-      method = 'DELETE';
-      headers['Prefer'] = 'return=minimal';
-
-    } else if (action === 'upsert') {
-      url = `${SB_URL}/rest/v1/${table}`;
-      method = 'POST';
-      headers['Prefer'] = 'resolution=merge-duplicates,return=representation';
-      sbBody = JSON.stringify(Array.isArray(data) ? data : [data]);
-
-    } else {
-      return res.status(400).json({ error: 'Unknown action: ' + action });
-    }
-
-    const r = await fetch(url, { method, headers, body: sbBody });
-    if (action === 'delete') return res.status(200).json({ data: { deleted: true }, error: null });
-    if (!r.ok) { const err = await r.text(); return res.status(200).json({ data: null, error: err }); }
-    const d = await r.json();
-    return res.status(200).json({ data: d, error: null });
-
-  } catch (err) {
-    console.error('DB relay error:', err);
-    return res.status(200).json({ data: null, error: err.message });
-  }
-};
+CREATE TABLE IF NOT EXISTS to_restaurants (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  cuisine TEXT DEFAULT '',
+  city TEXT DEFAULT '',
+  tables_indoor INTEGER DEFAULT 20,
+  seats_indoor INTEGER DEFAULT 80,
+  tables_outdoor INTEGER DEFAULT 0,
+  seats_outdoor INTEGER DEFAULT 0,
+  bar_seats INTEGER DEFAULT 0,
+  avg_check NUMERIC DEFAULT 45,
+  food_cost_target NUMERIC DEFAULT 30,
+  labor_cost_target NUMERIC DEFAULT 30,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
