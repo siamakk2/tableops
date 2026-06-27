@@ -1992,7 +1992,7 @@ function renderStaff(){
       '<td>'+sBadge+'</td>'+
       '<td style="text-align:right;white-space:nowrap;">'+
         '<button onclick="editStaff('+s.id+')" style="background:none;border:none;color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;margin-right:8px;font-family:Inter,sans-serif;">✎ Edit</button>'+
-        '<button onclick="deleteStaff('+s.id+',''+s.first+' '+s.last+'')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕ Delete</button>'+
+        '<button onclick="deleteStaff('+s.id+')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕ Delete</button>'+
       '</td>'+
     '</tr>';
   }).join('');
@@ -2006,7 +2006,7 @@ function renderStaff(){
 
 function openAddStaff(){
   document.getElementById('staff-edit-id').value='';
-  document.getElementById('staff-modal-title').innerHTML='Add staff member <button class="modal-close" onclick="closeModal('modal-addstaff')" style="color:#6b7280;">×</button>';
+  document.getElementById('staff-modal-title').innerHTML='Add staff member <button class="modal-close" onclick="closeModal("modal-addstaff")" style="color:#6b7280;">×</button>';
   ['sf-first','sf-last','sf-phone','sf-email','sf-rate','sf-hours'].forEach(function(id){
     var el=document.getElementById(id);if(el)el.value='';
   });
@@ -2022,7 +2022,7 @@ function editStaff(id){
   var s=staffList.find(function(x){return x.id===id;});
   if(!s)return;
   document.getElementById('staff-edit-id').value=id;
-  document.getElementById('staff-modal-title').innerHTML='Edit — '+s.first+' '+s.last+' <button class="modal-close" onclick="closeModal('modal-addstaff')" style="color:#6b7280;">×</button>';
+  document.getElementById('staff-modal-title').innerHTML='Edit — '+s.first+' '+s.last+' <button class="modal-close" onclick="closeModal("modal-addstaff")" style="color:#6b7280;">×</button>';
   document.getElementById('sf-first').value=s.first;
   document.getElementById('sf-last').value=s.last||'';
   document.getElementById('sf-phone').value=s.phone||'';
@@ -2067,9 +2067,7 @@ function saveStaff(){
 }
 
 function deleteStaff(id,name){
-  if(!confirm('Remove '+name+' from the roster?
-
-This cannot be undone.'))return;
+  if(!confirm('Remove '+name+' from the roster?  This cannot be undone.'))return;
   var deleted = staffList.find(function(s){return s.id===id;});
   staffList=staffList.filter(function(s){return s.id!==id;});
   saveStaffToStorage();
@@ -2078,9 +2076,7 @@ This cannot be undone.'))return;
 }
 
 function clearAllStaffConfirm(){
-  if(!confirm('Remove ALL staff and start fresh with your real team?
-
-This will delete all '+staffList.length+' roster entries.'))return;
+  if(!confirm('Remove ALL staff and start fresh with your real team?  This will delete all '+staffList.length+' roster entries.'))return;
   staffList=[];
   saveStaffToStorage();
   renderStaff();
