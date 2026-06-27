@@ -8,29 +8,47 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
-  --bg:#0f0d0a;--card:#1a1710;--card2:#211e18;--bdr:#2e2a22;
-  --gold:#c9973a;--gold2:#e8b44a;--tx:#f5f0e8;--mut:#9a8f7e;--dim:#5a5248;
-  --red:#e05252;--green:#4caf72;--blue:#4a8fd4;--purple:#9b72d4;
+  /* Clean professional light theme */
+  --bg:#f8f9fa;
+  --card:#ffffff;
+  --card2:#f1f3f5;
+  --bdr:#e0e4e8;
+  --bdr2:#c8cfd8;
+  --gold:#e67e22;
+  --gold2:#f39c12;
+  --tx:#1a1d23;
+  --mut:#6b7280;
+  --dim:#9ca3af;
+  --red:#e53e3e;
+  --green:#38a169;
+  --blue:#3182ce;
+  --purple:#805ad5;
+  --sidebar:#1e2433;
+  --sidebar-text:#e2e8f0;
+  --sidebar-mut:#94a3b8;
+  --sidebar-active:rgba(230,126,34,.15);
+  --sidebar-bdr:rgba(255,255,255,.08);
+  --topbar:#ffffff;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;font-size:14px;}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:var(--card2);}::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px;}
 a{color:inherit;text-decoration:none;}
 button,input,select,textarea{font-family:'Inter',sans-serif;}
 
 /* ── AUTH ── */
-#auth-wall{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+#auth-wall{position:fixed;inset:0;background:linear-gradient(135deg,#1e2433 0%,#2d3748 50%,#1e2433 100%);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
 #auth-wall.hidden{display:none;}
-.auth-box{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:36px;width:100%;max-width:420px;}
+.auth-box{background:#ffffff;border:none;border-radius:20px;padding:40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
 .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
 .auth-logo-mark{width:38px;height:38px;border-radius:9px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
 .auth-logo-mark svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 .auth-logo span{font-size:22px;font-weight:800;color:var(--tx);}
-.auth-tabs{display:flex;gap:0;background:var(--card2);border-radius:9px;padding:3px;margin-bottom:24px;}
-.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:7px;cursor:pointer;color:var(--mut);transition:all .15s;}
-.auth-tab.active{background:var(--bdr);color:var(--tx);}
+.auth-tabs{display:flex;gap:0;background:#f1f3f5;border-radius:9px;padding:3px;margin-bottom:24px;}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:7px;cursor:pointer;color:#6b7280;transition:all .15s;}
+.auth-tab.active{background:#ffffff;color:#1a1d23;box-shadow:0 1px 4px rgba(0,0,0,.1);}
 .auth-field{margin-bottom:14px;}
-.auth-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;}
-.auth-field input,.auth-field select{width:100%;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:11px 14px;font-size:14px;color:var(--tx);outline:none;}
-.auth-field input:focus,.auth-field select:focus{border-color:var(--gold);}
+.auth-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7280;margin-bottom:6px;}
+.auth-field input,.auth-field select{width:100%;background:#f8f9fa;border:1.5px solid #e0e4e8;border-radius:8px;padding:11px 14px;font-size:14px;color:#1a1d23;outline:none;transition:border-color .15s;}
+.auth-field input:focus,.auth-field select:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(230,126,34,.12);}
 .auth-field select option{background:var(--card2);}
 .auth-btn{width:100%;background:var(--gold);border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .auth-btn:hover{opacity:.9;}
@@ -38,9 +56,9 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 .auth-err{background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
 
 /* ── RESTAURANT SETUP WIZARD ── */
-#setup-wall{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+#setup-wall{position:fixed;inset:0;background:linear-gradient(135deg,#1e2433 0%,#2d3748 100%);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
 #setup-wall.hidden{display:none;}
-.setup-box{background:var(--card);border:1px solid var(--bdr);border-radius:18px;padding:36px;width:100%;max-width:540px;}
+.setup-box{background:#ffffff;border:none;border-radius:20px;padding:40px;width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
 .setup-step{display:none;}.setup-step.active{display:block;}
 .setup-progress{display:flex;gap:6px;margin-bottom:28px;}
 .setup-dot{height:4px;flex:1;border-radius:2px;background:var(--bdr);}
@@ -54,50 +72,50 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 /* ── APP SHELL ── */
 #app-shell{display:flex;height:100vh;height:100dvh;}
 #app-shell.hidden{display:none;}
-.sidebar{width:240px;background:var(--card);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;transition:transform .25s;}
-.sb-top{padding:16px 14px 12px;border-bottom:1px solid var(--bdr);}
-.sb-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin-bottom:12px;}
+.sidebar{width:240px;background:var(--sidebar);border-right:none;display:flex;flex-direction:column;flex-shrink:0;transition:transform .25s;box-shadow:2px 0 12px rgba(0,0,0,.08);}
+.sb-top{padding:16px 14px 12px;border-bottom:1px solid var(--sidebar-bdr);}
+.sb-logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin-bottom:12px;color:var(--sidebar-text);}
 .sb-lmark{width:28px;height:28px;border-radius:6px;background:var(--gold);display:flex;align-items:center;justify-content:center;}
 .sb-lmark svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 
 /* Restaurant switcher */
-.rest-switcher{background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:9px 11px;cursor:pointer;position:relative;}
-.rest-name{font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
-.rest-sub{font-size:11px;color:var(--mut);margin-top:1px;}
-.rest-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);border:1px solid var(--bdr);border-radius:10px;z-index:200;display:none;overflow:hidden;}
+.rest-switcher{background:rgba(255,255,255,.08);border:1px solid var(--sidebar-bdr);border-radius:8px;padding:9px 11px;cursor:pointer;position:relative;}
+.rest-name{font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;color:var(--sidebar-text);}
+.rest-sub{font-size:11px;color:var(--sidebar-mut);margin-top:1px;}
+.rest-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#2d3748;border:1px solid var(--sidebar-bdr);border-radius:10px;z-index:200;display:none;overflow:hidden;}
 .rest-dropdown.open{display:block;}
-.rest-opt{padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--bdr);}
+.rest-opt{padding:10px 12px;font-size:13px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--sidebar-bdr);color:var(--sidebar-text);}
 .rest-opt:last-child{border-bottom:none;}
-.rest-opt:hover{background:var(--card2);}
+.rest-opt:hover{background:rgba(255,255,255,.08);}
 .rest-opt.active{color:var(--gold);}
 .rest-add{padding:10px 12px;font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
 
 /* Nav */
 .sb-nav{flex:1;overflow-y:auto;padding:8px 6px;}
-.sb-sect{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:12px 8px 5px;}
-.sb-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;cursor:pointer;color:var(--mut);font-size:13px;font-weight:500;margin-bottom:1px;transition:all .12s;}
-.sb-item:hover{background:var(--card2);color:var(--tx);}
-.sb-item.on{background:rgba(201,151,58,.12);color:var(--gold2);}
+.sb-sect{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sidebar-mut);padding:12px 8px 5px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;cursor:pointer;color:var(--sidebar-mut);font-size:13px;font-weight:500;margin-bottom:1px;transition:all .12s;}
+.sb-item:hover{background:rgba(255,255,255,.08);color:var(--sidebar-text);}
+.sb-item.on{background:var(--sidebar-active);color:var(--gold);}
 .sb-item svg{width:15px;height:15px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .sb-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 5px;border-radius:999px;}
 .sb-badge.red{background:var(--red);color:#fff;}
 .sb-badge.green{background:var(--green);color:#fff;}
-.sb-footer{padding:12px 14px;border-top:1px solid var(--bdr);}
+.sb-footer{padding:12px 14px;border-top:1px solid var(--sidebar-bdr);}
 .sb-user{display:flex;align-items:center;gap:8px;cursor:pointer;}
 .sb-av{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
-.sb-uname{font-size:12px;font-weight:600;}
-.sb-urole{font-size:11px;color:var(--mut);}
-.sb-logout{font-size:11px;color:var(--dim);margin-left:auto;cursor:pointer;}
+.sb-uname{font-size:12px;font-weight:600;color:var(--sidebar-text);}
+.sb-urole{font-size:11px;color:var(--sidebar-mut);}
+.sb-logout{font-size:11px;color:var(--sidebar-mut);margin-left:auto;cursor:pointer;}
 .sb-logout:hover{color:var(--red);}
 
 /* Main area */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.top-bar{padding:14px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.top-bar-left h1{font-size:16px;font-weight:700;}
+.top-bar{padding:14px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--topbar);}
+.top-bar-left h1{font-size:16px;font-weight:700;color:#1a1d23;}
 .top-bar-left p{font-size:11px;color:var(--mut);margin-top:1px;}
 .top-bar-right{display:flex;align-items:center;gap:8px;}
-.tbtn{background:var(--card2);border:1px solid var(--bdr);border-radius:7px;padding:7px 13px;font-size:12px;font-weight:600;color:var(--tx);cursor:pointer;}
-.tbtn.gold{background:var(--gold);border-color:var(--gold);color:#fff;}
+.tbtn{background:#ffffff;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;transition:all .15s;}
+.tbtn.gold{background:var(--gold);border-color:var(--gold);color:#fff;}.tbtn:hover{border-color:var(--gold);color:var(--gold);}
 .scr{display:none;flex:1;overflow-y:auto;padding:20px;}
 .scr.on{display:block;}
 
@@ -114,25 +132,25 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 
 /* CARDS / METRICS */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
-.metric{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:16px;}
-.metric-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);margin-bottom:7px;}
-.metric-val{font-size:26px;font-weight:800;line-height:1;}
+.metric{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.metric-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;margin-bottom:7px;}
+.metric-val{font-size:26px;font-weight:800;line-height:1;color:#1a1d23;}
 .metric-chg{font-size:11px;margin-top:3px;}
 .up{color:var(--green);}
 .dn{color:var(--red);}
 .neutral{color:var(--mut);}
 
-.card{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:16px;margin-bottom:14px;}
-.card-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.card-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;color:#1a1d23;}
 .card-title span{font-size:11px;font-weight:500;color:var(--mut);}
 .card-action{font-size:11px;color:var(--gold);font-weight:600;cursor:pointer;}
 
 /* TABLES */
 .tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:7px 10px;text-align:left;border-bottom:1px solid var(--bdr);}
-.tbl td{padding:10px;font-size:13px;border-bottom:1px solid var(--bdr);}
+.tbl th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#9ca3af;padding:8px 12px;text-align:left;border-bottom:2px solid var(--bdr);background:#f8f9fa;}
+.tbl td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--bdr);color:#374151;}
 .tbl tr:last-child td{border-bottom:none;}
-.tbl tr:hover td{background:var(--card2);}
+.tbl tr:hover td{background:#f8f9fa;}
 
 /* BADGES */
 .badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;}
@@ -147,7 +165,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 .alert-row:last-child{border-bottom:none;}
 .a-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .a-txt{flex:1;}
-.a-title{font-size:13px;font-weight:600;}
+.a-title{font-size:13px;font-weight:600;color:#1a1d23;}
 .a-sub{font-size:11px;color:var(--mut);}
 .a-act{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;white-space:nowrap;}
 
@@ -170,13 +188,13 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 /* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;display:none;}
 .modal-bg.open{display:flex;}
-.modal{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:28px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;}
+.modal{background:#ffffff;border:none;border-radius:16px;padding:32px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
 .modal h2{font-size:17px;font-weight:800;margin-bottom:18px;}
 .modal-close{float:right;background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;margin-top:-4px;}
 .field{margin-bottom:14px;}
-.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:5px;}
-.field input,.field select,.field textarea{width:100%;background:var(--card2);border:1px solid var(--bdr);border-radius:8px;padding:10px 13px;font-size:13px;color:var(--tx);outline:none;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7280;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;background:#f8f9fa;border:1.5px solid #e0e4e8;border-radius:8px;padding:10px 13px;font-size:13px;color:#1a1d23;outline:none;transition:border-color .15s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(230,126,34,.12);}
 .field select option{background:var(--card2);}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .btn-row{display:flex;gap:8px;margin-top:18px;}
@@ -562,38 +580,60 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <!-- ── STAFF ── -->
     <div id="scr-staff" class="scr">
       <div class="top-bar">
-        <div class="top-bar-left"><h1>Staff & Scheduling</h1><p>9 employees · 4 on tonight · 1 call-out</p></div>
+        <div class="top-bar-left">
+          <h1>Staff & Scheduling</h1>
+          <p id="staff-summary">Your team roster</p>
+        </div>
         <div class="top-bar-right">
-          <button class="tbtn" onclick="openModal('modal-addstaff')">+ Add staff</button>
-          <button class="tbtn gold" onclick="aiAsk('Export payroll hours for this week — show each staff member, their hours, rate, and total pay')">Payroll export</button>
+          <button class="tbtn" onclick="openAddStaff()">+ Add staff member</button>
+          <button class="tbtn gold" onclick="exportStaffPayroll()">⬇ Payroll export</button>
         </div>
       </div>
       <div style="padding:20px;">
-        <div class="g2" style="margin-bottom:14px;">
-          <div class="metric"><div class="metric-lbl">Labor this week</div><div class="metric-val">$12,770</div><div class="metric-chg dn">31% of revenue</div></div>
-          <div class="metric"><div class="metric-lbl">Hours worked</div><div class="metric-val">218h</div><div class="metric-chg neutral">vs 210h last week</div></div>
+        <div class="g2" style="margin-bottom:18px;">
+          <div class="metric">
+            <div class="metric-lbl">Total staff</div>
+            <div class="metric-val" id="staff-count">0</div>
+            <div class="metric-chg neutral">on your roster</div>
+          </div>
+          <div class="metric">
+            <div class="metric-lbl">Est. weekly labor</div>
+            <div class="metric-val" id="staff-labor">$0</div>
+            <div class="metric-chg neutral">hours × rate</div>
+          </div>
         </div>
         <div class="card">
-          <div class="card-title">Team roster</div>
-          <table class="tbl">
-            <thead><tr><th>Name</th><th>Role</th><th>Access level</th><th>Hours (wk)</th><th>Rate</th><th>Status</th><th style="text-align:right;"><span class="card-action" onclick="clearAllStaff()">Clear all</span></th></tr></thead>
-            <tbody>
-              <tr><td><div style="font-weight:600;">Luigi Moretti</div></td><td>Executive Chef</td><td><span class="badge purple">Chef</span></td><td>44h</td><td>$38/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Ana Torres</div></td><td>Sous Chef</td><td><span class="badge purple">Chef</span></td><td>40h</td><td>$28/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Maria Rodriguez</div></td><td>FOH Lead</td><td><span class="badge blue">Manager</span></td><td>32h</td><td>$22/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Devon Kim</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>18h</td><td>$18/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Carlos Rivera</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>12h</td><td>$18/hr</td><td><span class="badge red">Called out</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Jessica Park</div></td><td>Server</td><td><span class="badge amber">Staff</span></td><td>8h</td><td>$18/hr</td><td><span class="badge amber">On-call</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Marco Bianchi</div></td><td>Line Cook</td><td><span class="badge purple">Chef</span></td><td>40h</td><td>$24/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Sofia Chen</div></td><td>Pastry Chef</td><td><span class="badge purple">Chef</span></td><td>30h</td><td>$26/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-              <tr><td><div style="font-weight:600;">Tony Valdez</div></td><td>Busser</td><td><span class="badge amber">Staff</span></td><td>14h</td><td>$16/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
-            </tbody>
-          </table>
+          <div class="card-title">
+            Team roster
+            <button onclick="clearAllStaffConfirm()" style="background:none;border:none;font-size:12px;color:#9ca3af;cursor:pointer;font-family:'Inter',sans-serif;">Clear all demo staff</button>
+          </div>
+          <div id="staff-table-wrap">
+            <table class="tbl" id="staff-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Access level</th>
+                  <th>Hours/wk</th>
+                  <th>Rate</th>
+                  <th>Status</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="staff-tbody"></tbody>
+            </table>
+            <div id="staff-empty" style="display:none;text-align:center;padding:48px 20px;">
+              <div style="font-size:40px;margin-bottom:14px;">👥</div>
+              <div style="font-size:16px;font-weight:700;margin-bottom:8px;color:#1a1d23;">No staff yet</div>
+              <div style="font-size:13px;color:#6b7280;margin-bottom:20px;">Add your team to track hours, scheduling, and payroll</div>
+              <button class="tbtn gold" onclick="openAddStaff()">+ Add first staff member</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ── MENU ── -->
+<!-- ── MENU ── -->
     <div id="scr-menu" class="scr">
       <div class="top-bar">
         <div class="top-bar-left"><h1>Menu & Recipes</h1><p>Eiko's Napa · eikosnapa.com · Japanese · Sushi · Napa Valley</p></div>
@@ -1071,29 +1111,60 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 <!-- MODALS -->
 <div class="modal-bg" id="modal-addstaff">
   <div class="modal">
-    <h2>Add staff member <button class="modal-close" onclick="closeModal('modal-addstaff')">×</button></h2>
+    <h2 id="staff-modal-title" style="color:#1a1d23;">Add staff member
+      <button class="modal-close" onclick="closeModal('modal-addstaff')" style="color:#6b7280;">×</button>
+    </h2>
+    <input type="hidden" id="staff-edit-id"/>
     <div class="field-row">
-      <div class="field"><label>First name</label><input type="text" placeholder="Maria"/></div>
-      <div class="field"><label>Last name</label><input type="text" placeholder="Rodriguez"/></div>
+      <div class="field"><label>First name *</label><input type="text" id="sf-first" placeholder="Kenji"/></div>
+      <div class="field"><label>Last name</label><input type="text" id="sf-last" placeholder="Tanaka"/></div>
     </div>
-    <div class="field"><label>Email (for login)</label><input type="email" placeholder="staff@eikosnapa.com"/></div>
     <div class="field-row">
-      <div class="field"><label>Role</label>
-        <select><option>Server</option><option>Bartender</option><option>Host/Hostess</option><option>Busser</option><option>Line Cook</option><option>Sous Chef</option><option>Executive Chef</option><option>Pastry Chef</option><option>Dishwasher</option><option>Manager</option></select>
+      <div class="field"><label>Phone</label><input type="tel" id="sf-phone" placeholder="(707) 555-0100"/></div>
+      <div class="field"><label>Email</label><input type="email" id="sf-email" placeholder="kenji@restaurant.com"/></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Role / position *</label>
+        <select id="sf-role">
+          <option>Head Sushi Chef</option><option>Sushi Chef</option>
+          <option>Executive Chef</option><option>Sous Chef</option>
+          <option>Line Cook</option><option>Pastry Chef</option>
+          <option>Server</option><option>Bartender</option>
+          <option>Host / Hostess</option><option>Busser</option>
+          <option>FOH Manager</option><option>General Manager</option>
+          <option>Dishwasher</option><option>Other</option>
+        </select>
       </div>
       <div class="field"><label>Access level</label>
-        <select><option value="staff">Staff (clock in/out, see schedule)</option><option value="chef">Chef (kitchen + menu)</option><option value="manager">Manager (all except finance)</option><option value="owner">Owner (full access)</option></select>
+        <select id="sf-access">
+          <option value="staff">Staff — schedule & clock in</option>
+          <option value="chef">Chef — kitchen & menu</option>
+          <option value="manager">Manager — all except finance</option>
+          <option value="owner">Owner — full access</option>
+        </select>
       </div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Hourly rate ($)</label><input type="number" placeholder="18.00"/></div>
+      <div class="field"><label>Hourly rate ($)</label><input type="number" id="sf-rate" placeholder="18.00" min="0" step="0.50"/></div>
+      <div class="field"><label>Typical weekly hours</label><input type="number" id="sf-hours" placeholder="30" min="0" max="80"/></div>
+    </div>
+    <div class="field-row">
       <div class="field"><label>Employment type</label>
-        <select><option>Full-time</option><option>Part-time</option><option>On-call</option><option>Seasonal</option></select>
+        <select id="sf-type">
+          <option>Full-time</option><option>Part-time</option>
+          <option>On-call</option><option>Seasonal</option>
+        </select>
+      </div>
+      <div class="field"><label>Status</label>
+        <select id="sf-status">
+          <option value="active">Active</option>
+          <option value="oncall">On-call</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
     </div>
-    <div class="field"><label>Phone (for shift texts)</label><input type="tel" placeholder="(707) 555-0100"/></div>
     <div class="btn-row">
-      <button class="btn primary" onclick="closeModal('modal-addstaff')">Add to roster</button>
+      <button class="btn primary" onclick="saveStaff()">Save staff member</button>
       <button class="btn secondary" onclick="closeModal('modal-addstaff')">Cancel</button>
     </div>
   </div>
@@ -1168,6 +1239,38 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 <script>
 var SB_URL='https://rlvibtvyaunuiwizqigj.supabase.co';
 var SB_KEY='sb_publishable_Q3Amu8Xs1UN2xH0fVPrngQ_BGZy3aye';
+
+// ── DATABASE HELPER ──
+// All data goes to Supabase via /api/db relay
+// Falls back to localStorage if DB unavailable
+async function dbCall(action, table, data, id, filters){
+  try{
+    var userId = curUser ? (curUser.supabase_id || curUser.email) : 'demo';
+    var body = {action:action, table:table, user_id:userId};
+    if(data) body.data = data;
+    if(id) body.id = id;
+    if(filters) body.filters = filters;
+    if(curUser && curUser.token) body.token = curUser.token;
+    var r = await fetch('/api/db', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d = await r.json();
+    if(d.error) console.warn('DB error:', d.error);
+    return d.data || [];
+  }catch(e){
+    console.warn('DB unavailable, using localStorage:', e.message);
+    return null; // caller handles localStorage fallback
+  }
+}
+
+// Queue for offline/failed operations
+var dbQueue = [];
+function saveToQueue(action, table, data){
+  dbQueue.push({action,table,data,ts:Date.now()});
+  try{localStorage.setItem('to_db_queue',JSON.stringify(dbQueue.slice(-50)));}catch(e){}
+}
 var curUser=null;
 var aiHistory=[];
 var isAiBusy=false;
@@ -1311,6 +1414,13 @@ function enterApp(){
   if(vw){vw.style.display='flex';}
   document.getElementById('voice-fab').style.display='flex';
   initTTS();
+  // Load staff: try DB first, fall back to localStorage
+  loadStaffFromStorage(); // load local first for instant display
+  renderStaff();
+  // Then try to sync from DB in background
+  loadStaffFromDB().then(function(loaded){
+    if(loaded){ renderStaff(); } // refresh with DB data if available
+  });
   // Apply restaurant from setup wizard or demo
   var rest=window._setupRest||window._demoRest;
   if(rest){
@@ -1633,6 +1743,248 @@ function stopVoice(){
   setTimeout(function(){document.getElementById('voice-toast').classList.remove('show');},1500);
 }
 
+// ══ STAFF MANAGEMENT ══
+var staffList = [];
+var staffNextId = 100;
+var staffLoaded = false;
+
+// Default demo staff for Eiko's Napa
+function getDefaultStaff(){
+  return [
+    {id:1,first:'Kenji',last:'T.',role:'Head Sushi Chef',access:'chef',rate:38,hours:44,type:'Full-time',status:'active',phone:'',email:''},
+    {id:2,first:'Yuki',last:'M.',role:'Sushi Chef',access:'chef',rate:28,hours:40,type:'Full-time',status:'active',phone:'',email:''},
+    {id:3,first:'Sofia',last:'R.',role:'Server',access:'staff',rate:18,hours:32,type:'Full-time',status:'active',phone:'',email:''},
+    {id:4,first:'Marcus',last:'L.',role:'Busser',access:'staff',rate:16,hours:25,type:'Part-time',status:'active',phone:'',email:''},
+    {id:5,first:'Eiko',last:'(Owner)',role:'Owner / Manager',access:'owner',rate:0,hours:50,type:'Full-time',status:'active',phone:'',email:''}
+  ];
+}
+
+function loadStaffFromStorage(){
+  try{
+    var saved=localStorage.getItem('to_staff_v2');
+    if(saved){
+      staffList=JSON.parse(saved);
+      if(staffList.length>0){
+        staffNextId=Math.max.apply(null,staffList.map(function(s){return s.id;}))+1;
+        staffLoaded=true;
+        return;
+      }
+    }
+  }catch(e){}
+  // Load defaults
+  staffList=getDefaultStaff();
+  staffNextId=10;
+  staffLoaded=true;
+}
+
+function saveStaffToStorage(){
+  try{localStorage.setItem('to_staff_v2',JSON.stringify(staffList));}catch(e){}
+}
+
+async function saveStaffToDB(staffMember, isDelete){
+  if(!curUser || curUser.email === 'demo@eikosnapa.com') return; // skip for demo
+  try{
+    var row = {
+      user_id: curUser.supabase_id || curUser.email,
+      first_name: staffMember.first,
+      last_name: staffMember.last || '',
+      role: staffMember.role,
+      access_level: staffMember.access,
+      hourly_rate: staffMember.rate || 0,
+      weekly_hours: staffMember.hours || 0,
+      employment_type: staffMember.type || 'Full-time',
+      status: staffMember.status || 'active',
+      phone: staffMember.phone || '',
+      email: staffMember.email || '',
+      restaurant_id: document.getElementById('cur-rest-name') ? document.getElementById('cur-rest-name').textContent : ''
+    };
+    if(staffMember.db_id){
+      // Update existing
+      if(isDelete){
+        await dbCall('delete','to_staff',null,staffMember.db_id);
+      } else {
+        await dbCall('update','to_staff',row,staffMember.db_id);
+      }
+    } else if(!isDelete){
+      // Insert new
+      var result = await dbCall('insert','to_staff',row);
+      if(result && result[0] && result[0].id){
+        staffMember.db_id = result[0].id;
+        saveStaffToStorage();
+      }
+    }
+  }catch(e){ console.warn('Staff DB save failed:', e); }
+}
+
+async function loadStaffFromDB(){
+  if(!curUser || curUser.email === 'demo@eikosnapa.com') return false;
+  try{
+    var userId = curUser.supabase_id || curUser.email;
+    var rows = await dbCall('select','to_staff',null,null,null);
+    if(rows && Array.isArray(rows) && rows.length > 0){
+      staffList = rows.map(function(r){
+        return {
+          id: r.id, db_id: r.id,
+          first: r.first_name, last: r.last_name || '',
+          role: r.role, access: r.access_level || 'staff',
+          rate: r.hourly_rate || 0, hours: r.weekly_hours || 0,
+          type: r.employment_type || 'Full-time',
+          status: r.status || 'active',
+          phone: r.phone || '', email: r.email || ''
+        };
+      });
+      staffNextId = staffList.length + 100;
+      saveStaffToStorage();
+      return true;
+    }
+    return false;
+  }catch(e){ console.warn('Staff DB load failed:', e); return false; }
+}
+
+function renderStaff(){
+  var tbody=document.getElementById('staff-tbody');
+  var empty=document.getElementById('staff-empty');
+  var tbl=document.getElementById('staff-table');
+  if(!tbody)return;
+
+  if(staffList.length===0){
+    if(tbl)tbl.style.display='none';
+    if(empty)empty.style.display='block';
+    document.getElementById('staff-count').textContent='0';
+    document.getElementById('staff-labor').textContent='$0';
+    document.getElementById('staff-summary').textContent='No staff yet — add your team';
+    return;
+  }
+  if(tbl)tbl.style.display='';
+  if(empty)empty.style.display='none';
+
+  var accessColors={owner:'red',manager:'blue',chef:'purple',staff:'amber'};
+  var statusColors={active:'green',oncall:'amber',inactive:''};
+
+  tbody.innerHTML=staffList.map(function(s){
+    var aBadge='<span class="badge '+(accessColors[s.access]||'amber')+'">'+(s.access.charAt(0).toUpperCase()+s.access.slice(1))+'</span>';
+    var sBadge=s.status==='active'?'<span class="badge green">Active</span>':s.status==='oncall'?'<span class="badge amber">On-call</span>':'<span class="badge" style="background:#f1f3f5;color:#6b7280;">Inactive</span>';
+    var rate=s.rate>0?'$'+s.rate+'/hr':'—';
+    var hours=s.hours>0?s.hours+'h':'—';
+    return '<tr>'+
+      '<td><div style="font-weight:600;color:#1a1d23;">'+s.first+' '+s.last+'</div>'+(s.email?'<div style="font-size:11px;color:#9ca3af;">'+s.email+'</div>':s.phone?'<div style="font-size:11px;color:#9ca3af;">'+s.phone+'</div>':'')+'</td>'+
+      '<td style="color:#374151;">'+s.role+'</td>'+
+      '<td>'+aBadge+'</td>'+
+      '<td style="color:#374151;">'+hours+'</td>'+
+      '<td style="color:#374151;">'+rate+'</td>'+
+      '<td>'+sBadge+'</td>'+
+      '<td style="text-align:right;white-space:nowrap;">'+
+        '<button onclick="editStaff('+s.id+')" style="background:none;border:none;color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;margin-right:8px;font-family:Inter,sans-serif;">✎ Edit</button>'+
+        '<button onclick="deleteStaff('+s.id+',''+s.first+' '+s.last+'')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕ Delete</button>'+
+      '</td>'+
+    '</tr>';
+  }).join('');
+
+  var total=staffList.length;
+  var labor=staffList.reduce(function(s,m){return s+(m.rate*m.hours);},0);
+  document.getElementById('staff-count').textContent=total;
+  document.getElementById('staff-labor').textContent='$'+labor.toLocaleString();
+  document.getElementById('staff-summary').textContent=total+' staff · click ✎ Edit or ✕ Delete on any row';
+}
+
+function openAddStaff(){
+  document.getElementById('staff-edit-id').value='';
+  document.getElementById('staff-modal-title').innerHTML='Add staff member <button class="modal-close" onclick="closeModal('modal-addstaff')" style="color:#6b7280;">×</button>';
+  ['sf-first','sf-last','sf-phone','sf-email','sf-rate','sf-hours'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('sf-role').value='Server';
+  document.getElementById('sf-access').value='staff';
+  document.getElementById('sf-type').value='Full-time';
+  document.getElementById('sf-status').value='active';
+  openModal('modal-addstaff');
+  setTimeout(function(){document.getElementById('sf-first').focus();},100);
+}
+
+function editStaff(id){
+  var s=staffList.find(function(x){return x.id===id;});
+  if(!s)return;
+  document.getElementById('staff-edit-id').value=id;
+  document.getElementById('staff-modal-title').innerHTML='Edit — '+s.first+' '+s.last+' <button class="modal-close" onclick="closeModal('modal-addstaff')" style="color:#6b7280;">×</button>';
+  document.getElementById('sf-first').value=s.first;
+  document.getElementById('sf-last').value=s.last||'';
+  document.getElementById('sf-phone').value=s.phone||'';
+  document.getElementById('sf-email').value=s.email||'';
+  document.getElementById('sf-role').value=s.role;
+  document.getElementById('sf-access').value=s.access;
+  document.getElementById('sf-rate').value=s.rate||'';
+  document.getElementById('sf-hours').value=s.hours||'';
+  document.getElementById('sf-type').value=s.type||'Full-time';
+  document.getElementById('sf-status').value=s.status||'active';
+  openModal('modal-addstaff');
+}
+
+function saveStaff(){
+  var first=document.getElementById('sf-first').value.trim();
+  if(!first){alert('First name is required.');document.getElementById('sf-first').focus();return;}
+  var editId=parseInt(document.getElementById('staff-edit-id').value)||0;
+  var data={
+    first:first,
+    last:document.getElementById('sf-last').value.trim(),
+    phone:document.getElementById('sf-phone').value.trim(),
+    email:document.getElementById('sf-email').value.trim(),
+    role:document.getElementById('sf-role').value,
+    access:document.getElementById('sf-access').value,
+    rate:parseFloat(document.getElementById('sf-rate').value)||0,
+    hours:parseInt(document.getElementById('sf-hours').value)||0,
+    type:document.getElementById('sf-type').value,
+    status:document.getElementById('sf-status').value
+  };
+  if(editId){
+    var idx=staffList.findIndex(function(x){return x.id===editId;});
+    if(idx>=0)staffList[idx]=Object.assign({id:editId},data);
+  } else {
+    data.id=staffNextId++;
+    staffList.push(data);
+  }
+  saveStaffToStorage();
+  renderStaff();
+  closeModal('modal-addstaff');
+  // Save to DB in background
+  saveStaffToDB(editId ? staffList.find(function(x){return x.id===editId;}) : staffList[staffList.length-1]);
+}
+
+function deleteStaff(id,name){
+  if(!confirm('Remove '+name+' from the roster?
+
+This cannot be undone.'))return;
+  var deleted = staffList.find(function(s){return s.id===id;});
+  staffList=staffList.filter(function(s){return s.id!==id;});
+  saveStaffToStorage();
+  renderStaff();
+  if(deleted) saveStaffToDB(deleted, true);
+}
+
+function clearAllStaffConfirm(){
+  if(!confirm('Remove ALL staff and start fresh with your real team?
+
+This will delete all '+staffList.length+' roster entries.'))return;
+  staffList=[];
+  saveStaffToStorage();
+  renderStaff();
+}
+
+function exportStaffPayroll(){
+  var text="PAYROLL REPORT — Eiko's Napa\n";
+  text+="Generated: "+new Date().toLocaleDateString()+"\n\n";
+  text+="Name,Role,Hours,Rate,Gross Pay\n";
+  staffList.forEach(function(s){
+    text+=s.first+' '+s.last+','+s.role+','+s.hours+'h,$'+s.rate+'/hr,$'+(s.rate*s.hours).toLocaleString()+"\n";
+  });
+  var total=staffList.reduce(function(s,m){return s+(m.rate*m.hours);},0);
+  text+="\nTOTAL WEEKLY LABOR:,$"+total.toLocaleString();
+  var blob=new Blob([text],{type:'text/csv'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='payroll-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
 // ══ KITCHEN / PREP MANAGEMENT ══
 var prepList = [
   {id:1, task:'Sushi rice — prep 20 cups', assignee:'Kenji', time:'2pm', done:false},
@@ -1786,8 +2138,19 @@ function openAddPnl(){
   var food=parseFloat(prompt('Food cost ($):',''));
   var labor=parseFloat(prompt('Labor cost ($):',''));
   var other=parseFloat(prompt('Other costs ($):',''));
-  pnlList.push({id:pnlNextId++,date:date,revenue:revenue,food:food||0,labor:labor||0,other:other||0});
+  var entry = {id:pnlNextId++,date:date,revenue:revenue,food:food||0,labor:labor||0,other:other||0};
+  pnlList.push(entry);
   renderPnl();
+  // Save to DB
+  if(curUser && curUser.email !== 'demo@eikosnapa.com'){
+    dbCall('insert','to_pnl',{
+      user_id: curUser.supabase_id||curUser.email,
+      entry_date: date, revenue: revenue,
+      food_cost: food||0, labor_cost: labor||0, other_costs: other||0
+    }).then(function(r){
+      if(r&&r[0]&&r[0].id){ entry.db_id=r[0].id; }
+    });
+  }
 }
 function editPnl(id){
   var p=pnlList.find(function(x){return x.id===id;});
