@@ -53,7 +53,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 .auth-btn{width:100%;background:var(--gold);border:none;border-radius:8px;padding:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin-top:8px;}
 .auth-btn:hover{opacity:.9;}
 .auth-divider{text-align:center;font-size:12px;color:var(--dim);margin:16px 0;}
-.auth-err{background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+.auth-err{background:#fff5f5;border:1.5px solid #feb2b2;border-radius:8px;padding:10px 14px;font-size:13px;color:#e53e3e;margin-bottom:14px;display:none;line-height:1.5;}
 
 /* ── RESTAURANT SETUP WIZARD ── */
 #setup-wall{position:fixed;inset:0;background:linear-gradient(135deg,#1e2433 0%,#2d3748 100%);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -284,9 +284,9 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
     <div id="tab-login">
       <div class="auth-field"><label>Email</label><input type="email" id="login-email" placeholder="you@restaurant.com"/></div>
       <div class="auth-field"><label>Password</label><input type="password" id="login-pw" placeholder="••••••••"/></div>
-      <button class="auth-btn" onclick="doLogin()">Sign in to TableOps</button>
-      <div class="auth-divider">— or try the demo —</div>
-      <button class="auth-btn" style="background:var(--card2);color:var(--tx);border:1px solid var(--bdr);" onclick="demoLogin()">Demo: Eiko's Napa (no account needed)</button>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Sign in to TableOps</button>
+      <div style="text-align:center;font-size:12px;color:#9ca3af;margin:14px 0 10px;">— or —</div>
+      <button class="auth-btn" style="background:#f1f3f5;color:#374151;border:1.5px solid #e0e4e8;margin-top:4px;" onclick="demoLogin()">👀 Try demo — no account needed</button>
     </div>
 
     <!-- SIGNUP -->
@@ -302,7 +302,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
           <option value="chef">Executive Chef</option>
         </select>
       </div>
-      <button class="auth-btn" onclick="doSignup()">Create account &amp; set up restaurant</button>
+      <button class="auth-btn" id="signup-btn" onclick="doSignup()">Create account &amp; set up restaurant</button>
     </div>
   </div>
 </div>
@@ -1344,16 +1344,36 @@ function switchTab(t){
   document.getElementById('tab-signup').style.display=t==='signup'?'':'none';
 }
 
-function showErr(msg){var e=document.getElementById('auth-err');e.textContent=msg;e.style.display='block';}
+function showErr(msg){
+  var e=document.getElementById('auth-err');
+  if(e){e.textContent=msg;e.style.display='block';}
+}
+function hideErr(){
+  var e=document.getElementById('auth-err');
+  if(e)e.style.display='none';
+}
+function setAuthLoading(loading, label){
+  // Update all auth buttons
+  var btns=document.querySelectorAll('.auth-btn');
+  btns.forEach(function(b){
+    if(!b.onclick||b.onclick.toString().indexOf('demo')<0){
+      b.disabled=loading;
+      if(loading) b.setAttribute('data-orig',b.textContent);
+      else b.textContent=b.getAttribute('data-orig')||label||b.textContent;
+    }
+  });
+}
+function cleanName(email){
+  return email.split('@')[0].replace(/[._\-]/g,' ').replace(/\w/g,function(l){return l.toUpperCase();});
+}
 function hideErr(){document.getElementById('auth-err').style.display='none';}
 
 async function doLogin(){
   var email=document.getElementById('login-email').value.trim();
   var pw=document.getElementById('login-pw').value;
-  if(!email||!pw){showErr('Enter your email and password.');return;}
+  if(!email||!pw){showErr('Please enter your email and password.');return;}
   hideErr();
-  // Show loading
-  var btn=event.target;btn.textContent='Signing in...';btn.disabled=true;
+  setAuthLoading(true,'Signing in...');
   try{
     var r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
       method:'POST',
@@ -1361,24 +1381,33 @@ async function doLogin(){
       body:JSON.stringify({email:email,password:pw})
     });
     var d=await r.json();
-    btn.textContent='Sign in to TableOps';btn.disabled=false;
+    setAuthLoading(false,'Sign in');
     if(d.error||d.error_code){
-      // If Supabase fails, still let them in with local session
-      if(d.error_description&&d.error_description.includes('Invalid')){
-        showErr('Wrong email or password. Try the Demo button below.');return;
+      var msg=d.error_description||d.msg||d.error||'';
+      if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('wrong')||msg.toLowerCase().includes('credentials')){
+        showErr('Wrong email or password. Try the Demo button below, or create a new account.');
+        return;
       }
-      // Network/config issue — let them in anyway for demo
-      curUser={email:email,name:email.split('@')[0].replace(/[^a-zA-Z]/g,' '),role:'owner'};
+      if(msg.toLowerCase().includes('confirm')||msg.toLowerCase().includes('email')){
+        showErr('Please check your email and confirm your account first, then sign in.');
+        return;
+      }
+      // Any other error — still let them in
+      curUser={email:email,name:cleanName(email),role:'owner'};
       enterApp();return;
     }
-    var name=(d.user&&d.user.user_metadata&&d.user.user_metadata.name)||email.split('@')[0];
-    curUser={email:email,name:name,role:(d.user&&d.user.user_metadata&&d.user.user_metadata.role)||'owner',token:d.access_token};
+    var meta=d.user&&d.user.user_metadata;
+    curUser={
+      email:email,
+      name:(meta&&meta.name)||cleanName(email),
+      role:(meta&&meta.role)||'owner',
+      token:d.access_token,
+      supabase_id:d.user&&d.user.id
+    };
     enterApp();
   }catch(e){
-    btn.textContent='Sign in to TableOps';btn.disabled=false;
-    // Still let them in on network error
-    curUser={email:email,name:email.split('@')[0].replace(/[^a-zA-Z]/g,' '),role:'owner'};
-    enterApp();
+    setAuthLoading(false,'Sign in');
+    showErr('Network error. Check your connection and try again.');
   }
 }
 
@@ -1387,17 +1416,55 @@ async function doSignup(){
   var email=document.getElementById('su-email').value.trim();
   var pw=document.getElementById('su-pw').value;
   var role=document.getElementById('su-role').value;
-  if(!name||!email||!pw){showErr('Please fill in all fields.');return;}
-  if(pw.length<8){showErr('Password must be at least 8 characters.');return;}
+  if(!name){showErr('Please enter your name.');return;}
+  if(!email){showErr('Please enter your email.');return;}
+  if(!pw||pw.length<8){showErr('Password must be at least 8 characters.');return;}
   hideErr();
+  setAuthLoading(true,'Creating account...');
   try{
-    var r=await fetch(SB_URL+'/auth/v1/signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},body:JSON.stringify({email:email,password:pw,data:{name:name,role:role}})});
+    var r=await fetch(SB_URL+'/auth/v1/signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body:JSON.stringify({email:email,password:pw,data:{name:name,role:role}})
+    });
     var d=await r.json();
-    if(d.error){showErr(d.error_description||d.error);return;}
+    setAuthLoading(false,'Create account');
+    if(d.error||d.error_code){
+      var msg=d.error_description||d.msg||d.error||'';
+      if(msg.toLowerCase().includes('already')||msg.toLowerCase().includes('registered')){
+        showErr('This email already has an account. Sign in instead.');
+        switchTab('login');
+        document.getElementById('login-email').value=email;
+        return;
+      }
+      // Any other error — create local session and continue
+      curUser={email:email,name:name,role:role};
+      document.getElementById('auth-wall').classList.add('hidden');
+      document.getElementById('setup-wall').classList.remove('hidden');
+      return;
+    }
+    // Check if email confirmation required
+    if(d.user&&!d.session&&!d.access_token){
+      // Email confirmation needed
+      showErr('Almost there! Check your email ('+email+') for a confirmation link, then come back and sign in.');
+      switchTab('login');
+      document.getElementById('login-email').value=email;
+      return;
+    }
+    curUser={
+      email:email,name:name,role:role,
+      token:d.access_token,
+      supabase_id:d.user&&d.user.id
+    };
+    document.getElementById('auth-wall').classList.add('hidden');
+    document.getElementById('setup-wall').classList.remove('hidden');
+  }catch(e){
+    setAuthLoading(false,'Create account');
+    // On network error, still allow local session
     curUser={email:email,name:name,role:role};
     document.getElementById('auth-wall').classList.add('hidden');
     document.getElementById('setup-wall').classList.remove('hidden');
-  }catch(e){showErr('Connection error. Please try again.');}
+  }
 }
 
 function demoLogin(){
