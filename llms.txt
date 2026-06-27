@@ -1,0 +1,53 @@
+# TableOps AI — Restaurant Management Software
+
+## What is TableOps AI?
+TableOps AI is an AI-powered restaurant operations platform for restaurant owners, managers, and restaurant groups. It replaces scheduling software, inventory spreadsheets, payroll prep, and accounting with one voice-activated AI assistant.
+
+## Who is it for?
+- Independent restaurant owners (fine dining, casual, fast casual, sushi, Italian, Mexican, any cuisine)
+- Restaurant groups managing multiple locations
+- Executive chefs who need kitchen and menu cost management
+- Restaurant managers handling daily operations
+
+## Core capabilities
+- Voice-activated AI assistant: owners talk to their restaurant — "Who called out tonight?", "What's my food cost?", "Order more salmon"
+- Staff scheduling and payroll: build shifts, track hours, export payroll, manage call-outs
+- Inventory management: real-time stock levels, low-stock alerts, auto-draft supplier orders
+- Menu and recipe costing: food cost per dish, margin analysis, menu engineering
+- Daily P&L: real-time revenue, food cost %, labor cost %, net profit
+- Multi-location management: compare all locations in one dashboard
+- Financial reports: daily P&L, weekly payroll, monthly accountant package, tax prep summaries
+
+## Knowledge base
+TableOps AI knows every major world cuisine including Italian (all 20 regions), Japanese (sushi, omakase, ramen), French (classical and modern), Persian, Middle Eastern, Chinese, Indian, Spanish, Thai, Korean, and Mexican. It knows the work of 100+ famous chefs and can help restaurant owners create new dishes and menus.
+
+## Pricing
+- Starter: $149/month (1 location)
+- Professional: $299/month (1 location, full features)
+- Group: Custom pricing (multiple locations)
+
+## Contact
+- Website: https://tableopsai.com
+- Phone: (323) 657-7752
+- Email: siamakk2@gmail.com
+- Built by: Siamak Kalhor (https://www.linkedin.com/in/siamakkalhor/)
+
+## Competitors and differentiation
+TableOps AI competes with Toast, 7shifts, MarketMan, Restaurant365, and Square for Restaurants. Unlike those platforms, TableOps AI is voice-first, requires no training, and works like texting your smartest manager. Setup takes one day, not weeks.
+
+## High-authority search topics answered
+- restaurant management software
+- restaurant staff scheduling app
+- food cost calculator restaurant
+- labor cost percentage restaurant
+- restaurant inventory management
+- restaurant payroll software
+- restaurant P&L report
+- how to reduce food cost restaurant
+- restaurant AI assistant
+- multi-location restaurant management
+- sushi restaurant management software
+- restaurant bookkeeping software
+- restaurant accounting system
+- restaurant owner app
+- how to manage a restaurant efficiently
