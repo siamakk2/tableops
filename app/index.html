@@ -538,11 +538,11 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
       </div>
       <div style="padding:20px;">
         <div class="card">
-          <div class="card-title">Stock levels <span>Tap item to log count</span></div>
+          <div class="card-title">Stock levels <span class="card-action" onclick="clearAllInventory()">Clear all demo items</span></div>
           <div class="inv-row" style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:5px 0;">
             <div>Item</div><div>In stock</div><div>Par</div><div>Status</div><div>Action</div>
           </div>
-          <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Salmon filet</div><div style="font-size:11px;color:var(--mut);">Proteins</div></div><div>4 portions</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:20%;background:var(--red);"></div></div></div><div><span class="badge red">Critical</span></div><div><span class="card-action" onclick="aiAsk('Order salmon — 20 portions urgently for tonight')">Order</span></div></div>
+          <div class="inv-row" id="inv-salmon"><div><div style="font-size:13px;font-weight:600;">Salmon filet</div><div style="font-size:11px;color:var(--mut);">Proteins</div></div><div>4 portions</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:20%;background:var(--red);"></div></div></div><div><span class="badge red">Critical</span></div><div style="display:flex;gap:8px;"><span class="card-action" onclick="aiAsk('Order salmon — 20 portions urgently for tonight')">Order</span><span style="font-size:11px;color:var(--dim);cursor:pointer;" onclick="this.closest('.inv-row').remove()">✕</span></div></div>
           <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Burrata</div><div style="font-size:11px;color:var(--mut);">Dairy</div></div><div>2 balls</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:20%;background:var(--red);"></div></div></div><div><span class="badge red">Critical</span></div><div><span class="card-action" onclick="aiAsk('Order burrata — 8 balls from local supplier')">Order</span></div></div>
           <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Ribeye 14oz</div><div style="font-size:11px;color:var(--mut);">Proteins</div></div><div>12 portions</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:50%;background:var(--gold2);"></div></div></div><div><span class="badge amber">Low</span></div><div><span class="card-action">Order</span></div></div>
           <div class="inv-row"><div><div style="font-size:13px;font-weight:600;">Pappardelle pasta</div><div style="font-size:11px;color:var(--mut);">Dry goods</div></div><div>8 lbs</div><div><div class="inv-bar-bg"><div class="inv-bar-fill" style="width:80%;background:var(--green);"></div></div></div><div><span class="badge green">Good</span></div><div></div></div>
@@ -571,7 +571,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
         <div class="card">
           <div class="card-title">Team roster</div>
           <table class="tbl">
-            <thead><tr><th>Name</th><th>Role</th><th>Access level</th><th>Hours (wk)</th><th>Rate</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Name</th><th>Role</th><th>Access level</th><th>Hours (wk)</th><th>Rate</th><th>Status</th><th style="text-align:right;"><span class="card-action" onclick="clearAllStaff()">Clear all</span></th></tr></thead>
             <tbody>
               <tr><td><div style="font-weight:600;">Luigi Moretti</div></td><td>Executive Chef</td><td><span class="badge purple">Chef</span></td><td>44h</td><td>$38/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
               <tr><td><div style="font-weight:600;">Ana Torres</div></td><td>Sous Chef</td><td><span class="badge purple">Chef</span></td><td>40h</td><td>$28/hr</td><td><span class="badge green">On shift</span></td><td><span class="card-action">Edit</span></td></tr>
@@ -852,6 +852,13 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
       <div class="ai-wrap" style="height:calc(100vh - 53px);">
         <div class="top-bar">
           <div class="top-bar-left"><h1>TableOps AI</h1><p>Your restaurant brain — operations, recipes, finances, every cuisine</p></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button id="tts-btn" class="tbtn" onclick="toggleTTS()" title="Toggle voice responses" style="display:flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            Voice off
+          </button>
+          <button class="tbtn" onclick="clearChat()">Clear chat</button>
+        </div>
         </div>
         <div class="ai-msgs" id="ai-msgs">
           <div class="amsg bot">
@@ -870,12 +877,14 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
         </div>
         <div class="ai-foot">
           <div class="ai-sugs">
-            <div class="ai-sug" onclick="aiAsk('What\'s my food cost this month and how can I improve it?')">Food cost analysis</div>
-            <div class="ai-sug" onclick="aiAsk('Give me authentic Persian Ghormeh Sabzi recipe with professional technique')">Persian Ghormeh Sabzi</div>
-            <div class="ai-sug" onclick="aiAsk('Compare my 3 restaurants this month — which is most profitable?')">Compare restaurants</div>
-            <div class="ai-sug" onclick="aiAsk('Generate a full 10-course omakase sushi menu with wine pairings')">Omakase menu</div>
-            <div class="ai-sug" onclick="aiAsk('What are the top 5 ways restaurants lose money without realizing it?')">Where money leaks</div>
-            <div class="ai-sug" onclick="aiAsk('Suggest seasonal menu changes for August — what\'s in season in Northern California?')">August specials</div>
+            <div class="ai-sug" onclick="aiAsk('Invent 3 brand new sushi rolls I have never seen before — creative ingredient combinations with names, ingredients, and how to plate them')">Invent new sushi rolls</div>
+            <div class="ai-sug" onclick="aiAsk('Create 3 new Italian pasta dishes using Napa Valley ingredients and California seasonal produce — give each a name, ingredients, and technique')">New Italian dishes</div>
+            <div class="ai-sug" onclick="aiAsk('A customer just complained their steak was overcooked and they are very upset. Walk me through exactly how to handle this right now')">Handle angry customer</div>
+            <div class="ai-sug" onclick="aiAsk('Give me the authentic Persian Ghormeh Sabzi recipe with exact grams, technique, and how to adapt it for a restaurant doing 50 portions')">Persian Ghormeh Sabzi</div>
+            <div class="ai-sug" onclick="aiAsk('My labor cost is 31 percent this week. Give me 5 specific things I can do this week to bring it under 29 percent without hurting service')">Cut labor cost now</div>
+            <div class="ai-sug" onclick="aiAsk('Design a 5-course tasting menu for a Napa Valley wine dinner pairing with Cabernet Sauvignon, Chardonnay, and Pinot Noir — each course with wine and food rationale')">Wine dinner menu</div>
+            <div class="ai-sug" onclick="aiAsk('I have salmon, burrata, arugula, ribeye, and pappardelle in my kitchen. Invent 2 new dishes I could add as specials tonight')">Tonight specials</div>
+            <div class="ai-sug" onclick="aiAsk('What are the most important things a new restaurant owner in Napa Valley needs to know in their first year to survive and thrive?')">First year survival</div>
           </div>
           <div class="ai-row">
             <textarea class="ai-in" id="ai-in" placeholder="Ask anything — type or use the mic button →" onkeydown="aiKey(event)" oninput="aiResize(this)"></textarea>
@@ -1018,31 +1027,63 @@ var isAiBusy=false;
 var voiceRec=null;
 var isRecording=false;
 
-var SYS=`You are TableOps AI — the intelligence layer for a restaurant operations platform.
+var SYS=`You are TableOps AI — the most knowledgeable restaurant operations assistant in the world. You are simultaneously a Michelin-starred chef, a restaurant operations expert, a financial analyst, a creative menu developer, and a hospitality consultant.
+
+PERSONALITY: Warm, direct, creative, encouraging. Talk like a brilliant friend who happens to know everything about restaurants. Never robotic. Never use markdown symbols like ** or ## or -- in your responses. Write in clean plain paragraphs. Use numbered lists when giving steps. Keep responses conversational but expert.
 
 CURRENT RESTAURANT: Bello Napa — upscale Italian, Napa Valley, CA
-Owner: Siamak Kalhor · Chef: Luigi Moretti · Seats: 80 indoor + 32 patio + 10 bar + 1 PDR (12)
-Open Tue–Sun 5–10pm · Avg check $95/person
+Owner: Siamak Kalhor · Chef: Luigi Moretti · 80 indoor + 32 patio + 10 bar seats
+Open Tue–Sun 5–10pm · Average check $95/person · 3 locations total
 
-TONIGHT: 84 covers · Est. revenue $11,400
-ALERTS: Salmon CRITICAL (4 portions), Carlos R. called out, Labor 31% (1pt over target)
-STAFF: Maria R. (FOH Lead ✓), Devon K. (Server ✓), Carlos R. (out), Jess P. (on-call), Luigi M. (chef ✓), Ana T. (sous chef ✓), Marco B. (line cook ✓), Sofia C. (pastry ✓), Tony V. (busser ✓)
-INVENTORY LOW: Salmon (4), Burrata (2), Ribeye (12), Arugula (2 lbs)
-WEEK REVENUE: $41,200 · Food cost 28% · Labor 31%
-MONTH: $186k revenue · 22.6% net margin
+TONIGHT: 84 covers · Salmon CRITICAL (4 portions) · Carlos R. called out · Labor 31%
 
-MULTI-LOCATION: Also managing Osteria Vino (St. Helena, wine bar) and Rosso Grill (Yountville, steakhouse)
+YOUR EXPERTISE — OPERATIONS:
+You solve every daily restaurant problem: staff call-outs, inventory crises, slow nights, difficult customers, kitchen conflicts, service failures, health inspections, vendor disputes, lease issues, bad reviews. You know how to handle a full restaurant when the dishwasher quits, how to turn a table twice on a Friday, how to comp a table gracefully, how to fire an employee legally.
 
-CAPABILITIES:
-1. OPERATIONS — staff, scheduling, inventory, P&L, alerts, covers
-2. FINANCE — food cost %, labor %, net margins, weekly/monthly P&L, payroll, tax prep
-3. RECIPES — deep knowledge of every major cuisine: Italian (all regions), French (classical + modern), Japanese (sushi, ramen, omakase, kaiseki), Persian (Ghormeh Sabzi, Fesenjan, Tahdig, Joojeh kabab, Ash Reshteh), Chinese (Cantonese, Sichuan, Shanghainese, dim sum), Indian (North/South, tandoor, curry base mastery), Middle Eastern (Lebanese, Turkish, Moroccan, Israeli, Egyptian), Spanish (Basque, Catalan, paella), Thai, Vietnamese, Korean, Mexican, American (regional BBQ, New American)
-4. CHEFS — know work of Massimo Bottura, Thomas Keller, Nobu, Ferran Adrià, René Redzepi, Gordon Ramsay, Alice Waters, David Chang, Heston Blumenthal, Daniel Boulud, Joel Robuchon, Wolfgang Puck, Marco Pierre White, Grant Achatz, Dominique Crenn, and 100+ more
-5. REPORTS — generate any report: P&L, payroll, food cost, inventory, sales mix, labor efficiency, tax prep, multi-location comparison
-6. MENU ENGINEERING — dish costing, margin analysis, what to push/drop/reprice
-7. SUPPLIER ORDERS — draft orders per supplier based on stock + covers
+YOUR EXPERTISE — CREATIVE MENU DEVELOPMENT:
+You are a genius at creating new dishes. When asked, you invent original combinations that are delicious, practical, and profitable. You understand flavor profiles, texture contrast, seasonal ingredients, dietary trends (plant-based, gluten-free, keto), and how to price dishes for maximum margin.
 
-Be direct and action-oriented. For recipes give professional detail with exact measurements. Generate reports as formatted text tables. Always address owner as Siamak.`;
+SUSHI AND JAPANESE: You know every cut of fish — otoro, chutoro, akami, hamachi, sake, tai, ika, tako, uni, ikura, hotate, ebi, anago. You can create omakase menus, invent new maki rolls with unexpected ingredients, design chirashi bowls, create fusion nigiri. You know sushi rice ratios (rice to vinegar to sugar to salt), knife techniques, fish aging, and how to source fish on a budget. You can create new sushi concepts like: truffle hamachi with microgreens, wagyu beef nigiri with yuzu kosho, lobster roll with mango and Thai basil.
+
+ITALIAN: All 20 regions of Italy. Pasta ratios from scratch (00 flour, eggs, semolina). You can invent new pasta dishes — imagine pairing Napa Valley wine-braised short rib with chestnut pappardelle and black truffle, or a squid ink tagliolini with Dungeness crab and Meyer lemon. You know how to make risotto sing, how to build a perfect sugo, how to make tiramisu 10 different ways.
+
+FRENCH: All mother sauces, all classical techniques. Escoffier to modernist. You can create new French-California fusion dishes using Napa Valley ingredients.
+
+PERSIAN: Ghormeh Sabzi, Fesenjan (pomegranate walnut stew), Tahdig (crispy rice — saffron, potato, bread versions), Joojeh Kabab (saffron chicken), Koofteh Tabrizi (giant meatballs), Ash Reshteh (herb noodle soup), Zereshk Polo (barberry rice), Chelo Kabab Koobideh, Mast-o-Khiar (cucumber yogurt), Mirza Ghasemi (smoked eggplant), Baghali Polo (fava bean dill rice), Shirin Polo (jeweled rice). You know the exact spice blends and techniques. You can invent Persian fusion dishes.
+
+MIDDLE EASTERN: Lebanese mezze (hummus, baba ganoush, fattoush, kibbeh), Turkish (iskender kebab, lahmacun, baklava, manti), Moroccan (tagines — chicken preserved lemon olive, lamb apricot almond, vegetable chermoula — couscous, bastilla), Israeli (shakshuka, sabich, falafel, shawarma), Egyptian (koshari, molokhia, ful medames).
+
+CHINESE: Cantonese (dim sum — har gow, siu mai, char siu bao, cheung fun), Sichuan (mapo tofu, dan dan noodles, twice-cooked pork, fish-fragrant eggplant — the numbing heat of Sichuan peppercorn), Shanghainese (xiaolongbao — the exact pleating technique, soup dumpling ratios), Peking duck (lacquering technique, pancakes, hoisin, scallion).
+
+INDIAN: North Indian (butter chicken, dal makhani, biryani layering technique, tandoor marinades), South Indian (dosas — batter fermentation, sambar, chutneys), Mughal (korma, roganjosh), street food (chaat, pani puri, vada pav).
+
+SPANISH: Paella (Valenciana — the socarrat technique, the exact rice-to-stock ratio), Basque pintxos, Catalan (crema catalana, pa amb tomàquet), gazpacho, tortilla española, jamón ibérico knowledge.
+
+THAI: Green/red/yellow/massaman curry pastes from scratch, pad thai ratios, tom yum and tom kha, som tum (green papaya salad), mango sticky rice (coconut milk ratios), larb.
+
+KOREAN: Kimchi fermentation science, Korean BBQ marinades (bulgogi, galbi), bibimbap, tteokbokki, doenjang jjigae, sundubu jjigae, Korean fried chicken (double-fry technique).
+
+MEXICAN: Mole negro (30+ ingredient complexity), al pastor (achiote marinade, vertical spit), birria (consommé technique), tamales (masa ratios), fresh tortillas, ceviche, aguachile.
+
+AMERICAN: Low and slow BBQ (brisket — the stall, the wrap, Texas vs Kansas City vs Carolina), New American (farm-to-table, seasonal California cuisine), classic diner food elevated.
+
+CREATIVE NEW DISH INVENTION:
+When asked to create new dishes, you think like a great chef — consider: flavor balance (acid/fat/salt/sweet/umami/bitter), texture contrast (crispy/creamy/chewy), color on the plate, seasonal availability, food cost, ease of execution during service. You invent specific, named dishes with ingredients, technique, and plating notes.
+
+CUSTOMER RELATIONS: You know how to handle: angry customers, bad Yelp reviews (how to respond professionally), no-shows, large parties that linger, dietary restrictions, VIP treatment, comping strategy, loyalty building.
+
+FINANCIAL INTELLIGENCE: Food cost %, labor cost %, prime cost, RevPASH (revenue per available seat hour), break-even analysis, menu engineering (stars/plowhorses/puzzles/dogs matrix), how to price a dish, how to reduce waste, how to negotiate with suppliers.
+
+STAFF MANAGEMENT: Hiring, firing (legally), training, scheduling to minimize overtime, handling call-outs, building kitchen culture, dealing with chef ego, FOH/BOH tension, tip pooling, performance reviews.
+
+FORMAT RULES — VERY IMPORTANT:
+Never use asterisks, pound signs, dashes as bullets, or any markdown symbols.
+Write in warm, clear paragraphs.
+Use numbers (1, 2, 3) for steps.
+Be specific — give exact measurements, temperatures, times.
+Be creative and encouraging — restaurant owners need inspiration, not just information.
+Keep responses focused and not too long — under 300 words unless a full recipe is requested.
+Always end with one helpful follow-up suggestion.`;
 
 // ── AUTH ──
 function switchTab(t){
@@ -1191,6 +1232,112 @@ function aiAsk(text){
   setTimeout(function(){document.getElementById('ai-in').value=text;aiSend();},100);
 }
 
+function formatAI(text){
+  // Remove all markdown artifacts cleanly
+  var t=text
+    .replace(/#{1,6}\s/g,'')
+    .replace(/\*\*\*(.*?)\*\*\*/g,'$1')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;font-size:12px;">$1</code>')
+    .replace(/---/g,'')
+    .replace(/\|.*\|/g,'')  // remove table pipes
+    .replace(/^[-_]{3,}$/gm,'');
+  // Split into paragraphs and lists
+  var lines=t.split('\n');
+  var html='';
+  var inList=false;
+  var inOl=false;
+  lines.forEach(function(line){
+    line=line.trim();
+    if(!line){
+      if(inList){html+='</ul>';inList=false;}
+      if(inOl){html+='</ol>';inOl=false;}
+      return;
+    }
+    if(/^[-•*]\s/.test(line)){
+      if(!inList){if(inOl){html+='</ol>';inOl=false;}html+='<ul>';inList=true;}
+      html+='<li>'+line.replace(/^[-•*]\s/,'')+'</li>';
+    } else if(/^\d+\.\s/.test(line)){
+      if(!inOl){if(inList){html+='</ul>';inList=false;}html+='<ol>';inOl=true;}
+      html+='<li>'+line.replace(/^\d+\.\s/,'')+'</li>';
+    } else {
+      if(inList){html+='</ul>';inList=false;}
+      if(inOl){html+='</ol>';inOl=false;}
+      html+='<p>'+line+'</p>';
+    }
+  });
+  if(inList)html+='</ul>';
+  if(inOl)html+='</ol>';
+  return html||'<p>'+t+'</p>';
+}
+
+// Text-to-speech
+var ttsEnabled=false;
+var ttsVoice=null;
+function initTTS(){
+  if(!window.speechSynthesis)return;
+  var load=function(){
+    var voices=speechSynthesis.getVoices();
+    ttsVoice=voices.find(function(v){return v.lang==='en-US'&&v.name.indexOf('Samantha')>=0;})||
+             voices.find(function(v){return v.lang==='en-US'&&!v.name.indexOf('Google');})||
+             voices.find(function(v){return v.lang.indexOf('en')>=0;})||voices[0];
+  };
+  speechSynthesis.addEventListener('voiceschanged',load);
+  load();
+}
+function speak(text){
+  if(!ttsEnabled||!window.speechSynthesis)return;
+  speechSynthesis.cancel();
+  // Strip HTML tags for speech
+  var clean=text.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,600);
+  var u=new SpeechSynthesisUtterance(clean);
+  if(ttsVoice)u.voice=ttsVoice;
+  u.rate=0.95;u.pitch=1;u.volume=1;
+  speechSynthesis.speak(u);
+}
+initTTS();
+function toggleTTS(){
+  ttsEnabled=!ttsEnabled;
+  var btn=document.getElementById('tts-btn');
+  if(btn){
+    btn.innerHTML=ttsEnabled?
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Voice on':
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> Voice off';
+  }
+  if(!ttsEnabled)speechSynthesis.cancel();
+}
+function clearAllStaff(){
+  if(confirm('Remove all demo staff? You can add your real team after.')){
+    var tbody=document.querySelector('#scr-staff table tbody');
+    if(tbody)tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--dim);">No staff yet — click Add Staff to build your team</td></tr>';
+  }
+}
+function clearAllInventory(){
+  if(confirm('Clear all demo inventory? You can add your real items after.')){
+    var card=document.querySelector('#scr-inventory .card');
+    if(card){var rows=card.querySelectorAll('.inv-row:not(:first-child)');rows.forEach(function(r){r.remove();});}
+  }
+}
+function clearAllMenu(){
+  if(confirm('Clear all demo menu items? You can add your real menu after.')){
+    document.querySelectorAll('#scr-menu .card:not(:last-child) .alert-row').forEach(function(r){r.remove();});
+  }
+}
+function clearDemoData(){
+  if(confirm('Clear ALL demo data and start fresh with your restaurant?')){
+    clearAllStaff();clearAllInventory();clearAllMenu();
+    document.querySelector('#scr-dashboard .card:first-child .card-title').nextElementSibling&&
+    document.querySelectorAll('#scr-dashboard .alert-row').forEach(function(r){r.style.opacity='.3';});
+    alert('Demo data cleared. Add your real staff, inventory, and menu items to get started.');
+  }
+}
+function clearChat(){
+  aiHistory=[];
+  var msgs=document.getElementById('ai-msgs');
+  msgs.innerHTML='<div class="amsg bot"><div class="amsg-av">T</div><div class="amsg-bub"><p>Chat cleared. How can I help you?</p></div></div>';
+}
+
 function aiSend(){
   var inp=document.getElementById('ai-in');
   var text=inp.value.trim();
@@ -1209,8 +1356,9 @@ function aiSend(){
     aiRemoveTyping();
     var reply=(d.content&&d.content[0])?d.content[0].text:'Sorry, try again.';
     aiHistory.push({role:'assistant',content:reply});
-    var fmt=reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'</p><p>').replace(/\n- /g,'</p><ul><li>').replace(/\n(\d+)\. /g,'</li><li>').replace(/^/,'<p>').replace(/$/,'</p>');
-    aiMsg('bot',fmt);
+    var fmt=formatAI(reply);
+    var botMsg=aiMsg('bot',fmt);
+    speak(reply);
     isAiBusy=false;document.getElementById('ai-send').disabled=false;
   }).catch(function(){
     aiRemoveTyping();aiMsg('bot','<p>Connection error — please try again.</p>');
