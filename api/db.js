@@ -4,8 +4,10 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, apikey, Prefer');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const SB_URL = 'https://rlvibtvyaunuiwizqigj.supabase.co';
-  const KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsdmlidHZ5YXVudWl3aXpxaWdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM1MzI3NzEsImV4cCI6MjA0OTEwODc3MX0.placeholder';
+  const SB_URL = 'https://dfytyzgbihqggkwuzkfx.supabase.co';
+  const KEY = process.env.SUPABASE_SERVICE_KEY
+    || process.env.SUPABASE_ANON_KEY
+    || 'sb_publishable_4WA8MeOaniWhLWU2C2DGQQ_VkMN30lx';
 
   try {
     let body = req.body;
@@ -27,13 +29,12 @@ module.exports = async function handler(req, res) {
     if (action === 'select') {
       let query = `${SB_URL}/rest/v1/${table}?`;
       if (user_id) query += `user_id=eq.${encodeURIComponent(user_id)}&`;
-      if (filters) Object.keys(filters).forEach(k => { query += `${k}=eq.${encodeURIComponent(filters[k])}&`; });
+      if (filters) Object.keys(filters).forEach(k => {
+        query += `${k}=eq.${encodeURIComponent(filters[k])}&`;
+      });
       query += 'order=created_at.asc&limit=500';
       const r = await fetch(query, { headers });
-      if (!r.ok) {
-        const err = await r.text();
-        return res.status(200).json({ data: [], error: err });
-      }
+      if (!r.ok) { const err = await r.text(); return res.status(200).json({ data: [], error: err }); }
       const d = await r.json();
       return res.status(200).json({ data: Array.isArray(d) ? d : [], error: null });
 
@@ -58,17 +59,13 @@ module.exports = async function handler(req, res) {
       headers['Prefer'] = 'resolution=merge-duplicates,return=representation';
       sbBody = JSON.stringify(Array.isArray(data) ? data : [data]);
 
-    } else if (action === 'rpc') {
-      url = `${SB_URL}/rest/v1/rpc/${table}`;
-      method = 'POST';
-      sbBody = JSON.stringify(data || {});
-
     } else {
       return res.status(400).json({ error: 'Unknown action: ' + action });
     }
 
     const r = await fetch(url, { method, headers, body: sbBody });
     if (action === 'delete') return res.status(200).json({ data: { deleted: true }, error: null });
+    if (!r.ok) { const err = await r.text(); return res.status(200).json({ data: null, error: err }); }
     const d = await r.json();
     return res.status(200).json({ data: d, error: null });
 
