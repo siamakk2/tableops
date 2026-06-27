@@ -1339,182 +1339,186 @@ Always end with one helpful follow-up suggestion.`;
 
 // ── AUTH ──
 function switchTab(t){
-  document.querySelectorAll('.auth-tab').forEach(function(el,i){el.classList.toggle('active',i===(t==='login'?0:1));});
-  document.getElementById('tab-login').style.display=t==='login'?'':'none';
-  document.getElementById('tab-signup').style.display=t==='signup'?'':'none';
+  var isLogin = (t === 'login');
+  document.querySelectorAll('.auth-tab').forEach(function(el, i){
+    el.classList.toggle('active', isLogin ? i===0 : i===1);
+  });
+  document.getElementById('tab-login').style.display = isLogin ? '' : 'none';
+  document.getElementById('tab-signup').style.display = isLogin ? 'none' : '';
+  hideErr();
 }
 
 function showErr(msg){
-  var e=document.getElementById('auth-err');
-  if(e){e.textContent=msg;e.style.display='block';}
+  var e = document.getElementById('auth-err');
+  if(e){ e.textContent = msg; e.style.display = 'block'; }
 }
+
 function hideErr(){
-  var e=document.getElementById('auth-err');
-  if(e)e.style.display='none';
+  var e = document.getElementById('auth-err');
+  if(e) e.style.display = 'none';
 }
-function setAuthLoading(loading, label){
-  // Update all auth buttons
-  var btns=document.querySelectorAll('.auth-btn');
-  btns.forEach(function(b){
-    if(!b.onclick||b.onclick.toString().indexOf('demo')<0){
-      b.disabled=loading;
-      if(loading) b.setAttribute('data-orig',b.textContent);
-      else b.textContent=b.getAttribute('data-orig')||label||b.textContent;
-    }
-  });
-}
+
 function cleanName(email){
-  return email.split('@')[0].replace(/[._\-]/g,' ').replace(/\w/g,function(l){return l.toUpperCase();});
-}
-function hideErr(){document.getElementById('auth-err').style.display='none';}
-
-async function doLogin(){
-  var email=document.getElementById('login-email').value.trim();
-  var pw=document.getElementById('login-pw').value;
-  if(!email||!pw){showErr('Please enter your email and password.');return;}
-  hideErr();
-  setAuthLoading(true,'Signing in...');
-  try{
-    var r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body:JSON.stringify({email:email,password:pw})
-    });
-    var d=await r.json();
-    setAuthLoading(false,'Sign in');
-    if(d.error||d.error_code){
-      var msg=d.error_description||d.msg||d.error||'';
-      if(msg.toLowerCase().includes('invalid')||msg.toLowerCase().includes('wrong')||msg.toLowerCase().includes('credentials')){
-        showErr('Wrong email or password. Try the Demo button below, or create a new account.');
-        return;
-      }
-      if(msg.toLowerCase().includes('confirm')||msg.toLowerCase().includes('email')){
-        showErr('Please check your email and confirm your account first, then sign in.');
-        return;
-      }
-      // Any other error — still let them in
-      curUser={email:email,name:cleanName(email),role:'owner'};
-      enterApp();return;
-    }
-    var meta=d.user&&d.user.user_metadata;
-    curUser={
-      email:email,
-      name:(meta&&meta.name)||cleanName(email),
-      role:(meta&&meta.role)||'owner',
-      token:d.access_token,
-      supabase_id:d.user&&d.user.id
-    };
-    enterApp();
-  }catch(e){
-    setAuthLoading(false,'Sign in');
-    showErr('Network error. Check your connection and try again.');
-  }
+  return (email||'').split('@')[0]
+    .replace(/[._\-0-9]/g,' ')
+    .replace(/\w/g, function(l){ return l.toUpperCase(); })
+    .trim() || 'User';
 }
 
-async function doSignup(){
-  var name=document.getElementById('su-name').value.trim();
-  var email=document.getElementById('su-email').value.trim();
-  var pw=document.getElementById('su-pw').value;
-  var role=document.getElementById('su-role').value;
-  if(!name){showErr('Please enter your name.');return;}
-  if(!email){showErr('Please enter your email.');return;}
-  if(!pw||pw.length<8){showErr('Password must be at least 8 characters.');return;}
-  hideErr();
-  setAuthLoading(true,'Creating account...');
-  try{
-    var r=await fetch(SB_URL+'/auth/v1/signup',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body:JSON.stringify({email:email,password:pw,data:{name:name,role:role}})
-    });
-    var d=await r.json();
-    setAuthLoading(false,'Create account');
-    if(d.error||d.error_code){
-      var msg=d.error_description||d.msg||d.error||'';
-      if(msg.toLowerCase().includes('already')||msg.toLowerCase().includes('registered')){
-        showErr('This email already has an account. Sign in instead.');
-        switchTab('login');
-        document.getElementById('login-email').value=email;
-        return;
-      }
-      // Any other error — create local session and continue
-      curUser={email:email,name:name,role:role};
-      document.getElementById('auth-wall').classList.add('hidden');
-      document.getElementById('setup-wall').classList.remove('hidden');
-      return;
-    }
-    // Check if email confirmation required
-    if(d.user&&!d.session&&!d.access_token){
-      // Email confirmation needed
-      showErr('Almost there! Check your email ('+email+') for a confirmation link, then come back and sign in.');
-      switchTab('login');
-      document.getElementById('login-email').value=email;
-      return;
-    }
-    curUser={
-      email:email,name:name,role:role,
-      token:d.access_token,
-      supabase_id:d.user&&d.user.id
-    };
-    document.getElementById('auth-wall').classList.add('hidden');
-    document.getElementById('setup-wall').classList.remove('hidden');
-  }catch(e){
-    setAuthLoading(false,'Create account');
-    // On network error, still allow local session
-    curUser={email:email,name:name,role:role};
-    document.getElementById('auth-wall').classList.add('hidden');
-    document.getElementById('setup-wall').classList.remove('hidden');
-  }
+function setAuthBtn(loading){
+  var btn = document.getElementById('login-btn');
+  if(btn){ btn.disabled = loading; btn.textContent = loading ? 'Signing in...' : 'Sign in to TableOps'; }
+  var btn2 = document.getElementById('signup-btn');
+  if(btn2){ btn2.disabled = loading; btn2.textContent = loading ? 'Creating account...' : 'Create account'; }
 }
 
+// DEMO — always works, no server needed
 function demoLogin(){
-  curUser={email:'demo@eikosnapa.com',name:'Siamak Kalhor',role:'owner'};
-  window._demoRest={name:"Eiko's Napa",cuisine:'Japanese · Sushi',city:'Napa, CA',covers:120,check:45};
+  curUser = {
+    email: 'demo@eikosnapa.com',
+    name: 'Siamak Kalhor',
+    role: 'owner'
+  };
+  window._demoRest = {
+    name: "Eiko's Napa",
+    cuisine: 'Japanese · Sushi',
+    city: 'Napa, CA',
+    covers: 120,
+    check: 45
+  };
   enterApp();
 }
 
-function enterApp(){
-  document.getElementById('auth-wall').classList.add('hidden');
-  document.getElementById('setup-wall').classList.add('hidden');
-  document.getElementById('app-shell').classList.remove('hidden');
-  var vw=document.getElementById('voice-fab-wrap');
-  if(vw){vw.style.display='flex';}
-  document.getElementById('voice-fab').style.display='flex';
-  initTTS();
-  // Load staff: try DB first, fall back to localStorage
-  loadStaffFromStorage(); // load local first for instant display
-  renderStaff();
-  // Then try to sync from DB in background
-  loadStaffFromDB().then(function(loaded){
-    if(loaded){ renderStaff(); } // refresh with DB data if available
-  });
-  // Apply restaurant from setup wizard or demo
-  var rest=window._setupRest||window._demoRest;
-  if(rest){
-    document.getElementById('cur-rest-name').textContent=rest.name;
-    document.getElementById('cur-rest-sub').textContent=(rest.city?rest.city+' · ':'')+rest.cuisine;
-    document.getElementById('dash-date').textContent='Welcome to '+rest.name+' · TableOps AI';
-    SYS=SYS.replace(/Eiko's Napa/g,rest.name);
-    if(rest.cuisine)SYS=SYS.replace('upscale Italian',rest.cuisine);
-    window._setupRest=null;window._demoRest=null;
+// LOGIN
+async function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pw = document.getElementById('login-pw').value;
+  if(!email || !pw){ showErr('Enter your email and password.'); return; }
+  hideErr();
+  setAuthBtn(true);
+  try {
+    var r = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY
+      },
+      body: JSON.stringify({ email: email, password: pw })
+    });
+    var d = await r.json();
+    setAuthBtn(false);
+    if(d.error || d.error_code || d.msg){
+      var msg = d.error_description || d.msg || d.error || '';
+      if(msg.toLowerCase().indexOf('invalid') >= 0 || msg.toLowerCase().indexOf('wrong') >= 0){
+        showErr('Wrong email or password. Try the demo button, or create a new account.');
+        return;
+      }
+      if(msg.toLowerCase().indexOf('confirm') >= 0 || msg.toLowerCase().indexOf('email not confirmed') >= 0){
+        showErr('Please check your email and click the confirmation link first.');
+        return;
+      }
+      // Unknown error — still let them in
+      curUser = { email: email, name: cleanName(email), role: 'owner' };
+      enterApp();
+      return;
+    }
+    // Success
+    var meta = (d.user && d.user.user_metadata) || {};
+    curUser = {
+      email: email,
+      name: meta.name || cleanName(email),
+      role: meta.role || 'owner',
+      token: d.access_token,
+      supabase_id: d.user && d.user.id
+    };
+    enterApp();
+  } catch(e) {
+    setAuthBtn(false);
+    // Network error — let them in anyway
+    curUser = { email: email, name: cleanName(email), role: 'owner' };
+    enterApp();
   }
-  // Set user info
-  if(localStorage.getItem('to_vtip')){var tip=document.getElementById('voice-tip');if(tip)tip.style.display='none';}
-  var initials=curUser.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2);
-  document.getElementById('sb-av-txt').textContent=initials;
-  document.getElementById('sb-uname').textContent=curUser.name;
-  document.getElementById('sb-urole').textContent=curUser.role.charAt(0).toUpperCase()+curUser.role.slice(1);
-  // Greeting
-  var h=new Date().getHours();
-  var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('dash-greeting').textContent=g+', '+curUser.name.split(' ')[0];
+}
+
+// SIGNUP
+async function doSignup(){
+  var name = document.getElementById('su-name').value.trim();
+  var email = document.getElementById('su-email').value.trim();
+  var pw = document.getElementById('su-pw').value;
+  var role = document.getElementById('su-role').value || 'owner';
+  if(!name){ showErr('Please enter your name.'); return; }
+  if(!email){ showErr('Please enter your email.'); return; }
+  if(pw.length < 8){ showErr('Password needs to be at least 8 characters.'); return; }
+  hideErr();
+  setAuthBtn(true);
+  try {
+    var r = await fetch(SB_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY
+      },
+      body: JSON.stringify({
+        email: email,
+        password: pw,
+        data: { name: name, role: role }
+      })
+    });
+    var d = await r.json();
+    setAuthBtn(false);
+    if(d.error || d.error_code){
+      var msg = d.error_description || d.msg || d.error || '';
+      if(msg.toLowerCase().indexOf('already') >= 0 || msg.toLowerCase().indexOf('registered') >= 0){
+        showErr('This email already has an account. Sign in instead.');
+        switchTab('login');
+        document.getElementById('login-email').value = email;
+        return;
+      }
+      // Other error — create local account
+      curUser = { email: email, name: name, role: role };
+      goToSetup();
+      return;
+    }
+    // Check if needs email confirmation
+    if(d.user && !d.access_token){
+      curUser = { email: email, name: name, role: role };
+      showErr('Account created! Check your email (' + email + ') for a confirmation link, then sign in.');
+      switchTab('login');
+      document.getElementById('login-email').value = email;
+      setAuthBtn(false);
+      return;
+    }
+    // Fully signed up
+    curUser = {
+      email: email,
+      name: name,
+      role: role,
+      token: d.access_token,
+      supabase_id: d.user && d.user.id
+    };
+    goToSetup();
+  } catch(e) {
+    setAuthBtn(false);
+    // Network error — still create local account
+    curUser = { email: email, name: name, role: role };
+    goToSetup();
+  }
+}
+
+function goToSetup(){
+  document.getElementById('auth-wall').classList.add('hidden');
+  document.getElementById('setup-wall').classList.remove('hidden');
 }
 
 function doLogout(){
-  curUser=null;
+  curUser = null;
   document.getElementById('app-shell').classList.add('hidden');
-  document.getElementById('voice-fab').style.display='none';var vw2=document.getElementById('voice-fab-wrap');if(vw2)vw2.style.display='none';
+  document.getElementById('voice-fab-wrap').style.display = 'none';
   document.getElementById('auth-wall').classList.remove('hidden');
+  hideErr();
+  if(window.speechSynthesis) speechSynthesis.cancel();
 }
 
 // ── SETUP WIZARD ──
