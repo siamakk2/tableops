@@ -1512,6 +1512,63 @@ function goToSetup(){
   document.getElementById('setup-wall').classList.remove('hidden');
 }
 
+function enterApp(){
+  document.getElementById('auth-wall').classList.add('hidden');
+  document.getElementById('setup-wall').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+
+  // Show voice button
+  var vw = document.getElementById('voice-fab-wrap');
+  if(vw) vw.style.display = 'flex';
+  var vf = document.getElementById('voice-fab');
+  if(vf) vf.style.display = 'flex';
+
+  // Apply restaurant from setup or demo
+  var rest = window._setupRest || window._demoRest;
+  if(rest){
+    var nameEl = document.getElementById('cur-rest-name');
+    var subEl = document.getElementById('cur-rest-sub');
+    var dateEl = document.getElementById('dash-date');
+    if(nameEl) nameEl.textContent = rest.name;
+    if(subEl) subEl.textContent = (rest.city ? rest.city + ' · ' : '') + rest.cuisine;
+    if(dateEl) dateEl.textContent = "Welcome to " + rest.name + " · TableOps AI";
+    if(rest.name) SYS = SYS.replace(/Eiko's Napa/g, rest.name);
+    window._setupRest = null;
+    window._demoRest = null;
+  }
+
+  // Set user display
+  if(curUser){
+    var initials = (curUser.name || 'U').split(' ').map(function(n){ return n[0] || ''; }).join('').toUpperCase().slice(0,2) || 'U';
+    var avEl = document.getElementById('sb-av-txt');
+    var unEl = document.getElementById('sb-uname');
+    var urEl = document.getElementById('sb-urole');
+    if(avEl) avEl.textContent = initials;
+    if(unEl) unEl.textContent = curUser.name || curUser.email || 'User';
+    if(urEl) urEl.textContent = (curUser.role || 'owner').charAt(0).toUpperCase() + (curUser.role || 'owner').slice(1);
+  }
+
+  // Greeting
+  var h = new Date().getHours();
+  var greet = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var greetEl = document.getElementById('dash-greeting');
+  if(greetEl && curUser) greetEl.textContent = greet + ', ' + (curUser.name || '').split(' ')[0];
+
+  // Dismiss voice tip if seen before
+  if(localStorage.getItem('to_vtip')){
+    var tip = document.getElementById('voice-tip');
+    if(tip) tip.style.display = 'none';
+  }
+
+  // Init TTS and load data
+  initTTS();
+  loadStaffFromStorage();
+  renderStaff();
+  renderKitchen();
+  renderPnl();
+}
+
+
 function doLogout(){
   curUser = null;
   document.getElementById('app-shell').classList.add('hidden');
