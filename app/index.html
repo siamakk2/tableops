@@ -102,10 +102,10 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 .scr.on{display:block;}
 
 /* VOICE BUTTON — floating */
-.voice-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(201,151,58,.4);z-index:500;transition:transform .15s;}
+.voice-fab{width:60px;height:60px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 28px rgba(201,151,58,.5);transition:transform .15s;flex-shrink:0;}
 .voice-fab:hover{transform:scale(1.08);}
 .voice-fab.recording{background:var(--red);animation:vPulse 1.2s ease-in-out infinite;}
-.voice-fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.voice-fab svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 @keyframes vPulse{0%,100%{box-shadow:0 4px 20px rgba(224,82,82,.4);}50%{box-shadow:0 4px 36px rgba(224,82,82,.7),0 0 0 10px rgba(224,82,82,.15);}}
 .voice-toast{position:fixed;bottom:88px;right:24px;background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:12px 16px;font-size:13px;max-width:280px;z-index:500;display:none;}
 .voice-toast.show{display:block;}
@@ -891,9 +891,22 @@ button,input,select,textarea{font-family:'Inter',sans-serif;}
 </div><!-- /app-shell -->
 
 <!-- VOICE FAB -->
-<button class="voice-fab" id="voice-fab" onclick="toggleVoice()" style="display:none;" aria-label="Voice input">
-  <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-</button>
+<!-- VOICE FOCAL POINT -->
+<div id="voice-fab-wrap" style="display:none;position:fixed;bottom:24px;right:24px;z-index:500;display:none;flex-direction:column;align-items:flex-end;gap:10px;">
+  <!-- First-time tip bubble -->
+  <div id="voice-tip" style="background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:12px 16px;max-width:220px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
+    <div style="font-size:13px;font-weight:700;color:var(--gold2);margin-bottom:4px;">🎙️ Just tap &amp; talk</div>
+    <div style="font-size:12px;color:var(--mut);line-height:1.5;">"Order more salmon" · "Who's on tonight?" · "What's my food cost?" · Any question, any recipe</div>
+    <div style="margin-top:8px;font-size:11px;color:var(--dim);cursor:pointer;" onclick="dismissVoiceTip()">Got it ✕</div>
+  </div>
+  <!-- The mic button -->
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div id="voice-label" style="background:var(--card);border:1px solid var(--bdr);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--mut);">Tap to speak</div>
+    <button class="voice-fab" id="voice-fab" onclick="toggleVoice()" aria-label="Voice input">
+      <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+  </div>
+</div>
 <div class="voice-toast" id="voice-toast">
   <div class="voice-state" id="voice-state">Listening...</div>
   <div class="voice-transcript" id="voice-tx">Say anything — I'm listening</div>
@@ -1082,8 +1095,20 @@ function enterApp(){
   document.getElementById('auth-wall').classList.add('hidden');
   document.getElementById('setup-wall').classList.add('hidden');
   document.getElementById('app-shell').classList.remove('hidden');
+  var vw=document.getElementById('voice-fab-wrap');
+  if(vw){vw.style.display='flex';}
   document.getElementById('voice-fab').style.display='flex';
+  // Apply setup restaurant if available
+  if(window._setupRest){
+    document.getElementById('cur-rest-name').textContent=window._setupRest.name;
+    document.getElementById('cur-rest-sub').textContent=(window._setupRest.city?window._setupRest.city+' · ':'')+window._setupRest.cuisine;
+    document.getElementById('dash-date').textContent='Welcome · '+window._setupRest.name;
+    // Update AI system with new restaurant name
+    SYS=SYS.replace('Bello Napa',window._setupRest.name);
+    window._setupRest=null;
+  }
   // Set user info
+  if(localStorage.getItem('to_vtip')){var tip=document.getElementById('voice-tip');if(tip)tip.style.display='none';}
   var initials=curUser.name.split(' ').map(function(n){return n[0];}).join('').toUpperCase().slice(0,2);
   document.getElementById('sb-av-txt').textContent=initials;
   document.getElementById('sb-uname').textContent=curUser.name;
@@ -1097,7 +1122,7 @@ function enterApp(){
 function doLogout(){
   curUser=null;
   document.getElementById('app-shell').classList.add('hidden');
-  document.getElementById('voice-fab').style.display='none';
+  document.getElementById('voice-fab').style.display='none';var vw2=document.getElementById('voice-fab-wrap');if(vw2)vw2.style.display='none';
   document.getElementById('auth-wall').classList.remove('hidden');
 }
 
@@ -1109,7 +1134,14 @@ function nextStep(n){
   document.getElementById('step-'+n).classList.add('active');
   document.querySelectorAll('.setup-dot').forEach(function(d,i){d.classList.toggle('done',i<n);});
 }
-function finishSetup(){enterApp();}
+function finishSetup(){
+  var rname=document.getElementById('r-name').value.trim()||'My Restaurant';
+  var rcuisine=document.getElementById('r-cuisine').value;
+  var rcity=document.getElementById('r-city').value.trim()||'';
+  // Update sidebar restaurant display
+  window._setupRest={name:rname,cuisine:rcuisine,city:rcity};
+  enterApp();
+}
 
 // ── NAV ──
 function nav(id,el){
@@ -1169,7 +1201,7 @@ function aiSend(){
   aiMsg('user',text);
   aiHistory.push({role:'user',content:text});
   aiTyping();
-  fetch('https://api.anthropic.com/v1/messages',{
+  fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:SYS,messages:aiHistory})
@@ -1198,6 +1230,8 @@ function startVoice(){
   document.getElementById('voice-fab').classList.add('recording');
   document.getElementById('voice-toast').classList.add('show');
   document.getElementById('voice-state').textContent='Listening...';
+  document.getElementById('voice-label').textContent='Listening...';
+  document.getElementById('voice-label').style.color='var(--red)';
   document.getElementById('voice-tx').textContent='Say anything — staff, orders, questions';
   voiceRec=new SR();voiceRec.continuous=false;voiceRec.interimResults=true;voiceRec.lang='en-US';
   voiceRec.onresult=function(e){
@@ -1222,10 +1256,17 @@ function startVoice(){
   try{voiceRec.start();}catch(e){stopVoice();}
 }
 
+function dismissVoiceTip(){
+  var tip=document.getElementById('voice-tip');
+  if(tip)tip.style.display='none';
+  localStorage.setItem('to_vtip','1');
+}
 function stopVoice(){
   isRecording=false;
   if(voiceRec){try{voiceRec.abort();}catch(e){}voiceRec=null;}
   document.getElementById('voice-fab').classList.remove('recording');
+  document.getElementById('voice-label').textContent='Tap to speak';
+  document.getElementById('voice-label').style.color='var(--mut)';
   setTimeout(function(){document.getElementById('voice-toast').classList.remove('show');},1500);
 }
 
