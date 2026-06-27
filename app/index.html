@@ -1363,6 +1363,17 @@ function showTab(t){
   authMsg('');
 }
 
+// Aliases for backward compatibility
+function switchTab(t){ showTab(t); }
+function showErr(msg){ authMsg(msg, true); }
+function hideErr(){ authMsg(''); }
+function setAuthBtn(loading, label){ setBtnLoading(loading ? 'btn-login' : 'btn-login', loading, label||'Sign in'); }
+function goToSetup(){
+  document.getElementById('auth-wall').classList.add('hidden');
+  document.getElementById('setup-wall').classList.remove('hidden');
+}
+
+
 function authMsg(msg, isError){
   var el = document.getElementById('auth-msg');
   if(!msg){ el.style.display='none'; return; }
