@@ -829,68 +829,67 @@ function demo() {
 }
 
 function signin() {
-  var email = (document.getElementById('si-email').value || '').trim();
+  var email = (document.getElementById('si-email').value || '').trim().toLowerCase();
   var pw = document.getElementById('si-pw').value || '';
   if (!email) { msg('Please enter your email.', 'err'); return; }
   if (!pw) { msg('Please enter your password.', 'err'); return; }
   msg('', '');
-  setBtn('si-btn', true, 'Sign in');
 
-  // Check local accounts first
+  // Check local accounts first — always instant
   var accts = getAccounts();
   if (accts[email]) {
     if (accts[email].pw === pw) {
-      curUser = {email:email, name:accts[email].name, role:accts[email].role || 'owner'};
-      setBtn('si-btn', false, 'Sign in');
+      curUser = {email:email, name:accts[email].name, role:accts[email].role||'owner'};
       enterApp();
       return;
     } else {
-      setBtn('si-btn', false, 'Sign in');
-      msg('Wrong password. Try again or use the demo button.', 'err');
+      msg('Wrong password. Try the demo button or create a new account.', 'err');
       return;
     }
   }
 
-  // Try Supabase with 5 second timeout
-  var sbTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 5000); });
-  Promise.race([
-    fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body: JSON.stringify({email:email, password:pw})
-    }),
-    sbTimeout
-  ])
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
+  // No local account — try Supabase with hard 4s timeout
+  setBtn('si-btn', true, 'Sign in');
+  var done = false;
+  var timer = setTimeout(function(){
+    if(done) return; done=true;
     setBtn('si-btn', false, 'Sign in');
-    if (d.access_token) {
-      var meta = (d.user && d.user.user_metadata) || {};
-      curUser = {email:email, name:meta.name || email.split('@')[0], role:meta.role || 'owner', token:d.access_token};
-      saveAccount(email, {name:curUser.name, role:curUser.role, pw:pw});
+    msg('Account not found. Please create one below.', 'err');
+    showPanel('create');
+    document.getElementById('ca-email').value = email;
+  }, 4000);
+
+  fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify({email:email, password:pw})
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(done) return; done=true; clearTimeout(timer);
+    setBtn('si-btn', false, 'Sign in');
+    if(d.access_token){
+      var meta=(d.user&&d.user.user_metadata)||{};
+      curUser={email:email,name:meta.name||email.split('@')[0],role:meta.role||'owner',token:d.access_token};
+      saveAccount(email,{name:curUser.name,role:curUser.role,pw:pw});
       enterApp();
     } else {
-      var m = d.error_description || d.msg || d.error || '';
-      if (m.toLowerCase().indexOf('confirm') >= 0) {
-        msg('Please check your email and click the confirmation link, then sign in.', 'err');
-      } else if (m.toLowerCase().indexOf('invalid') >= 0 || m.toLowerCase().indexOf('wrong') >= 0) {
-        msg('Wrong email or password. Try the demo button or create a new account.', 'err');
-      } else {
-        msg('Account not found. Please create one.', 'err');
-        showPanel('create');
-        document.getElementById('ca-email').value = email;
-      }
+      msg('Account not found. Please create one.', 'err');
+      showPanel('create');
+      document.getElementById('ca-email').value = email;
     }
   })
-  .catch(function() {
+  .catch(function(){
+    if(done) return; done=true; clearTimeout(timer);
     setBtn('si-btn', false, 'Sign in');
-    msg('Cannot connect to server. Check your internet connection.', 'err');
+    msg('Cannot connect. Check your internet and try again.', 'err');
   });
 }
 
+
 function createAccount() {
   var name = (document.getElementById('ca-name').value || '').trim();
-  var email = (document.getElementById('ca-email').value || '').trim();
+  var email = (document.getElementById('ca-email').value || '').trim().toLowerCase();
   var pw = document.getElementById('ca-pw').value || '';
   var role = document.getElementById('ca-role').value || 'owner';
   if (!name) { msg('Please enter your name.', 'err'); return; }
@@ -898,33 +897,30 @@ function createAccount() {
   if (pw.length < 8) { msg('Password must be at least 8 characters.', 'err'); return; }
 
   var accts = getAccounts();
-  if (accts[email]) { msg('This email already has an account. Sign in instead.', 'err'); showPanel('signin'); document.getElementById('si-email').value = email; return; }
+  if (accts[email]) {
+    msg('This email already has an account. Sign in instead.', 'err');
+    showPanel('signin');
+    document.getElementById('si-email').value = email;
+    return;
+  }
 
-  msg('', '');
-  setBtn('ca-btn', true, 'Create account');
+  // Save locally FIRST — this always works
   curUser = {email:email, name:name, role:role};
   saveAccount(email, {name:name, role:role, pw:pw});
 
-  // Try Supabase in background
-  var sbTimeout2 = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 5000); });
-  Promise.race([
-    fetch(SB_URL + '/auth/v1/signup', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-      body: JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
-    }),
-    sbTimeout2
-  ])
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.access_token) { curUser.token = d.access_token; }
-  })
-  .catch(function() {})
-  .finally(function() {
-    setBtn('ca-btn', false, 'Create account');
-    enterApp();
-  });
+  // Enter app immediately — don't wait for Supabase
+  enterApp();
+
+  // Sync to Supabase silently in background
+  fetch(SB_URL + '/auth/v1/signup', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.access_token){ curUser.token=d.access_token; }
+  }).catch(function(){});
 }
+
 
 function getAccounts() {
   try { return JSON.parse(localStorage.getItem('to2_accounts') || '{}'); } catch(e) { return {}; }
