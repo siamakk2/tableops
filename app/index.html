@@ -851,12 +851,16 @@ function signin() {
     }
   }
 
-  // Try Supabase
-  fetch(SB_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-    body: JSON.stringify({email:email, password:pw})
-  })
+  // Try Supabase with 5 second timeout
+  var sbTimeout = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 5000); });
+  Promise.race([
+    fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body: JSON.stringify({email:email, password:pw})
+    }),
+    sbTimeout
+  ])
   .then(function(r) { return r.json(); })
   .then(function(d) {
     setBtn('si-btn', false, 'Sign in');
@@ -902,11 +906,15 @@ function createAccount() {
   saveAccount(email, {name:name, role:role, pw:pw});
 
   // Try Supabase in background
-  fetch(SB_URL + '/auth/v1/signup', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-    body: JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
-  })
+  var sbTimeout2 = new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('timeout')); }, 5000); });
+  Promise.race([
+    fetch(SB_URL + '/auth/v1/signup', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+      body: JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
+    }),
+    sbTimeout2
+  ])
   .then(function(r) { return r.json(); })
   .then(function(d) {
     if (d.access_token) { curUser.token = d.access_token; }
