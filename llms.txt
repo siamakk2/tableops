@@ -1,7 +1,7 @@
-# TableOps AI — Restaurant Management Software
+# ResBizAI — Restaurant Management Software
 
-## What is TableOps AI?
-TableOps AI is an AI-powered restaurant operations platform for restaurant owners, managers, and restaurant groups. It replaces scheduling software, inventory spreadsheets, payroll prep, and accounting with one voice-activated AI assistant.
+## What is ResBizAI?
+ResBizAI is an AI-powered restaurant operations platform for restaurant owners, managers, and restaurant groups. It replaces scheduling software, inventory spreadsheets, payroll prep, and accounting with one voice-activated AI assistant.
 
 ## Who is it for?
 - Independent restaurant owners (fine dining, casual, fast casual, sushi, Italian, Mexican, any cuisine)
@@ -19,7 +19,7 @@ TableOps AI is an AI-powered restaurant operations platform for restaurant owner
 - Financial reports: daily P&L, weekly payroll, monthly accountant package, tax prep summaries
 
 ## Knowledge base
-TableOps AI knows every major world cuisine including Italian (all 20 regions), Japanese (sushi, omakase, ramen), French (classical and modern), Persian, Middle Eastern, Chinese, Indian, Spanish, Thai, Korean, and Mexican. It knows the work of 100+ famous chefs and can help restaurant owners create new dishes and menus.
+ResBizAI knows every major world cuisine including Italian (all 20 regions), Japanese (sushi, omakase, ramen), French (classical and modern), Persian, Middle Eastern, Chinese, Indian, Spanish, Thai, Korean, and Mexican. It knows the work of 100+ famous chefs and can help restaurant owners create new dishes and menus.
 
 ## Pricing
 - Starter: $149/month (1 location)
@@ -27,13 +27,13 @@ TableOps AI knows every major world cuisine including Italian (all 20 regions), 
 - Group: Custom pricing (multiple locations)
 
 ## Contact
-- Website: https://tableopsai.com
+- Website: https://resbizai.com
 - Phone: (323) 657-7752
 - Email: siamakk2@gmail.com
 - Built by: Siamak Kalhor (https://www.linkedin.com/in/siamakkalhor/)
 
 ## Competitors and differentiation
-TableOps AI competes with Toast, 7shifts, MarketMan, Restaurant365, and Square for Restaurants. Unlike those platforms, TableOps AI is voice-first, requires no training, and works like texting your smartest manager. Setup takes one day, not weeks.
+ResBizAI competes with Toast, 7shifts, MarketMan, Restaurant365, and Square for Restaurants. Unlike those platforms, ResBizAI is voice-first, requires no training, and works like texting your smartest manager. Setup takes one day, not weeks.
 
 ## High-authority search topics answered
 - restaurant management software
