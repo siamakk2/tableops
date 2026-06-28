@@ -11,7 +11,10 @@
 </script>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230f0d0a%22/%3E%3Cpath%20d%3D%22M22%2012v10c0%203%202%205%205%206v16h-3v4h12v-4h-3V28c3-1%205-3%205-6V12h-3v8h-2v-8h-3v8h-2v-8z%22%20fill%3D%22%23c9973a%22/%3E%3C/svg%3E"/>
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230f0d0a%22/%3E%3Cpath%20d%3D%22M22%2012v10c0%203%202%205%205%206v16h-3v4h12v-4h-3V28c3-1%205-3%205-6V12h-3v8h-2v-8h-3v8h-2v-8z%22%20fill%3D%22%23c9973a%22/%3E%3C/svg%3E"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="https://resbizai.com/apple-touch-icon.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="https://resbizai.com/favicon-32.png"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="https://resbizai.com/icon-192.png"/>
+  <meta name="apple-mobile-web-app-title" content="ResBizAI"/>
   <meta name="theme-color" content="#c9973a"/>
   <meta name="description" content="ResBizAI — AI restaurant management. Manage staff, inventory, P&L, menus, and recipes by voice."/>
   <meta property="og:title" content="ResBizAI — AI Restaurant Management"/>
@@ -25,7 +28,7 @@
 <title>ResBizAI — AI for Restaurant Owners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}html,body{overflow-x:hidden;max-width:100%;}
 body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100vh;overflow:hidden;}
 
 /* AUTH */
@@ -211,7 +214,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
 .ract button:first-child:hover{opacity:.9;color:#fff;}
 
 .mburger{display:none;align-items:center;justify-content:center;position:fixed;top:10px;left:10px;z-index:4300;width:42px;height:42px;border-radius:10px;background:#1e2433;border:1px solid rgba(255,255,255,.14);box-shadow:0 2px 12px rgba(0,0,0,.3);cursor:pointer;}.mburger svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;}.mbackdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:4150;}@media(max-width:768px){
-  .sb{position:fixed;top:0;left:0;bottom:0;z-index:4200;transform:translateX(-100%);transition:transform .22s ease;box-shadow:2px 0 22px rgba(0,0,0,.4);}.sb.open{transform:translateX(0);}#app.show .mburger{display:flex !important;}.mbackdrop.show{display:block;}.topbar{padding-left:58px;}
+  .sb{position:fixed;top:0;left:0;bottom:0;z-index:4200;transform:translateX(-100%);visibility:hidden;transition:transform .22s ease,visibility .22s ease;box-shadow:2px 0 22px rgba(0,0,0,.4);}.sb.open{transform:translateX(0);visibility:visible;}#app.show .mburger{display:flex !important;}.mbackdrop.show{display:block;}.topbar{padding-left:58px;}
   .metrics{grid-template-columns:1fr 1fr;}
   .g2,.g3{grid-template-columns:1fr;}
   .rcards{grid-template-columns:1fr 1fr;}
