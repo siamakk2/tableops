@@ -255,7 +255,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
     <div class="apanel" id="panel-create">
       <div class="af"><label>Your name</label>
         <input type="text" id="ca-name" placeholder="Siamak Kalhor" autocomplete="name"/>
-      </div>
+      </div><div class="af"><label>Restaurant name</label><input type="text" id="ca-rest" placeholder="e.g. Bella Italia" autocomplete="organization"/></div>
       <div class="af"><label>Email</label>
         <input type="email" id="ca-email" placeholder="you@restaurant.com" autocomplete="email"/>
       </div>
@@ -322,17 +322,19 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       </div>
       <div style="padding:20px;">
         <div class="metrics">
-          <div class="metric"><div class="mlbl">Tonight revenue est.</div><div class="mval">$9,200</div><div class="mchg up">↑ 8% vs last week</div></div>
-          <div class="metric"><div class="mlbl">Food cost %</div><div class="mval">32%</div><div class="mchg">Seafood menu</div></div>
-          <div class="metric"><div class="mlbl">Labor cost %</div><div class="mval">29%</div><div class="mchg up">On target</div></div>
-          <div class="metric"><div class="mlbl">Covers tonight</div><div class="mval">120</div><div class="mchg up">Fully booked</div></div>
+          <div class="metric"><div class="mlbl">Tonight revenue est.</div><div class="mval" id="m-rev">$9,200</div><div class="mchg up" id="m-rev-c">↑ 8% vs last week</div></div>
+          <div class="metric"><div class="mlbl">Food cost %</div><div class="mval" id="m-food">32%</div><div class="mchg" id="m-food-c">Seafood menu</div></div>
+          <div class="metric"><div class="mlbl">Labor cost %</div><div class="mval" id="m-labor">29%</div><div class="mchg up" id="m-labor-c">On target</div></div>
+          <div class="metric"><div class="mlbl">Covers tonight</div><div class="mval" id="m-cov">120</div><div class="mchg up" id="m-cov-c">Fully booked</div></div>
         </div>
         <div class="g2">
           <div class="card">
             <div class="card-title">Live alerts</div>
+            <div id="alerts-body">
             <div class="arow"><div class="adot" style="background:#e53e3e"></div><div class="atxt"><div class="atitle">Chili Rock Shrimp — 86'd (out of stock)</div><div class="asub">Update guests and suggest alternatives</div></div><div class="aact" onclick="askAI('Chili Rock Shrimp is 86 tonight. What should I tell guests and what can I suggest instead?')">AI help</div></div>
             <div class="arow"><div class="adot" style="background:#e53e3e"></div><div class="atxt"><div class="atitle">Coffee out of stock</div><div class="asub">Friday night — guests will ask</div></div><div class="aact" onclick="askAI('Coffee is out tonight. What alternatives should servers suggest to guests?')">Handle</div></div>
             <div class="arow"><div class="adot" style="background:#f39c12"></div><div class="atxt"><div class="atitle">Uni ($25) — check freshness before service</div><div class="asub">Sea urchin shelf life critical</div></div><div class="aact" onclick="askAI('How do I check if uni is still fresh and at peak quality for service tonight?')">Guide</div></div>
+            </div>
           </div>
           <div class="card">
             <div class="card-title">Tonight's team</div>
@@ -732,15 +734,41 @@ var pnlId = 10;
 var menu = [];
 var menuId = 10;
 
+function uns(){ return (curUser && curUser.email ? curUser.email : 'anon').toLowerCase().replace(/[^a-z0-9]+/g,'_'); }
+function isDemo(){ return !!(curUser && curUser.email === 'demo@eikosnapa.com'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
+function loadRest(){ if(isDemo()) return {name:"Eiko's Sushi", city:"Napa", cuisine:"Japanese"}; try{ var r=JSON.parse(localStorage.getItem('to2_'+uns()+'_rest')||'null'); if(r&&r.name) return {name:r.name,city:r.city||'',cuisine:r.cuisine||''}; }catch(e){} return {name:(curUser&&curUser.name?(curUser.name.split(' ')[0]+"'s Restaurant"):"My Restaurant"), city:'', cuisine:''}; }
+function saveRest(r){ try{ localStorage.setItem('to2_'+uns()+'_rest', JSON.stringify(r)); }catch(e){} }
+function renderDash(){
+  function S(id,v){ var el=document.getElementById(id); if(el!=null) el.textContent=v; }
+  var ab=document.getElementById('alerts-body');
+  if(isDemo()){
+    S('m-rev','$9,200'); S('m-rev-c','↑ 8% vs last week');
+    S('m-food','32%'); S('m-food-c','Seafood menu');
+    S('m-labor','29%'); S('m-labor-c','On target');
+    S('m-cov','120'); S('m-cov-c','Fully booked');
+    if(ab){ var DA=[{c:'#e53e3e',t:"Chili Rock Shrimp — 86'd (out of stock)",s:"Update guests and suggest alternatives",act:"AI help",q:"Chili Rock Shrimp is 86 tonight. What should I tell guests and what can I suggest instead?"},{c:'#e53e3e',t:"Coffee out of stock",s:"Friday night — guests will ask",act:"Handle",q:"Coffee is out tonight. What alternatives should servers suggest to guests?"},{c:'#f39c12',t:"Uni ($25) — check freshness before service",s:"Sea urchin shelf life critical",act:"Guide",q:"How do I check if uni is still fresh and at peak quality for service tonight?"}];
+      ab.innerHTML=DA.map(function(a){return '<div class="arow"><div class="adot" style="background:'+a.c+'"></div><div class="atxt"><div class="atitle">'+a.t+'</div><div class="asub">'+a.s+'</div></div><div class="aact" onclick="askAI(\''+a.q+'\')">'+a.act+'</div></div>';}).join(''); }
+    return;
+  }
+  S('m-rev','—'); S('m-rev-c','Add in P&L →');
+  S('m-food','—'); S('m-food-c','Add in P&L →');
+  S('m-labor','—'); S('m-labor-c',(staff&&staff.length)?(staff.length+' on payroll'):'Add staff →');
+  S('m-cov','—'); S('m-cov-c','Set in P&L →');
+  if(ab){ var rows='';
+    (inv||[]).forEach(function(it){ if(it.status==='critical'||it.status==='low'){ var col=it.status==='critical'?'#e53e3e':'#f39c12'; rows+='<div class="arow"><div class="adot" style="background:'+col+'"></div><div class="atxt"><div class="atitle">'+esc(it.name)+' — '+it.status+' stock</div><div class="asub">'+(it.qty||0)+' '+esc(it.unit||'')+' left · par '+(it.par||0)+'</div></div></div>'; } });
+    if(!rows) rows='<div class="arow"><div class="adot" style="background:#1e8a52"></div><div class="atxt"><div class="atitle">No active alerts</div><div class="asub">Add inventory and low-stock alerts show up here.</div></div></div>';
+    ab.innerHTML=rows; }
+}
 function loadData() {
-  try { staff = JSON.parse(localStorage.getItem('to2_staff') || '[]'); } catch(e) { staff = []; }
-  try { inv = JSON.parse(localStorage.getItem('to2_inv') || '[]'); } catch(e) { inv = []; }
-  try { prep = JSON.parse(localStorage.getItem('to2_prep') || '[]'); } catch(e) { prep = []; }
-  try { e86 = JSON.parse(localStorage.getItem('to2_e86') || '[]'); } catch(e) { e86 = []; }
-  try { pnl = JSON.parse(localStorage.getItem('to2_pnl') || '[]'); } catch(e) { pnl = []; }
-  try { menu = JSON.parse(localStorage.getItem('to2_menu') || '[]'); } catch(e) { menu = []; }
+  try { staff = JSON.parse(localStorage.getItem('to2_'+uns()+'_staff') || '[]'); } catch(e) { staff = []; }
+  try { inv = JSON.parse(localStorage.getItem('to2_'+uns()+'_inv') || '[]'); } catch(e) { inv = []; }
+  try { prep = JSON.parse(localStorage.getItem('to2_'+uns()+'_prep') || '[]'); } catch(e) { prep = []; }
+  try { e86 = JSON.parse(localStorage.getItem('to2_'+uns()+'_e86') || '[]'); } catch(e) { e86 = []; }
+  try { pnl = JSON.parse(localStorage.getItem('to2_'+uns()+'_pnl') || '[]'); } catch(e) { pnl = []; }
+  try { menu = JSON.parse(localStorage.getItem('to2_'+uns()+'_menu') || '[]'); } catch(e) { menu = []; }
 
-  if (staff.length === 0) {
+  if (isDemo() && staff.length === 0) {
     staff = [
       {id:1,first:'Kenji',last:'T.',role:'Head Sushi Chef',access:'chef',rate:38,hrs:44,type:'Full-time',status:'active',phone:'',email:''},
       {id:2,first:'Yuki',last:'M.',role:'Sushi Chef',access:'chef',rate:28,hrs:40,type:'Full-time',status:'active',phone:'',email:''},
@@ -750,7 +778,7 @@ function loadData() {
     ];
     save('staff');
   }
-  if (inv.length === 0) {
+  if (isDemo() && inv.length === 0) {
     inv = [
       {id:1,name:'Salmon filet',cat:'Seafood',unit:'portions',qty:4,par:20,cost:8.50,sup:'Pacific Seafood',status:'critical'},
       {id:2,name:'Tuna (maguro)',cat:'Seafood',unit:'lbs',qty:8,par:15,cost:22,sup:'Pacific Seafood',status:'low'},
@@ -761,7 +789,7 @@ function loadData() {
     ];
     save('inv');
   }
-  if (prep.length === 0) {
+  if (isDemo() && prep.length === 0) {
     prep = [
       {id:1,task:'Sushi rice — prep 30 cups',who:'Kenji',time:'2pm',done:false},
       {id:2,task:'Slice fish for nigiri & sashimi',who:'Yuki',time:'3pm',done:false},
@@ -771,14 +799,14 @@ function loadData() {
     ];
     save('prep');
   }
-  if (e86.length === 0) {
+  if (isDemo() && e86.length === 0) {
     e86 = [
       {id:1,item:'Chili Rock Shrimp',reason:'Out of stock'},
       {id:2,item:'Coffee',reason:'Out of stock'}
     ];
     save('e86');
   }
-  if (pnl.length === 0) {
+  if (isDemo() && pnl.length === 0) {
     pnl = [
       {id:1,date:'Mon Jun 23',rev:4200,food:1302,labor:1176,other:600},
       {id:2,date:'Tue Jun 24',rev:5800,food:1856,labor:1682,other:700},
@@ -787,7 +815,7 @@ function loadData() {
     ];
     save('pnl');
   }
-  if (menu.length === 0) {
+  if (isDemo() && menu.length === 0) {
     menu = [
       {id:1,name:'Napa Valley Roll',cat:'Signature Rolls',price:24,desc:'Tempura shrimp & crab, maguro, salmon, unagi sauce, sriracha, tobiko'},
       {id:2,name:'Surf & Turf Roll',cat:'Signature Rolls',price:26,desc:'Spicy Dungeness crab, tempura onion, seared Japanese wagyu, soy balsamic, tobiko'},
@@ -804,7 +832,7 @@ function loadData() {
 function save(key) {
   var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu'};
   var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu};
-  try { localStorage.setItem(map[key], JSON.stringify(data[key])); } catch(e) {}
+  try { localStorage.setItem('to2_'+uns()+'_'+key, JSON.stringify(data[key])); } catch(e) {}
 }
 
 // ── AUTH ──
@@ -916,6 +944,7 @@ function createAccount() {
   // Save locally FIRST — this always works
   curUser = {email:email, name:name, role:role};
   saveAccount(email, {name:name, role:role, pw:pw});
+  var _r=(document.getElementById('ca-rest')?(document.getElementById('ca-rest').value||'').trim():''); saveRest({name:_r||(name+"'s Restaurant"),city:'',cuisine:''});
 
   // Enter app immediately — don't wait for Supabase
   enterApp();
@@ -958,8 +987,9 @@ function enterApp() {
   var fn = curUser ? (curUser.name || '').split(' ')[0] : '';
   document.getElementById('dash-greet').textContent = greet + (fn ? ', ' + fn : '');
 
-  loadData();
+  var _R=loadRest();var _rn=document.getElementById('rest-name'); if(_rn) _rn.textContent=_R.name;var _rs=document.getElementById('rest-sub'); if(_rs) _rs.textContent=isDemo()?'Napa · Japanese · DEMO':([_R.city,_R.cuisine].filter(Boolean).join(' · ')||'Add your details in Settings');var _ds=document.getElementById('dash-sub'); if(_ds) _ds.textContent=isDemo()?(_R.name+' · 3 alerts need attention'):(_R.name+' · welcome — add your data to get started');loadData();
   renderAll();
+  renderDash();
   initTTS();
 }
 
@@ -1342,7 +1372,7 @@ function saveSettings(){
   var c=document.getElementById('set-city').value;
   var cu=document.getElementById('set-cuisine').value;
   if(c&&cu)document.getElementById('rest-sub').textContent=c+' · '+cu;
-  alert('Settings saved!');
+  var _cur=loadRest(); saveRest({name:(document.getElementById('set-name').value||_cur.name),city:(document.getElementById('set-city').value||_cur.city),cuisine:(document.getElementById('set-cuisine').value||_cur.cuisine)}); alert('Settings saved!');
 }
 
 // ── AI CHAT ──
