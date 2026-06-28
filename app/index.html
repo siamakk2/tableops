@@ -216,7 +216,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
   .g2,.g3{grid-template-columns:1fr;}
   .rcards{grid-template-columns:1fr 1fr;}
 }
-</style>
+.tblx{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}@media(max-width:768px){.scr{padding:14px 14px 92px;}.topbar{flex-wrap:wrap;gap:8px;}.topbar h1{font-size:18px;line-height:1.2;}.topbar p{font-size:12px;}.topbar-right{flex-wrap:wrap;width:100%;}.btn{padding:7px 11px;font-size:12px;}.tbl{white-space:nowrap;font-size:12px;}.tbl th,.tbl td{padding:7px 9px;}.metric{padding:14px;}.mval{font-size:24px;}.modal{width:100%!important;max-height:88vh;overflow-y:auto;}.modal-bg{padding:12px;}}</style>
 </head>
 <body>
 
@@ -365,10 +365,10 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
         </div>
         <div class="card">
           <div class="card-title">Team roster <span class="card-act" onclick="clearStaff()" style="color:#9ca3af;font-size:11px;">Clear all demo</span></div>
-          <table class="tbl" id="staff-tbl">
+          <div class="tblx"><table class="tbl" id="staff-tbl">
             <thead><tr><th>Name</th><th>Role</th><th>Access</th><th>Hours</th><th>Rate</th><th>Status</th><th></th></tr></thead>
             <tbody id="staff-body"></tbody>
-          </table>
+          </table></div>
           <div id="staff-empty" style="display:none;text-align:center;padding:40px;color:#9ca3af;">
             <div style="font-size:32px;margin-bottom:10px;">👥</div>
             <div style="font-weight:600;margin-bottom:6px;">No staff yet</div>
@@ -389,10 +389,10 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       <div style="padding:20px;">
         <div class="card">
           <div class="card-title">Stock levels <span class="card-act" style="color:#9ca3af;font-size:11px;" onclick="clearInv()">Clear all demo</span></div>
-          <table class="tbl">
+          <div class="tblx"><table class="tbl">
             <thead><tr><th>Item</th><th>Category</th><th>Stock</th><th>Par</th><th>Status</th><th></th></tr></thead>
             <tbody id="inv-body"></tbody>
-          </table>
+          </table></div>
           <div id="inv-empty" style="display:none;text-align:center;padding:32px;color:#9ca3af;">No items yet — add your inventory</div>
         </div>
       </div>
@@ -419,7 +419,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
         </div>
         <div class="card">
           <div class="card-title">Eiko's Napa — Signature Rolls <span class="card-act" onclick="openM('m-dish')">+ Add</span></div>
-          <table class="tbl"><thead><tr><th>Dish</th><th>Price</th><th>Description</th><th></th></tr></thead><tbody id="menu-body"></tbody></table>
+          <div class="tblx"><table class="tbl"><thead><tr><th>Dish</th><th>Price</th><th>Description</th><th></th></tr></thead><tbody id="menu-body"></tbody></table></div>
         </div>
       </div>
     </div>
@@ -437,7 +437,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
         <div class="g2">
           <div class="card">
             <div class="card-title">Tonight's reservations</div>
-            <table class="tbl"><thead><tr><th>Time</th><th>Party</th><th>Table</th><th>Notes</th></tr></thead>
+            <div class="tblx"><table class="tbl"><thead><tr><th>Time</th><th>Party</th><th>Table</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td>5:30pm</td><td>2</td><td>T1</td><td style="color:#6b7280;">Anniversary</td></tr>
               <tr><td>6:00pm</td><td>4</td><td>T3</td><td style="color:#6b7280;">—</td></tr>
@@ -445,7 +445,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
               <tr><td>7:00pm</td><td>8</td><td>T8</td><td style="color:#6b7280;">VIP regulars</td></tr>
               <tr><td>7:30pm</td><td>4</td><td>Bar</td><td style="color:#6b7280;">Omakase</td></tr>
               <tr><td>8:00pm</td><td>10</td><td>Patio</td><td style="color:#6b7280;">Birthday</td></tr>
-            </tbody></table>
+            </tbody></table></div>
           </div>
           <div class="card">
             <div class="card-title">Table map — indoor</div>
@@ -508,15 +508,8 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
         <div class="ai-msgs" id="ai-msgs">
           <div class="amsg bot">
             <div class="amsg-av">T</div>
-            <div class="amsg-bub">
-              <p>Good evening. I am your ResBizAI — here is your briefing for <strong>Eiko's Napa tonight</strong>:</p>
-              <ul>
-                <li><strong>Chili Rock Shrimp</strong> is 86'd — out of stock</li>
-                <li><strong>Coffee</strong> is out of stock tonight</li>
-                <li><strong>120 covers</strong> booked — fully packed</li>
-                <li><strong>Uni</strong> needs freshness check before service</li>
-              </ul>
-              <p>Ask me anything — staff, inventory, recipes, finance, or any cuisine in the world.</p>
+            <div class="amsg-bub" id="ai-intro">
+              <p>Hi! I'm your ResBizAI assistant — staff, scheduling, inventory, menu, recipes, food &amp; labor cost, P&amp;L, and any cuisine in the world.</p><p>Add your data through the menu, or just ask me anything to get started.</p>
             </div>
           </div>
         </div>
@@ -554,8 +547,8 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
         </div>
         <div class="card">
           <div class="card-title">Daily entries <span class="card-act" onclick="clearPnl()" style="color:#9ca3af;font-size:11px;">Clear all</span></div>
-          <table class="tbl"><thead><tr><th>Date</th><th>Revenue</th><th>Food cost</th><th>Labor</th><th>Other</th><th>Net</th><th></th></tr></thead>
-          <tbody id="pnl-body"></tbody></table>
+          <div class="tblx"><table class="tbl"><thead><tr><th>Date</th><th>Revenue</th><th>Food cost</th><th>Labor</th><th>Other</th><th>Net</th><th></th></tr></thead>
+          <tbody id="pnl-body"></tbody></table></div>
           <div id="pnl-empty" style="display:none;text-align:center;padding:32px;color:#9ca3af;">No entries — add your first day</div>
         </div>
       </div>
@@ -592,7 +585,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       </div>
       <div style="padding:20px;">
         <div class="card">
-          <table class="tbl"><thead><tr><th>Supplier</th><th>Category</th><th>Last order</th><th>Monthly spend</th><th>Status</th><th></th></tr></thead>
+          <div class="tblx"><table class="tbl"><thead><tr><th>Supplier</th><th>Category</th><th>Last order</th><th>Monthly spend</th><th>Status</th><th></th></tr></thead>
           <tbody>
             <tr><td><strong>Sysco Northern CA</strong></td><td>Proteins, dry goods</td><td>Jun 24</td><td>$18,400</td><td><span class="badge green">Active</span></td><td><span class="card-act" onclick="askAI('Draft a Sysco order for this week — need salmon, ribeye, and other low items at Eikos Napa')">Order now</span></td></tr>
             <tr><td><strong>Fresh Point</strong></td><td>Produce, herbs</td><td>Jun 25</td><td>$4,200</td><td><span class="badge green">Active</span></td><td><span class="card-act" onclick="askAI('Draft a Fresh Point produce order for Eikos Napa this week')">Order now</span></td></tr>
@@ -600,7 +593,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
             <tr><td><strong>BelGioioso Cheese</strong></td><td>Dairy, cheese</td><td>Jun 22</td><td>$2,100</td><td><span class="badge green">Active</span></td><td><span class="card-act">Order now</span></td></tr>
             <tr><td><strong>Dalla Terra</strong></td><td>Wine, sake, beverages</td><td>Jun 20</td><td>$6,800</td><td><span class="badge green">Active</span></td><td><span class="card-act">Order now</span></td></tr>
             <tr><td><strong>Napa Bread Co.</strong></td><td>Bread, pastry</td><td>Jun 26</td><td>$900</td><td><span class="badge green">Active</span></td><td><span class="card-act">Order now</span></td></tr>
-          </tbody></table>
+          </tbody></table></div>
         </div>
       </div>
     </div>
@@ -749,7 +742,7 @@ function renderTeam(){
   tb.innerHTML=staff.map(function(p,i){ var fn=(p.first||''),ln=(p.last||''); var ini=((fn.charAt(0)||'')+(ln.charAt(0)||'')).toUpperCase()||'?'; var col=pal[i%pal.length]; var owner=(p.access==='owner'||/owner/i.test(p.role||'')); return '<div class="srow"><div class="sav" style="background:'+col[0]+';color:'+col[1]+';">'+esc(ini)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">'+esc((fn+' '+ln).trim())+'</div><div style="font-size:11px;color:#6b7280;">'+esc(p.role||'')+'</div></div><span class="badge green">'+(owner?'On site':'On shift')+'</span></div>'; }).join(''); }
 function renderDash(){
   function S(id,v){ var el=document.getElementById(id); if(el!=null) el.textContent=v; }
-  renderTeam(); var ab=document.getElementById('alerts-body');
+  renderTeam(); var _ai=document.getElementById('ai-intro'); if(_ai){ if(isDemo()){ _ai.innerHTML='<p>Good evening. Here is your briefing for <strong>Eiko\'s Sushi tonight</strong>:</p><ul><li><strong>Chili Rock Shrimp</strong> is 86\'d \u2014 out of stock</li><li><strong>Coffee</strong> is out of stock tonight</li><li><strong>120 covers</strong> booked \u2014 fully packed</li><li><strong>Uni</strong> needs a freshness check before service</li></ul><p>Ask me anything \u2014 staff, inventory, recipes, finance, or any cuisine in the world.</p>'; } else { _ai.innerHTML='<p>Hi! I\'m your ResBizAI assistant for <strong>'+esc(loadRest().name)+'</strong> \u2014 staff, scheduling, inventory, menu, recipes, food &amp; labor cost, P&amp;L, and any cuisine in the world.</p><p>Add your data through the menu, or just ask me anything to get started.</p>'; } } var ab=document.getElementById('alerts-body');
   if(isDemo()){
     S('m-rev','$9,200'); S('m-rev-c','↑ 8% vs last week');
     S('m-food','32%'); S('m-food-c','Seafood menu');
