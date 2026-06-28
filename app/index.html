@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>TableOps AI</title>
+<title>ResBizAI — AI for Restaurant Owners</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -208,7 +208,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       <div class="alogo-mark">
         <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg>
       </div>
-      <div class="alogo-name">TableOps AI</div>
+      <div class="alogo-name">ResBizAI</div>
     </div>
 
     <div class="atabs">
@@ -261,7 +261,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
     <div class="sb-top">
       <div class="sb-logo">
         <div class="sb-lm"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg></div>
-        TableOps AI
+        ResBizAI
       </div>
       <div class="sb-rest">
         <div class="sb-rname" id="rest-name">Eiko's Napa</div>
@@ -475,7 +475,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
     <div id="scr-ai" class="scr" style="padding:0;display:none;">
       <div class="ai-wrap" style="height:calc(100vh - 0px);">
         <div class="topbar">
-          <div><h1>TableOps AI</h1><p>Operations · recipes · finance · every cuisine in the world</p></div>
+          <div><h1>ResBizAI</h1><p>Operations · recipes · finance · every cuisine in the world</p></div>
           <div class="topbar-right">
             <button class="btn" id="tts-btn" onclick="toggleTTS()">🔇 Voice off</button>
             <button class="btn" onclick="clearChat()">Clear chat</button>
@@ -485,7 +485,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
           <div class="amsg bot">
             <div class="amsg-av">T</div>
             <div class="amsg-bub">
-              <p>Good evening. I am your TableOps AI — here is your briefing for <strong>Eiko's Napa tonight</strong>:</p>
+              <p>Good evening. I am your ResBizAI — here is your briefing for <strong>Eiko's Napa tonight</strong>:</p>
               <ul>
                 <li><strong>Chili Rock Shrimp</strong> is 86'd — out of stock</li>
                 <li><strong>Coffee</strong> is out of stock tonight</li>
@@ -689,7 +689,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
 
 var SB_URL = 'https://dfytyzgbihqggkwuzkfx.supabase.co';
 var SB_KEY = 'sb_publishable_4WA8MeOaniWhLWU2C2DGQQ_VkMN30lx';
-var AI_SYS = "You are TableOps AI — a brilliant restaurant operations assistant and world-class chef. You know every cuisine (Italian, Japanese/sushi, Persian, French, Chinese, Indian, Middle Eastern, Korean, Thai, Mexican, Spanish), hundreds of famous chefs, food costs, labor management, menu engineering, and how to run a profitable restaurant. You know Eikos Napa in Napa Valley — a popular Japanese sushi restaurant. Be warm, direct, and specific. Give exact measurements for recipes. Never use asterisks or markdown symbols. Write in clean paragraphs. Always end with one helpful suggestion.";
+var AI_SYS = "You are ResBizAI — a brilliant restaurant operations assistant and world-class chef. You know every cuisine (Italian, Japanese/sushi, Persian, French, Chinese, Indian, Middle Eastern, Korean, Thai, Mexican, Spanish), hundreds of famous chefs, food costs, labor management, menu engineering, and how to run a profitable restaurant. You know Eikos Napa in Napa Valley — a popular Japanese sushi restaurant. Be warm, direct, and specific. Give exact measurements for recipes. Never use asterisks or markdown symbols. Write in clean paragraphs. Always end with one helpful suggestion.";
 
 var curUser = null;
 var aiHistory = [];
@@ -1400,8 +1400,8 @@ function dlReport(){
 }
 
 function emailRpt(title){
-  var sub=encodeURIComponent('TableOps Report: '+title);
-  var body=encodeURIComponent('Please find the '+title+' report from TableOps AI.\n\nGenerated: '+new Date().toLocaleDateString());
+  var sub=encodeURIComponent('ResBizAI Report: '+title);
+  var body=encodeURIComponent('Please find the '+title+' report from ResBizAI.\n\nGenerated: '+new Date().toLocaleDateString());
   window.location.href='mailto:?subject='+sub+'&body='+body;
 }
 
