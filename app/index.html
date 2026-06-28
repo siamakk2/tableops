@@ -210,8 +210,8 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
 .ract button:hover{border-color:#e67e22;color:#e67e22;}
 .ract button:first-child:hover{opacity:.9;color:#fff;}
 
-@media(max-width:768px){
-  .sb{display:none;}
+.mburger{display:none;align-items:center;justify-content:center;position:fixed;top:10px;left:10px;z-index:4300;width:42px;height:42px;border-radius:10px;background:#1e2433;border:1px solid rgba(255,255,255,.14);box-shadow:0 2px 12px rgba(0,0,0,.3);cursor:pointer;}.mburger svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;}.mbackdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:4150;}@media(max-width:768px){
+  .sb{position:fixed;top:0;left:0;bottom:0;z-index:4200;transform:translateX(-100%);transition:transform .22s ease;box-shadow:2px 0 22px rgba(0,0,0,.4);}.sb.open{transform:translateX(0);}#app.show .mburger{display:flex !important;}.mbackdrop.show{display:block;}.topbar{padding-left:58px;}
   .metrics{grid-template-columns:1fr 1fr;}
   .g2,.g3{grid-template-columns:1fr;}
   .rcards{grid-template-columns:1fr 1fr;}
@@ -276,7 +276,8 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
 
 <!-- ═══ APP ═══ -->
 <div id="app">
-  <div class="sb">
+  <button class="mburger" id="mburger" onclick="toggleNav()" aria-label="Menu"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div class="mbackdrop" id="mbackdrop" onclick="toggleNav()"></div>
+      <div class="sb">
     <div class="sb-top">
       <div class="sb-logo">
         <div class="sb-lm"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg></div>
@@ -338,10 +339,12 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
           </div>
           <div class="card">
             <div class="card-title">Tonight's team</div>
+            <div id="team-body">
             <div class="srow"><div class="sav" style="background:#dcfce7;color:#166534;">EK</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Eiko (Owner)</div><div style="font-size:11px;color:#6b7280;">Front of house</div></div><span class="badge green">On site</span></div>
             <div class="srow"><div class="sav" style="background:#dbeafe;color:#1e40af;">KT</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Kenji T.</div><div style="font-size:11px;color:#6b7280;">Head Sushi Chef</div></div><span class="badge green">On shift</span></div>
             <div class="srow"><div class="sav" style="background:#ede9fe;color:#5b21b6;">YM</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Yuki M.</div><div style="font-size:11px;color:#6b7280;">Sushi Chef</div></div><span class="badge green">On shift</span></div>
             <div class="srow"><div class="sav" style="background:#fef3c7;color:#92400e;">SR</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">Sofia R.</div><div style="font-size:11px;color:#6b7280;">Server</div></div><span class="badge green">On shift</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -739,9 +742,14 @@ function isDemo(){ return !!(curUser && curUser.email === 'demo@eikosnapa.com');
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]; }); }
 function loadRest(){ if(isDemo()) return {name:"Eiko's Sushi", city:"Napa", cuisine:"Japanese"}; try{ var r=JSON.parse(localStorage.getItem('to2_'+uns()+'_rest')||'null'); if(r&&r.name) return {name:r.name,city:r.city||'',cuisine:r.cuisine||''}; }catch(e){} return {name:(curUser&&curUser.name?(curUser.name.split(' ')[0]+"'s Restaurant"):"My Restaurant"), city:'', cuisine:''}; }
 function saveRest(r){ try{ localStorage.setItem('to2_'+uns()+'_rest', JSON.stringify(r)); }catch(e){} }
+function renderTeam(){
+  var tb=document.getElementById('team-body'); if(!tb) return;
+  if(!staff||!staff.length){ tb.innerHTML='<div style="padding:10px 2px;color:#6b7280;font-size:13px;">No team added yet. <a onclick="go(\'staff\')" style="color:#1e8a52;font-weight:700;cursor:pointer;">Add your team →</a></div>'; return; }
+  var pal=[['#dcfce7','#166534'],['#dbeafe','#1e40af'],['#ede9fe','#5b21b6'],['#fef3c7','#92400e'],['#fee2e2','#991b1b']];
+  tb.innerHTML=staff.map(function(p,i){ var fn=(p.first||''),ln=(p.last||''); var ini=((fn.charAt(0)||'')+(ln.charAt(0)||'')).toUpperCase()||'?'; var col=pal[i%pal.length]; var owner=(p.access==='owner'||/owner/i.test(p.role||'')); return '<div class="srow"><div class="sav" style="background:'+col[0]+';color:'+col[1]+';">'+esc(ini)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">'+esc((fn+' '+ln).trim())+'</div><div style="font-size:11px;color:#6b7280;">'+esc(p.role||'')+'</div></div><span class="badge green">'+(owner?'On site':'On shift')+'</span></div>'; }).join(''); }
 function renderDash(){
   function S(id,v){ var el=document.getElementById(id); if(el!=null) el.textContent=v; }
-  var ab=document.getElementById('alerts-body');
+  renderTeam(); var ab=document.getElementById('alerts-body');
   if(isDemo()){
     S('m-rev','$9,200'); S('m-rev-c','↑ 8% vs last week');
     S('m-food','32%'); S('m-food-c','Seafood menu');
@@ -1003,12 +1011,13 @@ function logout() {
 }
 
 // ── NAVIGATION ──
+function toggleNav(){ var sb=document.querySelector('.sb'); var bd=document.getElementById('mbackdrop'); if(!sb)return; var open=sb.classList.toggle('open'); if(bd) bd.classList.toggle('show',open); }
 function go(id, el) {
   document.querySelectorAll('.scr').forEach(function(s) { s.classList.remove('on'); s.style.display = ''; });
   var scr = document.getElementById('scr-' + id);
   if (scr) { scr.classList.add('on'); if (id === 'ai') scr.style.display = 'block'; }
   document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('on'); });
-  if (el) el.classList.add('on');
+  if (el) el.classList.add('on'); var _sb=document.querySelector('.sb'); if(_sb)_sb.classList.remove('open'); var _bd=document.getElementById('mbackdrop'); if(_bd)_bd.classList.remove('show');
 }
 
 // ── MODALS ──
