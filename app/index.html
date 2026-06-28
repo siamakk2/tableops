@@ -386,6 +386,8 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       <div class="topbar"><div><h1>Inventory</h1><p>Track stock, get alerts, order fast</p></div>
         <div class="topbar-right">
           <button class="btn" onclick="openM('m-inv')">+ Add item</button>
+<button class="btn" onclick="openSales()">Record sales</button>
+<button class="btn" onclick="openCount()">Count &amp; reconcile</button>
           <button class="btn gold" onclick="askAI('Draft a full supplier order based on current inventory levels for tonight at Eikos Napa with 120 covers')">Auto-order draft</button>
         </div>
       </div>
@@ -635,7 +637,30 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
   </div><!-- /main -->
 </div><!-- /app -->
 
-<!-- VOICE -->
+<!-- RECIPE MODAL -->
+    <div class="modal-bg" id="m-recipe"><div class="modal">
+      <h2>Recipe <button class="mclose" onclick="closeM('m-recipe')">×</button></h2>
+      <p id="recipe-sub" style="font-size:13px;color:#6b7280;margin:-6px 0 12px;">Link ingredients so stock drops automatically when this dish sells.</p>
+      <div id="recipe-rows"></div>
+      <button class="btn" type="button" onclick="addRecipeRow()" style="margin-top:8px;">+ Add ingredient</button>
+      <div class="brow" style="margin-top:16px;"><button class="btn gold" onclick="saveRecipe()">Save recipe</button><button class="btn" onclick="closeM('m-recipe')">Cancel</button></div>
+    </div></div>
+    <!-- RECORD SALES MODAL -->
+    <div class="modal-bg" id="m-sales"><div class="modal">
+      <h2>Record today's sales <button class="mclose" onclick="closeM('m-sales')">×</button></h2>
+      <p style="font-size:13px;color:#6b7280;margin:-6px 0 12px;">Enter how many of each dish you sold. Stock drops automatically from each recipe.</p>
+      <div id="sales-rows"></div>
+      <div class="brow" style="margin-top:16px;"><button class="btn gold" onclick="recordSales()">Apply to stock</button><button class="btn" onclick="closeM('m-sales')">Cancel</button></div>
+    </div></div>
+    <!-- COUNT MODAL -->
+    <div class="modal-bg" id="m-count"><div class="modal">
+      <h2>Count &amp; reconcile <button class="mclose" onclick="closeM('m-count')">×</button></h2>
+      <p style="font-size:13px;color:#6b7280;margin:-6px 0 12px;">Count what's physically on the shelf. We'll compare to what the system expects and show the gap.</p>
+      <div id="count-rows"></div>
+      <div class="brow" style="margin-top:16px;"><button class="btn gold" onclick="saveCount()">Save count</button><button class="btn" onclick="closeM('m-count')">Cancel</button></div>
+    </div></div>
+
+    <!-- VOICE -->
 <div class="vfab" id="vfab">
   <div class="vlbl" id="vlbl">Tap to speak</div>
   <button class="vbtn" id="vbtn" onclick="toggleVoice()">
@@ -1140,7 +1165,66 @@ function exportPayroll() {
 }
 
 // ── INVENTORY ──
-function renderInv() {
+function invById(id){ for(var k=0;k<inv.length;k++){ if(inv[k].id==id) return inv[k]; } return null; }
+function menuById(id){ for(var k=0;k<menu.length;k++){ if(menu[k].id==id) return menu[k]; } return null; }
+function recStatus(it){ var pct=it.par>0?(it.qty/it.par*100):100; it.status=pct<30?'critical':(pct<60?'low':'ok'); }
+function invOptions(sel){ return inv.map(function(i){ return '<option value="'+i.id+'"'+(String(i.id)===String(sel)?' selected':'')+'>'+esc(i.name)+' ('+esc(i.unit)+')</option>'; }).join(''); }
+function openRecipe(did){
+  var m=menuById(did); if(!m) return;
+  document.getElementById('recipe-dish').value=did;
+  document.getElementById('recipe-sub').textContent='Ingredients used each time you sell: '+m.name;
+  var box=document.getElementById('recipe-rows'); box.innerHTML='';
+  var rows=m.recipe||[];
+  if(!inv.length){ box.innerHTML='<p style="color:#9ca3af;font-size:13px;">Add inventory items first, then link them here.</p>'; openM('m-recipe'); return; }
+  if(rows.length===0){ addRecipeRow(); } else { rows.forEach(function(r){ addRecipeRow(r.inv, r.qty); }); }
+  openM('m-recipe');
+}
+function addRecipeRow(selId, qty){
+  var box=document.getElementById('recipe-rows');
+  var row=document.createElement('div'); row.className='rcp-row';
+  row.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:8px;';
+  row.innerHTML='<select class="rcp-inv" style="flex:1;padding:9px;border:1px solid #e0e4e8;border-radius:8px;background:#fff;">'+invOptions(selId)+'</select>'
+    +'<input type="number" class="rcp-qty" min="0" step="0.001" placeholder="qty/serving" value="'+(qty!=null?qty:'')+'" style="width:110px;padding:9px;border:1px solid #e0e4e8;border-radius:8px;"/>'
+    +'<button type="button" onclick="this.parentNode.remove()" style="background:#fee2e2;color:#991b1b;border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:16px;flex:none;">×</button>';
+  box.appendChild(row);
+}
+function saveRecipe(){
+  var did=document.getElementById('recipe-dish').value; var m=menuById(did); if(!m) return;
+  var rows=document.querySelectorAll('#recipe-rows .rcp-row'); var rec=[];
+  rows.forEach(function(r){ var iv=r.querySelector('.rcp-inv'); var qe=r.querySelector('.rcp-qty'); if(!iv||!qe) return; var q=parseFloat(qe.value)||0; if(iv.value && q>0) rec.push({inv:parseInt(iv.value), qty:q}); });
+  m.recipe=rec; save('menu'); renderMenu(); closeM('m-recipe');
+}
+function openSales(){
+  var withR=menu.filter(function(m){ return m.recipe && m.recipe.length; });
+  var box=document.getElementById('sales-rows');
+  if(withR.length===0){ box.innerHTML='<p style="color:#9ca3af;font-size:13px;padding:8px 0;">No dishes have recipes yet. Open <strong>Menu</strong>, tap <strong>Recipe</strong> on a dish, and link its ingredients first — then stock will drop automatically here.</p>'; }
+  else { box.innerHTML=withR.map(function(m){ return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:14px;flex:1;">'+esc(m.name)+'</div><input type="number" min="0" data-dish="'+m.id+'" class="sale-q" placeholder="0 sold" style="width:100px;padding:9px;border:1px solid #e0e4e8;border-radius:8px;"/></div>'; }).join(''); }
+  openM('m-sales');
+}
+function recordSales(){
+  var ins=document.querySelectorAll('.sale-q'); var used={}; var any=false;
+  ins.forEach(function(inp){ var n=parseInt(inp.value)||0; if(n<=0) return; any=true; var m=menuById(inp.getAttribute('data-dish')); if(!m||!m.recipe) return; m.recipe.forEach(function(r){ used[r.inv]=(used[r.inv]||0)+r.qty*n; }); });
+  if(!any){ alert('Enter how many of each dish you sold.'); return; }
+  var lines=[];
+  for(var id in used){ var it=invById(id); if(!it) continue; var before=it.qty; var u=Math.round(used[id]*1000)/1000; it.qty=Math.max(0, Math.round((it.qty-used[id])*1000)/1000); recStatus(it); lines.push('• '+it.name+':  -'+u+' '+it.unit+'   ('+before+' → '+it.qty+' left)'); }
+  save('inv'); renderInv(); renderDash(); closeM('m-sales');
+  alert('Stock updated from sales:\n\n'+lines.join('\n'));
+}
+function openCount(){
+  var box=document.getElementById('count-rows');
+  if(inv.length===0){ box.innerHTML='<p style="color:#9ca3af;font-size:13px;">No inventory items yet.</p>'; }
+  else { box.innerHTML=inv.map(function(i){ return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:14px;flex:1;">'+esc(i.name)+' <span style="color:#9ca3af;font-size:12px;">system: '+i.qty+' '+esc(i.unit)+'</span></div><input type="number" min="0" step="0.001" data-inv="'+i.id+'" class="cnt-q" placeholder="count" style="width:100px;padding:9px;border:1px solid #e0e4e8;border-radius:8px;"/></div>'; }).join(''); }
+  openM('m-count');
+}
+function saveCount(){
+  var ins=document.querySelectorAll('.cnt-q'); var diffs=[]; var any=false;
+  ins.forEach(function(inp){ if(inp.value==='') return; any=true; var it=invById(inp.getAttribute('data-inv')); if(!it) return; var actual=parseFloat(inp.value)||0; var v=Math.round((actual-it.qty)*1000)/1000; if(v!==0) diffs.push('• '+it.name+':  system '+it.qty+', counted '+actual+'  → '+(v>0?'+':'')+v+' '+it.unit+(v<0?' (shortage/loss)':' (extra)')); it.qty=actual; recStatus(it); });
+  if(!any){ alert('Enter at least one count.'); return; }
+  save('inv'); renderInv(); renderDash(); closeM('m-count');
+  alert(diffs.length? ('Reconciled. Here is where stock differed:\n\n'+diffs.join('\n')+'\n\nStock is now set to your real counts.') : 'Reconciled — your counts matched the system exactly. Nothing leaking.');
+}
+
+    function renderInv() {
   var body = document.getElementById('inv-body');
   var empty = document.getElementById('inv-empty');
   if (!body) return;
@@ -1218,6 +1302,7 @@ function renderMenu() {
       '<td>$' + m.price + '</td>' +
       '<td style="font-size:12px;color:#6b7280;">' + (m.desc || '') + '</td>' +
       '<td style="white-space:nowrap">' +
+        '<button onclick="openRecipe(' + m.id + ')" style="background:#1e8a52;color:#fff;border:none;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;margin-right:6px;font-family:Inter,sans-serif;">Recipe' + ((m.recipe&&m.recipe.length)?(' ('+m.recipe.length+')'):'') + '</button>' +
         '<button onclick="delMenu(' + m.id + ')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕</button>' +
       '</td></tr>';
   }).join('');
