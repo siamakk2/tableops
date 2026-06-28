@@ -7,11 +7,26 @@ ResBizAI is the AI brain behind successful restaurants. It gives owners one inte
 ## What ResBizAI does
 
 - **Staff & scheduling** — build shifts, track hours, manage call-outs, and export payroll from your phone.
-- **Inventory & auto-ordering** — real-time stock levels, low-item alerts, and one-tap supplier orders so you never 86 a dish unexpectedly.
+- **Inventory intelligence** — stock that tracks itself: link recipes to dishes and inventory depletes automatically as items sell, with low-item alerts, one-tap supplier orders, and nightly count-and-reconcile that reveals variance (waste, over-portioning, shrinkage, theft).
 - **Menu & recipe costing** — see exact food cost and margin per dish; margins update automatically when ingredient prices change.
 - **Daily P&L** — revenue, labor cost %, and food cost % every morning in one number.
 - **AI assistant** — ask "Who's on tonight?" "What's my labor cost this week?" "Order more ribeye." and it's done.
 - **Multi-location** — manage multiple restaurants from one dashboard with group P&L and shared staff.
+
+## How ResBizAI tracks inventory accurately
+
+ResBizAI knows how much stock a restaurant has left without anyone counting all day. It works in three steps:
+
+1. **Recipe linking** — each menu item is linked once to its ingredients and amounts (for example, "Grilled Salmon = 1 salmon fillet + 50g carrots").
+2. **Sales depletion** — when the day's sales are recorded (entered by hand or imported from a POS such as Square, Toast, or Lightspeed), ResBizAI automatically subtracts each dish's recipe from inventory. Selling 46 grilled salmon subtracts 46 fillets, so the system shows what remains in real time.
+3. **Count and reconcile** — a quick periodic physical count is compared against what the system expected. The difference is called **variance**, and it pinpoints exactly where stock — and money — is being lost to waste, over-portioning, spoilage, or theft.
+
+Worked example: a restaurant opens with 50 salmon fillets and sells 46 grilled salmon. ResBizAI shows 4 fillets left automatically. If the nightly count finds only 3, the −1 variance flags a loss the owner can investigate. This is the same method large restaurant chains use to control food cost, made simple enough to run from a phone.
+
+Common questions:
+- "How do I know how much inventory is left?" — recipes are subtracted from sales automatically; counts correct the estimate.
+- "Do I have to count every day?" — no; the running estimate is automatic, and counts are periodic.
+- "What is variance?" — the gap between expected and actual stock, showing where money leaks.
 
 ## Who ResBizAI is for
 
