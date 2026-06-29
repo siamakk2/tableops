@@ -294,6 +294,22 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
 .pnl-pull-note{font-size:12px;color:#15ac5b;margin-top:7px;font-weight:600;}
 .pnl-tip{font-size:12px;color:#8a7a6c;background:#fff;border:1px solid #f0e2d4;border-radius:10px;padding:9px 12px;margin-bottom:14px;}
 .pnl-tip b{color:#ff7518;}
+
+.pnl-locsel{border:1px solid #e9dccd;border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;background:#fff;color:#2a1c14;margin-right:6px;}
+.pnl-loc-badge{display:inline-block;margin-top:3px;font-size:10px;font-weight:700;color:#8a5a2b;background:#fff0dd;border-radius:5px;padding:1px 6px;}
+.rollup-cta{color:#8a7a6c;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.rollup-row{display:grid;grid-template-columns:1.6fr 1fr .8fr .8fr 1fr .8fr;gap:8px;padding:9px 6px;border-bottom:1px solid #f3ece2;font-size:13px;align-items:center;}
+.rollup-row.head{font-size:11px;font-weight:700;color:#7d6e62;text-transform:uppercase;letter-spacing:.4px;}
+.rollup-row.total{font-weight:800;color:#2a1c14;border-top:2px solid #f0e2d4;border-bottom:none;background:#fffaf3;}
+.rollup-row .rl-name{font-weight:700;color:#2a1c14;}
+.rl-ok{color:#15ac5b;font-weight:700;} .rl-bad{color:#e53e3e;font-weight:700;}
+.loc-sub{font-size:13px;color:#7d6e62;margin:0 0 14px;}
+.loc-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f3ece2;}
+.loc-nm{font-weight:700;color:#2a1c14;font-size:14px;} .loc-ct{font-size:12px;color:#aa9a8c;}
+.loc-rm{background:none;border:1px solid #f0d0c4;color:#c0341a;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;}
+.loc-add{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.loc-add input{flex:1;min-width:120px;border:1px solid #e9dccd;border-radius:8px;padding:9px;font:inherit;box-sizing:border-box;}
+@media(max-width:680px){.rollup-row{grid-template-columns:1.4fr 1fr .8fr .8fr;}.rollup-row div:nth-child(5),.rollup-row div:nth-child(6){display:none;}}
 </style>
 </head>
 <body>
@@ -610,6 +626,8 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
     <div id="scr-pnl" class="scr">
       <div class="topbar"><div><h1>Daily P&amp;L</h1><p>Real-time financials — owner only</p></div>
         <div class="topbar-right">
+          <select id="pnl-loc-filter" class="pnl-locsel" onchange="setPnlLoc(this.value)"><option value="all">All locations</option></select>
+          <button class="btn" onclick="openLocations()">Locations</button>
           <button class="btn" onclick="openPnlM()">+ Add entry</button>
           <button class="btn gold" onclick="printPnl()">⬇ Export</button>
         </div>
@@ -621,6 +639,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
           <div class="metric"><div class="mlbl">Labor cost</div><div class="mval" id="pnl-lab">$0</div><div class="mchg" id="pnl-lp"></div></div>
           <div class="metric"><div class="mlbl">Net profit</div><div class="mval" id="pnl-net">$0</div><div class="mchg" id="pnl-mp"></div></div>
         </div>
+        <div class="card" style="margin-bottom:14px;"><div class="inv-sec-h">Roll-up by location</div><div id="pnl-rollup"></div></div>
         <div class="pnl-tip">💡 When adding a day, tap <b>↻ Pull</b> to auto-fill Food &amp; Other costs from your AI-coded invoices — no re-typing.</div>
         <div class="card">
           <div class="card-title">Daily entries <span class="card-act" onclick="clearPnl()" style="color:#aa9a8c;font-size:11px;">Clear all</span></div>
@@ -827,10 +846,18 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
   <div class="brow"><button class="btn gold" onclick="save86()">86 it</button><button class="btn" onclick="closeM('m-86')">Cancel</button></div>
 </div></div>
 
+<div class="modal-bg" id="m-locations"><div class="modal">
+  <h2>Your locations <button class="mclose" onclick="closeM('m-locations')">×</button></h2>
+  <p class="loc-sub">Add each restaurant you operate, then tag P&amp;L days to a location to get a combined roll-up.</p>
+  <div id="loc-list"></div>
+  <div class="loc-add"><input type="text" id="loc-name" placeholder="Location name (e.g. Downtown)"><input type="text" id="loc-city" placeholder="City (optional)"><button class="btn gold" onclick="addLocation()">+ Add</button></div>
+</div></div>
+
 <div class="modal-bg" id="m-pnl"><div class="modal">
   <h2>Add P&amp;L entry <button class="mclose" onclick="closeM('m-pnl')">×</button></h2>
   <input type="hidden" id="pnl-eid"/>
   <div class="field"><label>Date *</label><input type="text" id="pnl-date" placeholder="Jun 27"/></div>
+  <div class="field"><label>Location</label><select id="pnl-loc-in"></select></div>
   <div class="frow"><div class="field"><label>Revenue ($)</label><input type="number" id="pnl-rev-in" placeholder="9200" min="0"/></div><div class="field"><label>Food cost ($)</label><input type="number" id="pnl-food-in" placeholder="2944" min="0"/></div></div>
   <div class="frow"><div class="field"><label>Labor cost ($)</label><input type="number" id="pnl-lab-in" placeholder="2668" min="0"/></div><div class="field"><label>Other costs ($)</label><input type="number" id="pnl-oth-in" placeholder="800" min="0"/></div></div>
   <div class="pnl-pull"><div class="pnl-pull-row"><label>Auto-fill costs from your AI-coded invoices for:</label><input type="date" id="pnl-pull-date"/><button class="btn sm" onclick="pnlPullInvoices()">↻ Pull</button></div><div class="pnl-pull-note" id="pnl-pull-note"></div></div>
@@ -869,6 +896,9 @@ var menu = [];
 var menuId = 10;
 var invoices = [];
 var invId = 10;
+var locations = [];
+var locId = 10;
+var pnlLocFilter = 'all';
 
 function uns(){ return (curUser && curUser.email ? curUser.email : 'anon').toLowerCase().replace(/[^a-z0-9]+/g,'_'); }
 function isDemo(){ return !!(curUser && curUser.email === 'demo@thejadeheron.com'); }
@@ -930,6 +960,8 @@ function loadData() {
   try { menu = JSON.parse(localStorage.getItem('to2_'+uns()+'_menu') || '[]'); } catch(e) { menu = []; }
   try { invoices = JSON.parse(localStorage.getItem('to2_'+uns()+'_invoices') || '[]'); } catch(e) { invoices = []; }
   invoices.forEach(function(x){ if(x.id>=invId) invId=x.id+1; });
+  try { locations = JSON.parse(localStorage.getItem('to2_'+uns()+'_locations') || '[]'); } catch(e) { locations = []; }
+  locations.forEach(function(x){ if(x.id>=locId) locId=x.id+1; });
   if (isDemo() && invoices.length===0) {
     invoices=[{id:5,vendor:'Greenleaf Produce',number:'4471',date:new Date(Date.now()-3*86400000).toISOString().split('T')[0],total:218.40,created:Date.now(),lineItems:[{description:'Roma tomatoes (12 cs)',qty:12,amount:48.00,category:'Food — Produce'},{description:'Spring mix (4 cs)',qty:4,amount:61.20,category:'Food — Produce'},{description:'Hass avocado (2 cs)',qty:2,amount:54.00,category:'Food — Produce'},{description:'Lemons (1 cs)',qty:1,amount:55.20,category:'Food — Produce'}],flags:{dup:'',variance:[]}}];
     invId=6;
@@ -997,8 +1029,8 @@ function loadData() {
 }
 
 function save(key) {
-  var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu',invoices:'to2_invoices'};
-  var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu,invoices:invoices};
+  var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu',invoices:'to2_invoices',locations:'to2_locations'};
+  var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu,invoices:invoices,locations:locations};
   try { localStorage.setItem('to2_'+uns()+'_'+key, JSON.stringify(data[key])); } catch(e) {}
 }
 
@@ -1619,18 +1651,62 @@ function delE86(id) { e86=e86.filter(function(x){return x.id!==id;}); save('e86'
 function clearEightySix() { if(!confirm('Clear 86 board?')) return; e86=[]; save('e86'); renderPrep(); }
 
 // ── P&L ──
+function pnlLocName(id){ if(!id)return ''; var l=locations.find(function(x){return String(x.id)===String(id);}); return l?l.name:''; }
+function setPnlLoc(v){ pnlLocFilter=v; renderPnl(); }
+function pnlFillLocSelects(){
+  var opts=locations.map(function(l){return '<option value="'+l.id+'">'+esc(l.name)+'</option>';}).join('');
+  var f=document.getElementById('pnl-loc-filter'); if(f){f.innerHTML='<option value="all">All locations</option>'+opts; f.value=pnlLocFilter;}
+  var inp=document.getElementById('pnl-loc-in');
+  if(inp){var cur=inp.value; inp.innerHTML=(locations.length?'':'<option value="">Main</option>')+opts; if(cur)inp.value=cur;}
+}
+function openLocations(){ renderLocList(); openM('m-locations'); }
+function renderLocList(){
+  var box=document.getElementById('loc-list'); if(!box)return;
+  box.innerHTML=locations.length?locations.map(function(l){
+    return '<div class="loc-item"><div><div class="loc-nm">'+esc(l.name)+'</div><div class="loc-ct">'+esc(l.city||'')+'</div></div><button class="loc-rm" onclick="removeLocation('+l.id+')">Remove</button></div>';
+  }).join(''):'<div class="inv-empty">No locations yet — add your first below.</div>';
+}
+function addLocation(){
+  var nm=(document.getElementById('loc-name').value||'').trim(); if(!nm)return;
+  var ct=(document.getElementById('loc-city').value||'').trim();
+  locations.push({id:locId++,name:nm,city:ct}); save('locations');
+  document.getElementById('loc-name').value=''; document.getElementById('loc-city').value='';
+  renderLocList(); pnlFillLocSelects(); renderPnl();
+}
+function removeLocation(id){
+  if(!confirm('Remove this location? P&L days tagged to it stay, but become unassigned.'))return;
+  locations=locations.filter(function(x){return x.id!==id;}); save('locations');
+  renderLocList(); pnlFillLocSelects(); renderPnl();
+}
+function renderRollup(){
+  var box=document.getElementById('pnl-rollup'); if(!box)return;
+  if(!locations.length){ box.innerHTML='<div class="rollup-cta">Operating more than one restaurant? Add your locations to get a combined roll-up. <button class="btn sm" onclick="openLocations()">Add locations</button></div>'; return; }
+  function agg(list){var r={rev:0,food:0,lab:0,oth:0};list.forEach(function(p){r.rev+=p.rev||0;r.food+=p.food||0;r.lab+=p.labor||0;r.oth+=p.other||0;});r.net=r.rev-r.food-r.lab-r.oth;return r;}
+  function pct(n,d){return d>0?Math.round(n/d*100):0;}
+  function money(n){return '$'+Math.round(n).toLocaleString();}
+  var rows=locations.map(function(l){return {name:l.name,a:agg(pnl.filter(function(p){return String(p.loc||'')===String(l.id);}))};});
+  var un=pnl.filter(function(p){return !p.loc;}); if(un.length){rows.push({name:'Unassigned',a:agg(un)});}
+  var tot=agg(pnl);
+  var head='<div class="rollup-row head"><div>Location</div><div>Revenue</div><div>Food %</div><div>Labor %</div><div>Net</div><div>Margin</div></div>';
+  var bodyh=rows.map(function(r){var a=r.a;return '<div class="rollup-row"><div class="rl-name">'+esc(r.name)+'</div><div>'+money(a.rev)+'</div><div class="'+(pct(a.food,a.rev)>34?'rl-bad':'rl-ok')+'">'+pct(a.food,a.rev)+'%</div><div class="'+(pct(a.lab,a.rev)>30?'rl-bad':'rl-ok')+'">'+pct(a.lab,a.rev)+'%</div><div class="'+(a.net>=0?'rl-ok':'rl-bad')+'">'+money(a.net)+'</div><div>'+pct(a.net,a.rev)+'%</div></div>';}).join('');
+  var totrow='<div class="rollup-row total"><div>All locations</div><div>'+money(tot.rev)+'</div><div>'+pct(tot.food,tot.rev)+'%</div><div>'+pct(tot.lab,tot.rev)+'%</div><div>'+money(tot.net)+'</div><div>'+pct(tot.net,tot.rev)+'%</div></div>';
+  box.innerHTML=head+bodyh+totrow;
+}
 function renderPnl() {
   var body = document.getElementById('pnl-body');
   var empty = document.getElementById('pnl-empty');
   if (!body) return;
-  if (pnl.length === 0) { empty.style.display='block'; body.innerHTML=''; updatePnlTotals(); return; }
+  pnlFillLocSelects();
+  var view = (pnlLocFilter==='all') ? pnl : pnl.filter(function(p){ return String(p.loc||'')===String(pnlLocFilter); });
+  if (view.length === 0) { empty.style.display='block'; body.innerHTML=''; updatePnlTotals(view); renderRollup(); return; }
   empty.style.display = 'none';
-  body.innerHTML = pnl.map(function(p) {
+  body.innerHTML = view.map(function(p) {
     var net = p.rev - p.food - p.labor - p.other;
     var fp = p.rev > 0 ? Math.round(p.food/p.rev*100) : 0;
     var lp = p.rev > 0 ? Math.round(p.labor/p.rev*100) : 0;
+    var ln = pnlLocName(p.loc);
     return '<tr>' +
-      '<td><strong>' + p.date + '</strong></td>' +
+      '<td><strong>' + p.date + '</strong>' + (ln?'<div class="pnl-loc-badge">'+esc(ln)+'</div>':'') + '</td>' +
       '<td>$' + p.rev.toLocaleString() + '</td>' +
       '<td>$' + p.food.toLocaleString() + ' <span style="font-size:10px;color:' + (fp>34?'#e53e3e':'#38a169') + ';">(' + fp + '%)</span></td>' +
       '<td>$' + p.labor.toLocaleString() + ' <span style="font-size:10px;color:' + (lp>30?'#e53e3e':'#38a169') + ';">(' + lp + '%)</span></td>' +
@@ -1641,12 +1717,13 @@ function renderPnl() {
         '<button onclick="delPnl(' + p.id + ')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕</button>' +
       '</td></tr>';
   }).join('');
-  updatePnlTotals();
+  updatePnlTotals(view); renderRollup();
 }
 
-function updatePnlTotals() {
+function updatePnlTotals(list) {
+  list=list||pnl;
   var tRev=0,tFood=0,tLab=0,tOth=0;
-  pnl.forEach(function(p){tRev+=p.rev;tFood+=p.food;tLab+=p.labor;tOth+=p.other;});
+  list.forEach(function(p){tRev+=p.rev;tFood+=p.food;tLab+=p.labor;tOth+=p.other;});
   var tNet=tRev-tFood-tLab-tOth;
   var el;
   el=document.getElementById('pnl-rev'); if(el)el.textContent='$'+tRev.toLocaleString();
@@ -1663,6 +1740,7 @@ function openPnlM() {
   ['pnl-date','pnl-rev-in','pnl-food-in','pnl-lab-in','pnl-oth-in'].forEach(function(id){document.getElementById(id).value='';});
   var _pd=document.getElementById('pnl-pull-date'); if(_pd)_pd.value=new Date().toISOString().split('T')[0];
   var _pn=document.getElementById('pnl-pull-note'); if(_pn)_pn.textContent='';
+  pnlFillLocSelects();
   openM('m-pnl');
 }
 
@@ -1674,6 +1752,7 @@ function editPnl(id) {
   document.getElementById('pnl-food-in').value=p.food;
   document.getElementById('pnl-lab-in').value=p.labor;
   document.getElementById('pnl-oth-in').value=p.other;
+  pnlFillLocSelects(); var _li=document.getElementById('pnl-loc-in'); if(_li)_li.value=p.loc||'';
   openM('m-pnl');
 }
 
@@ -1700,7 +1779,7 @@ function savePnl() {
   if(!date){alert('Date is required.');return;}
   if(!rev){alert('Revenue is required.');return;}
   var eid=parseInt(document.getElementById('pnl-eid').value)||0;
-  var data={date:date,rev:rev,food:parseFloat(document.getElementById('pnl-food-in').value)||0,labor:parseFloat(document.getElementById('pnl-lab-in').value)||0,other:parseFloat(document.getElementById('pnl-oth-in').value)||0};
+  var data={date:date,rev:rev,food:parseFloat(document.getElementById('pnl-food-in').value)||0,labor:parseFloat(document.getElementById('pnl-lab-in').value)||0,other:parseFloat(document.getElementById('pnl-oth-in').value)||0,loc:(document.getElementById('pnl-loc-in')?document.getElementById('pnl-loc-in').value:'')};
   if(eid){var idx=pnl.findIndex(function(x){return x.id===eid;}); if(idx>=0)pnl[idx]=Object.assign({id:eid},data);}
   else{data.id=pnlId++;pnl.push(data);}
   save('pnl');renderPnl();closeM('m-pnl');
