@@ -265,7 +265,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       <a class="abtn" href="https://buy.stripe.com/cNi28s8XecV26Neb2p0kE01" style="display:block;text-align:center;text-decoration:none">Start your free month →</a>
       <div class="adiv">— or —</div>
       <button class="abtn ghost" onclick="demo()">👀 Try the demo — no account needed</button>
-      <p style="color:#7a6a5d;font-size:12.5px;line-height:1.5;margin-top:14px;text-align:center">Already signed up but no login yet? <a href="https://resbizai.com/#contact" style="color:#ea5230;font-weight:600">Contact us</a>.</p>
+      <p style="color:#7a6a5d;font-size:12.5px;line-height:1.5;margin-top:14px;text-align:center">Already signed up but no login yet? <a href="https://resbizai.com/#contact" style="color:#ff4f2e;font-weight:600">Contact us</a>.</p>
     </div>
   </div>
 </div>
@@ -758,7 +758,7 @@ function loadRest(){ if(isDemo()) return {name:"The Jade Heron", city:"Napa", cu
 function saveRest(r){ try{ localStorage.setItem('to2_'+uns()+'_rest', JSON.stringify(r)); }catch(e){} }
 function renderTeam(){
   var tb=document.getElementById('team-body'); if(!tb) return;
-  if(!staff||!staff.length){ tb.innerHTML='<div style="padding:10px 2px;color:#6b7280;font-size:13px;">No team added yet. <a onclick="go(\'staff\')" style="color:#1e8a52;font-weight:700;cursor:pointer;">Add your team →</a></div>'; return; }
+  if(!staff||!staff.length){ tb.innerHTML='<div style="padding:10px 2px;color:#6b7280;font-size:13px;">No team added yet. <a onclick="go(\'staff\')" style="color:#15ac5b;font-weight:700;cursor:pointer;">Add your team →</a></div>'; return; }
   var pal=[['#dcfce7','#166534'],['#dbeafe','#1e40af'],['#ede9fe','#5b21b6'],['#fef3c7','#92400e'],['#fee2e2','#991b1b']];
   tb.innerHTML=staff.map(function(p,i){ var fn=(p.first||''),ln=(p.last||''); var ini=((fn.charAt(0)||'')+(ln.charAt(0)||'')).toUpperCase()||'?'; var col=pal[i%pal.length]; var owner=(p.access==='owner'||/owner/i.test(p.role||'')); return '<div class="srow"><div class="sav" style="background:'+col[0]+';color:'+col[1]+';">'+esc(ini)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">'+esc((fn+' '+ln).trim())+'</div><div style="font-size:11px;color:#6b7280;">'+esc(p.role||'')+'</div></div><span class="badge green">'+(owner?'On site':'On shift')+'</span></div>'; }).join(''); }
 function renderDash(){
@@ -779,7 +779,7 @@ function renderDash(){
   S('m-cov','—'); S('m-cov-c','Set in P&L →');
   if(ab){ var rows='';
     (inv||[]).forEach(function(it){ if(it.status==='critical'||it.status==='low'){ var col=it.status==='critical'?'#e53e3e':'#f39c12'; rows+='<div class="arow"><div class="adot" style="background:'+col+'"></div><div class="atxt"><div class="atitle">'+esc(it.name)+' — '+it.status+' stock</div><div class="asub">'+(it.qty||0)+' '+esc(it.unit||'')+' left · par '+(it.par||0)+'</div></div></div>'; } });
-    if(!rows) rows='<div class="arow"><div class="adot" style="background:#1e8a52"></div><div class="atxt"><div class="atitle">No active alerts</div><div class="asub">Add inventory and low-stock alerts show up here.</div></div></div>';
+    if(!rows) rows='<div class="arow"><div class="adot" style="background:#15ac5b"></div><div class="atxt"><div class="atitle">No active alerts</div><div class="asub">Add inventory and low-stock alerts show up here.</div></div></div>';
     ab.innerHTML=rows; }
 }
 function loadData() {
@@ -1272,7 +1272,7 @@ function renderMenu() {
       '<td>$' + m.price + '</td>' +
       '<td style="font-size:12px;color:#6b7280;">' + (m.desc || '') + '</td>' +
       '<td style="white-space:nowrap">' +
-        '<button onclick="openRecipe(' + m.id + ')" style="background:#1e8a52;color:#fff;border:none;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;margin-right:6px;font-family:Inter,sans-serif;">Recipe' + ((m.recipe&&m.recipe.length)?(' ('+m.recipe.length+')'):'') + '</button>' +
+        '<button onclick="openRecipe(' + m.id + ')" style="background:#15ac5b;color:#fff;border:none;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;margin-right:6px;font-family:Inter,sans-serif;">Recipe' + ((m.recipe&&m.recipe.length)?(' ('+m.recipe.length+')'):'') + '</button>' +
         '<button onclick="delMenu(' + m.id + ')" style="background:none;border:none;color:#e53e3e;font-size:12px;cursor:pointer;font-family:Inter,sans-serif;">✕</button>' +
       '</td></tr>';
   }).join('');
