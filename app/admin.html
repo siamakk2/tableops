@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Owner accounts · ResBizAI admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--cream:#fff9f0;--butter:#fff4e3;--tomato:#ea5230;--herb:#1e8a52;--honey:#f2a93b;--ink:#2a1e1a;--line:#efe2d3;--slate:#8a7a6d;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 18px 60px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;max-width:480px;width:100%;padding:34px 30px;box-shadow:0 18px 50px rgba(42,30,26,.08);margin-top:24px;}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--tomato);display:flex;align-items:center;justify-content:center;}
+  .mark svg{width:19px;height:19px;}
+  .brand b{font-family:'Fraunces',serif;font-size:21px;font-weight:600;}
+  h1{font-family:'Fraunces',serif;font-size:27px;font-weight:600;margin:18px 0 6px;letter-spacing:-.01em;}
+  .sub{color:var(--slate);font-size:14.5px;margin-bottom:24px;line-height:1.5;}
+  label{display:block;font-size:13px;font-weight:600;margin:16px 0 6px;}
+  input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;font-size:15px;font-family:inherit;background:var(--cream);}
+  input:focus{outline:none;border-color:var(--tomato);background:#fff;}
+  .row{display:flex;gap:10px;align-items:flex-end;}
+  .row .grow{flex:1;}
+  .mini{background:var(--butter);border:1px solid var(--line);border-radius:11px;padding:13px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--ink);}
+  .mini:hover{border-color:var(--honey);}
+  .btn{width:100%;margin-top:24px;padding:15px;border:none;border-radius:12px;background:var(--tomato);color:#fff;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .15s,opacity .15s;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.55;cursor:default;transform:none;}
+  .msg{margin-top:18px;padding:14px 15px;border-radius:11px;font-size:14px;line-height:1.5;display:none;}
+  .msg.err{display:block;background:#fdece8;border:1px solid #f6c4b6;color:#9c2d12;}
+  .msg.ok{display:block;background:#e7f5ec;border:1px solid #b6e0c6;color:#15663b;}
+  .creds{margin-top:14px;background:var(--butter);border:1px solid var(--line);border-radius:12px;padding:15px;font-size:14px;display:none;}
+  .creds.show{display:block;}
+  .creds .k{font-family:ui-monospace,Menlo,monospace;font-weight:600;}
+  .creds .copy{margin-top:12px;display:inline-block;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer;}
+  .foot{margin-top:22px;font-size:12.5px;color:var(--slate);line-height:1.55;border-top:1px solid var(--line);padding-top:16px;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v7a3 3 0 0 0 3 3 3 3 0 0 0 3-3V3M7 13v8"/><path d="M17 3c-1.5 0-3 1.8-3 5s1.5 5 3 5 0 0 0 0v8"/></svg></span>
+      <b>ResBizAI</b>
+    </div>
+    <h1>Create an owner account</h1>
+    <p class="sub">Admin only. Each account you create here lets one restaurant owner sign in at resbizai.com/app. Hand them the email + temporary password — they can change it later.</p>
+
+    <label for="f-name">Owner name</label>
+    <input id="f-name" placeholder="e.g. Maria Sanchez" autocomplete="off"/>
+
+    <label for="f-rest">Restaurant name</label>
+    <input id="f-rest" placeholder="e.g. Bella Trattoria" autocomplete="off"/>
+
+    <label for="f-email">Owner email (their login)</label>
+    <input id="f-email" type="email" placeholder="owner@theirrestaurant.com" autocomplete="off"/>
+
+    <label for="f-pw">Temporary password</label>
+    <div class="row">
+      <div class="grow"><input id="f-pw" placeholder="at least 8 characters" autocomplete="off"/></div>
+      <button class="mini" type="button" onclick="genPw()">Generate</button>
+    </div>
+
+    <label for="f-secret">Your admin password</label>
+    <input id="f-secret" type="password" placeholder="the ADMIN_SECRET you set in Vercel" autocomplete="off"/>
+
+    <button class="btn" id="go" onclick="createOwner()">Create account</button>
+
+    <div class="msg" id="msg"></div>
+    <div class="creds" id="creds"></div>
+
+    <p class="foot">Accounts are stored securely in Supabase. This page only works with your admin password and never stores it. To remove or reset an owner later, use your Supabase dashboard &rarr; Authentication &rarr; Users.</p>
+  </div>
+
+<script>
+function genPw(){
+  var chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  var out='';
+  for(var i=0;i<12;i++){ out+=chars.charAt(Math.floor(Math.random()*chars.length)); }
+  document.getElementById('f-pw').value=out;
+}
+function show(type,text){
+  var m=document.getElementById('msg');
+  m.className='msg '+type; m.textContent=text;
+}
+function createOwner(){
+  var name=(document.getElementById('f-name').value||'').trim();
+  var restaurant=(document.getElementById('f-rest').value||'').trim();
+  var email=(document.getElementById('f-email').value||'').trim().toLowerCase();
+  var password=document.getElementById('f-pw').value||'';
+  var secret=document.getElementById('f-secret').value||'';
+  document.getElementById('creds').className='creds';
+  if(!email||email.indexOf('@')<0){ show('err','Enter a valid owner email.'); return; }
+  if(password.length<8){ show('err','Temporary password must be at least 8 characters.'); return; }
+  if(!secret){ show('err','Enter your admin password.'); return; }
+
+  var btn=document.getElementById('go');
+  btn.disabled=true; btn.textContent='Creating...';
+  show('ok','Working...');
+
+  fetch('/api/admin',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({secret:secret,email:email,password:password,name:name,restaurant:restaurant})
+  }).then(function(r){return r.json();}).then(function(d){
+    btn.disabled=false; btn.textContent='Create account';
+    if(d && d.ok){
+      show('ok','Account created for '+d.email+'.');
+      var c=document.getElementById('creds');
+      c.className='creds show';
+      c.innerHTML='<div>Hand these to the owner:</div>'+
+        '<div style="margin-top:8px">Login page: <span class="k">resbizai.com/app</span></div>'+
+        '<div>Email: <span class="k" id="cE"></span></div>'+
+        '<div>Temp password: <span class="k" id="cP"></span></div>'+
+        '<span class="copy" onclick="copyCreds()">Copy all</span>';
+      document.getElementById('cE').textContent=email;
+      document.getElementById('cP').textContent=password;
+      window._creds='ResBizAI login\nGo to: resbizai.com/app\nEmail: '+email+'\nTemporary password: '+password;
+      document.getElementById('f-name').value='';
+      document.getElementById('f-rest').value='';
+      document.getElementById('f-email').value='';
+      document.getElementById('f-pw').value='';
+    } else {
+      show('err',(d && d.error) ? d.error : 'Something went wrong.');
+    }
+  }).catch(function(e){
+    btn.disabled=false; btn.textContent='Create account';
+    show('err','Network error: '+(e&&e.message?e.message:e));
+  });
+}
+function copyCreds(){
+  if(window._creds && navigator.clipboard){ navigator.clipboard.writeText(window._creds); }
+}
+</script>
+</body>
+</html>
