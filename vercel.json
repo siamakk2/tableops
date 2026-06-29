@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/app/reset.html",
+      "destination": "/app/reset.html"
+    },
+    {
       "source": "/app/admin.html",
       "destination": "/app/admin.html"
     },
@@ -55,6 +59,11 @@
     {
       "source": "/admin",
       "destination": "/app/admin.html",
+      "permanent": false
+    },
+    {
+      "source": "/reset",
+      "destination": "/app/reset.html",
       "permanent": false
     }
   ]
