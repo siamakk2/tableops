@@ -219,7 +219,26 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
   .g2,.g3{grid-template-columns:1fr;}
   .rcards{grid-template-columns:1fr 1fr;}
 }
-.tblx{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}@media(max-width:768px){.scr{padding:14px 14px 92px;}.topbar{flex-wrap:wrap;gap:8px;}.topbar h1{font-size:18px;line-height:1.2;}.topbar p{font-size:12px;}.topbar-right{flex-wrap:wrap;width:100%;}.btn{padding:7px 11px;font-size:12px;}.tbl{white-space:nowrap;font-size:12px;}.tbl th,.tbl td{padding:7px 9px;}.metric{padding:14px;}.mval{font-size:24px;}.modal{width:100%!important;max-height:88vh;overflow-y:auto;}.modal-bg{padding:12px;}}</style>
+.tblx{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;}@media(max-width:768px){.scr{padding:14px 14px 92px;}.topbar{flex-wrap:wrap;gap:8px;}.topbar h1{font-size:18px;line-height:1.2;}.topbar p{font-size:12px;}.topbar-right{flex-wrap:wrap;width:100%;}.btn{padding:7px 11px;font-size:12px;}.tbl{white-space:nowrap;font-size:12px;}.tbl th,.tbl td{padding:7px 9px;}.metric{padding:14px;}.mval{font-size:24px;}.modal{width:100%!important;max-height:88vh;overflow-y:auto;}.modal-bg{padding:12px;}}
+.sb-foot{padding:12px;border-top:1px solid #f0e2d4;}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-uinfo{min-width:0;flex:1;}
+.sb-un{font-weight:700;font-size:13px;color:#2a1c14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-ur{font-size:11px;color:#7d6e62;}
+.acct-out{margin-top:10px;text-align:center;font-weight:800;font-size:13px;color:#fff;background:#ff4f2e;border-radius:10px;padding:10px;cursor:pointer;transition:background .15s;}
+.acct-out:hover{background:#e8431f;}
+.acct-card{background:linear-gradient(135deg,#fff3e9,#ffe8d6);border:1px solid #ffd9bf;border-radius:14px;padding:14px;text-align:center;}
+.acct-tag{font-weight:800;font-size:12px;color:#ff4f2e;letter-spacing:.4px;}
+.acct-sub{font-size:12px;color:#7d6e62;margin:4px 0 10px;}
+.acct-cta{display:block;background:#ff4f2e;color:#fff;font-weight:800;font-size:13px;text-decoration:none;border-radius:10px;padding:10px;transition:background .15s;}
+.acct-cta:hover{background:#e8431f;}
+.acct-login{font-size:12px;color:#7d6e62;margin-top:9px;cursor:pointer;}
+.acct-login b{color:#2a1c14;}
+.demo-bar{display:none;position:sticky;top:0;z-index:40;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;background:linear-gradient(90deg,#ff4f2e,#ffa620);color:#fff;padding:10px 16px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.demo-bar .db-txt b{font-weight:800;}
+.demo-bar .db-cta{background:#fff;color:#d23a17;font-weight:800;text-decoration:none;border-radius:8px;padding:7px 14px;white-space:nowrap;}
+.demo-bar .db-cta:hover{background:#fff3e9;}
+</style>
 </head>
 <body>
 
@@ -302,7 +321,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
       <div class="sb-sec">Settings</div>
       <div class="sb-item" onclick="go('settings',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Restaurant settings</div>
     </div>
-    <div class="sb-foot">
+    <div class="sb-foot" id="sb-foot">
       <div class="sb-user">
         <div class="sb-av" id="sb-av">SK</div>
         <div><div class="sb-un" id="sb-un">Siamak Kalhor</div><div class="sb-ur" id="sb-ur">Owner</div></div>
@@ -312,6 +331,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
   </div>
 
   <div class="main">
+    <div class="demo-bar" id="demo-bar"></div>
 
     <!-- DASHBOARD -->
     <div id="scr-dashboard" class="scr on">
@@ -762,7 +782,27 @@ function renderTeam(){
   if(!staff||!staff.length){ tb.innerHTML='<div style="padding:10px 2px;color:#7d6e62;font-size:13px;">No team added yet. <a onclick="go(\'staff\')" style="color:#15ac5b;font-weight:700;cursor:pointer;">Add your team →</a></div>'; return; }
   var pal=[['#dcfce7','#166534'],['#dbeafe','#1e40af'],['#ede9fe','#5b21b6'],['#fef3c7','#92400e'],['#fee2e2','#991b1b']];
   tb.innerHTML=staff.map(function(p,i){ var fn=(p.first||''),ln=(p.last||''); var ini=((fn.charAt(0)||'')+(ln.charAt(0)||'')).toUpperCase()||'?'; var col=pal[i%pal.length]; var owner=(p.access==='owner'||/owner/i.test(p.role||'')); return '<div class="srow"><div class="sav" style="background:'+col[0]+';color:'+col[1]+';">'+esc(ini)+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600;">'+esc((fn+' '+ln).trim())+'</div><div style="font-size:11px;color:#7d6e62;">'+esc(p.role||'')+'</div></div><span class="badge green">'+(owner?'On site':'On shift')+'</span></div>'; }).join(''); }
+function resbizTrialURL(){ return 'https://buy.stripe.com/cNi28s8XecV26Neb2p0kE01'; }
+function renderAccount(){
+  var demo = (typeof isDemo==='function') ? isDemo() : false;
+  var bar = document.getElementById('demo-bar');
+  if(bar){
+    if(demo){ bar.style.display='flex'; bar.innerHTML='<span class="db-txt"><b>This is a live demo.</b> Start your free month to run it for your own restaurant.</span><a class="db-cta" href="'+resbizTrialURL()+'" target="_blank" rel="noopener">Start your free month \u2192</a>'; }
+    else { bar.style.display='none'; }
+  }
+  var foot = document.getElementById('sb-foot');
+  if(!foot) return;
+  if(demo){
+    foot.innerHTML='<div class="acct-card"><div class="acct-tag">\ud83d\udc40 Demo mode</div><div class="acct-sub">Viewing sample data.</div><a class="acct-cta" href="'+resbizTrialURL()+'" target="_blank" rel="noopener">Start your free month \u2192</a><div class="acct-login" onclick="logout()">Already a member? <b>Log in</b></div></div>';
+  } else {
+    var nm=(curUser&&(curUser.name||curUser.email))||'Owner';
+    var ini=(nm||'U').split(' ').map(function(n){return (n||'').charAt(0);}).join('').toUpperCase().slice(0,2)||'U';
+    var role=(curUser&&curUser.role)||'owner'; role=role.charAt(0).toUpperCase()+role.slice(1);
+    foot.innerHTML='<div class="sb-user"><div class="sb-av" id="sb-av">'+esc(ini)+'</div><div class="sb-uinfo"><div class="sb-un" id="sb-un">'+esc(nm)+'</div><div class="sb-ur" id="sb-ur">'+esc(role)+'</div></div></div><div class="acct-out" onclick="logout()">Log out</div>';
+  }
+}
 function renderDash(){
+  try{renderAccount();}catch(e){}
   function S(id,v){ var el=document.getElementById(id); if(el!=null) el.textContent=v; }
   renderTeam(); var _ai=document.getElementById('ai-intro'); if(_ai){ if(isDemo()){ _ai.innerHTML='<p>Good evening. Here is your briefing for <strong>The Jade Heron tonight</strong>:</p><ul><li><strong>Chili Rock Shrimp</strong> is 86\'d \u2014 out of stock</li><li><strong>Coffee</strong> is out of stock tonight</li><li><strong>120 covers</strong> booked \u2014 fully packed</li><li><strong>Uni</strong> needs a freshness check before service</li></ul><p>Ask me anything \u2014 staff, inventory, recipes, finance, or any cuisine in the world.</p>'; } else { _ai.innerHTML='<p>Hi! I\'m your ResBizAI assistant for <strong>'+esc(loadRest().name)+'</strong> \u2014 staff, scheduling, inventory, menu, recipes, food &amp; labor cost, P&amp;L, and any cuisine in the world.</p><p>Add your data through the menu, or just ask me anything to get started.</p>'; } } var ab=document.getElementById('alerts-body');
   if(isDemo()){
@@ -975,9 +1015,9 @@ function enterApp() {
 
   if (curUser) {
     var ini = (curUser.name || 'U').split(' ').map(function(n) { return (n||'').charAt(0); }).join('').toUpperCase().slice(0, 2) || 'U';
-    document.getElementById('sb-av').textContent = ini;
-    document.getElementById('sb-un').textContent = curUser.name || curUser.email || 'User';
-    document.getElementById('sb-ur').textContent = (curUser.role || 'owner').charAt(0).toUpperCase() + (curUser.role || 'owner').slice(1);
+    var _av=document.getElementById('sb-av'); if(_av)_av.textContent = ini;
+    var _un=document.getElementById('sb-un'); if(_un)_un.textContent = curUser.name || curUser.email || 'User';
+    var _ur=document.getElementById('sb-ur'); if(_ur)_ur.textContent = (curUser.role || 'owner').charAt(0).toUpperCase() + (curUser.role || 'owner').slice(1); try{renderAccount();}catch(e){}
   }
 
   var h = new Date().getHours();
