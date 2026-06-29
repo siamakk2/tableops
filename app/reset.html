@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex"/>
+<title>Reset password · ResBizAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--cream:#fffdf9;--butter:#fff0e0;--tomato:#ff4f2e;--herb:#15ac5b;--ink:#2a1e1a;--line:#f1e2d2;--slate:#8a7a70;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:20px;max-width:440px;width:100%;padding:34px 30px;box-shadow:0 18px 50px rgba(42,30,26,.08);}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--tomato);display:flex;align-items:center;justify-content:center;}
+  .mark svg{width:19px;height:19px;}
+  .brand b{font-family:'Fraunces',serif;font-size:21px;font-weight:600;}
+  h1{font-family:'Fraunces',serif;font-size:25px;font-weight:600;margin:6px 0 6px;}
+  .sub{color:var(--slate);font-size:14.5px;margin-bottom:22px;line-height:1.5;}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;}
+  input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:11px;font-size:15px;font-family:inherit;background:var(--cream);}
+  input:focus{outline:none;border-color:var(--tomato);background:#fff;}
+  .btn{width:100%;margin-top:22px;padding:15px;border:none;border-radius:12px;background:var(--tomato);color:#fff;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .msg{margin-top:18px;padding:14px 15px;border-radius:11px;font-size:14px;line-height:1.5;display:none;}
+  .msg.err{display:block;background:#fdece8;border:1px solid #f6c4b6;color:#9c2d12;}
+  .msg.ok{display:block;background:#e7f5ec;border:1px solid #b6e0c6;color:#15663b;}
+  .foot{margin-top:20px;font-size:13.5px;color:var(--slate);text-align:center;}
+  .foot a{color:var(--tomato);font-weight:600;text-decoration:none;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v7a3 3 0 0 0 3 3 3 3 0 0 0 3-3V3M7 13v8"/><path d="M17 3c-1.5 0-3 1.8-3 5s1.5 5 3 5v8"/></svg></span>
+      <b>ResBizAI</b>
+    </div>
+
+    <div id="request">
+      <h1>Reset your password</h1>
+      <p class="sub">Enter the email you use to sign in and we'll send you a link to set a new password.</p>
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="you@restaurant.com" autocomplete="email"/>
+      <button class="btn" id="reqBtn" onclick="sendReset()">Send reset link</button>
+    </div>
+
+    <div id="reset" style="display:none">
+      <h1>Set a new password</h1>
+      <p class="sub">Choose a new password for your account.</p>
+      <label for="newpw">New password</label>
+      <input id="newpw" type="password" placeholder="at least 8 characters" autocomplete="new-password"/>
+      <button class="btn" id="setBtn" onclick="setNewPw()">Update password</button>
+    </div>
+
+    <div class="msg" id="msg"></div>
+    <div class="foot"><a href="/app">&larr; Back to sign in</a></div>
+  </div>
+
+<script>
+var SB_URL='https://dfytyzgbihqggkwuzkfx.supabase.co';
+var SB_KEY='sb_publishable_4WA8MeOaniWhLWU2C2DGQQ_VkMN30lx';
+function msg(t,type){var m=document.getElementById('msg');m.className='msg '+type;m.textContent=t;}
+function parseHash(){
+  var h=(location.hash||'').replace(/^#/,'');
+  var p=new URLSearchParams(h);
+  return {token:p.get('access_token'),type:p.get('type'),err:p.get('error_description')};
+}
+var hp=parseHash();
+if(hp.err){ msg(decodeURIComponent(hp.err.replace(/\+/g,' ')),'err'); }
+if(hp.token && hp.type==='recovery'){
+  document.getElementById('request').style.display='none';
+  document.getElementById('reset').style.display='block';
+}
+function sendReset(){
+  var email=(document.getElementById('email').value||'').trim().toLowerCase();
+  if(!email||email.indexOf('@')<0){ msg('Please enter a valid email.','err'); return; }
+  var b=document.getElementById('reqBtn'); b.disabled=true; b.textContent='Sending...';
+  fetch(SB_URL+'/auth/v1/recover?redirect_to='+encodeURIComponent(location.origin+'/reset'),{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY},
+    body:JSON.stringify({email:email})
+  }).then(function(){
+    b.disabled=false; b.textContent='Send reset link';
+    msg('If that email has an account, a reset link is on its way. Check your inbox (and spam).','ok');
+  }).catch(function(){
+    b.disabled=false; b.textContent='Send reset link';
+    msg('Could not send right now. Please try again in a moment.','err');
+  });
+}
+function setNewPw(){
+  var pw=document.getElementById('newpw').value||'';
+  if(pw.length<8){ msg('Password must be at least 8 characters.','err'); return; }
+  var b=document.getElementById('setBtn'); b.disabled=true; b.textContent='Updating...';
+  fetch(SB_URL+'/auth/v1/user',{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+hp.token},
+    body:JSON.stringify({password:pw})
+  }).then(function(r){return r.json();}).then(function(d){
+    b.disabled=false; b.textContent='Update password';
+    if(d && (d.id || d.user)){
+      msg('Password updated! You can sign in now.','ok');
+      document.getElementById('reset').style.display='none';
+    } else {
+      msg((d && (d.msg||d.error_description||d.error)) || 'That link may have expired — request a new one.','err');
+    }
+  }).catch(function(){
+    b.disabled=false; b.textContent='Update password';
+    msg('Something went wrong. Request a new link and try again.','err');
+  });
+}
+</script>
+</body>
+</html>
