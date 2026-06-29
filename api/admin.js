@@ -6,11 +6,19 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    var SUPABASE_URL = process.env.SUPABASE_URL;
-    var SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    // Auto-detect across the names the Supabase/Vercel integration may have set
+    var SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    var SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+                   || process.env.SUPABASE_SECRET_KEY
+                   || process.env.SUPABASE_SERVICE_KEY;
     var ADMIN_SECRET = process.env.ADMIN_SECRET;
+
     if (!SUPABASE_URL || !SERVICE_KEY || !ADMIN_SECRET) {
-      return res.status(200).json({ ok: false, error: 'Server not configured yet. Add SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and ADMIN_SECRET in Vercel environment variables, then redeploy.' });
+      var miss = [];
+      if (!SUPABASE_URL) miss.push('SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL)');
+      if (!SERVICE_KEY) miss.push('SUPABASE_SERVICE_ROLE_KEY');
+      if (!ADMIN_SECRET) miss.push('ADMIN_SECRET');
+      return res.status(200).json({ ok: false, error: 'Missing in Vercel: ' + miss.join(', ') + '. Add it under Settings → Environment Variables, then redeploy.' });
     }
 
     var body = req.body;
