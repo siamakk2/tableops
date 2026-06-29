@@ -286,6 +286,14 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
 .btn.sm{padding:6px 11px;font-size:12px;}
 .btn.ghost{background:#fff;border:1px solid #e9dccd;color:#7d6e62;}
 @media(max-width:680px){.inv-cards{grid-template-columns:1fr;}.inv-fields{grid-template-columns:1fr;}.inv-row{grid-template-columns:1fr 1fr;}}
+
+.pnl-pull{background:#fffaf3;border:1px dashed #f0d8be;border-radius:10px;padding:11px 12px;margin:6px 0 12px;}
+.pnl-pull-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.pnl-pull-row label{font-size:12px;color:#7d6e62;font-weight:600;}
+.pnl-pull-row input[type=date]{border:1px solid #e9dccd;border-radius:7px;padding:6px 8px;font:inherit;font-size:12px;}
+.pnl-pull-note{font-size:12px;color:#15ac5b;margin-top:7px;font-weight:600;}
+.pnl-tip{font-size:12px;color:#8a7a6c;background:#fff;border:1px solid #f0e2d4;border-radius:10px;padding:9px 12px;margin-bottom:14px;}
+.pnl-tip b{color:#ff7518;}
 </style>
 </head>
 <body>
@@ -602,7 +610,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
     <div id="scr-pnl" class="scr">
       <div class="topbar"><div><h1>Daily P&amp;L</h1><p>Real-time financials — owner only</p></div>
         <div class="topbar-right">
-          <button class="btn" onclick="openM('m-pnl')">+ Add entry</button>
+          <button class="btn" onclick="openPnlM()">+ Add entry</button>
           <button class="btn gold" onclick="printPnl()">⬇ Export</button>
         </div>
       </div>
@@ -613,6 +621,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
           <div class="metric"><div class="mlbl">Labor cost</div><div class="mval" id="pnl-lab">$0</div><div class="mchg" id="pnl-lp"></div></div>
           <div class="metric"><div class="mlbl">Net profit</div><div class="mval" id="pnl-net">$0</div><div class="mchg" id="pnl-mp"></div></div>
         </div>
+        <div class="pnl-tip">💡 When adding a day, tap <b>↻ Pull</b> to auto-fill Food &amp; Other costs from your AI-coded invoices — no re-typing.</div>
         <div class="card">
           <div class="card-title">Daily entries <span class="card-act" onclick="clearPnl()" style="color:#aa9a8c;font-size:11px;">Clear all</span></div>
           <div class="tblx"><table class="tbl"><thead><tr><th>Date</th><th>Revenue</th><th>Food cost</th><th>Labor</th><th>Other</th><th>Net</th><th></th></tr></thead>
@@ -824,6 +833,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
   <div class="field"><label>Date *</label><input type="text" id="pnl-date" placeholder="Jun 27"/></div>
   <div class="frow"><div class="field"><label>Revenue ($)</label><input type="number" id="pnl-rev-in" placeholder="9200" min="0"/></div><div class="field"><label>Food cost ($)</label><input type="number" id="pnl-food-in" placeholder="2944" min="0"/></div></div>
   <div class="frow"><div class="field"><label>Labor cost ($)</label><input type="number" id="pnl-lab-in" placeholder="2668" min="0"/></div><div class="field"><label>Other costs ($)</label><input type="number" id="pnl-oth-in" placeholder="800" min="0"/></div></div>
+  <div class="pnl-pull"><div class="pnl-pull-row"><label>Auto-fill costs from your AI-coded invoices for:</label><input type="date" id="pnl-pull-date"/><button class="btn sm" onclick="pnlPullInvoices()">↻ Pull</button></div><div class="pnl-pull-note" id="pnl-pull-note"></div></div>
   <div class="brow"><button class="btn gold" onclick="savePnl()">Save</button><button class="btn" onclick="closeM('m-pnl')">Cancel</button></div>
 </div></div>
 
@@ -1651,6 +1661,8 @@ function updatePnlTotals() {
 function openPnlM() {
   document.getElementById('pnl-eid').value='';
   ['pnl-date','pnl-rev-in','pnl-food-in','pnl-lab-in','pnl-oth-in'].forEach(function(id){document.getElementById(id).value='';});
+  var _pd=document.getElementById('pnl-pull-date'); if(_pd)_pd.value=new Date().toISOString().split('T')[0];
+  var _pn=document.getElementById('pnl-pull-note'); if(_pn)_pn.textContent='';
   openM('m-pnl');
 }
 
@@ -1665,6 +1677,23 @@ function editPnl(id) {
   openM('m-pnl');
 }
 
+function pnlIsFoodCat(cat){cat=cat||'';return cat.indexOf('Food')===0||cat.indexOf('Beverage')===0;}
+function pnlPullInvoices(){
+  var dt=document.getElementById('pnl-pull-date').value;
+  var note=document.getElementById('pnl-pull-note');
+  if(!dt){if(note)note.textContent='Pick a date first.';return;}
+  var food=0,other=0,n=0,src=(typeof invoices!=='undefined'?invoices:[]);
+  src.forEach(function(inv){
+    if(inv.date!==dt)return; n++;
+    (inv.lineItems||[]).forEach(function(li){var a=parseFloat(li.amount)||0; if(pnlIsFoodCat(li.category))food+=a; else other+=a;});
+  });
+  if(!n){if(note)note.textContent='No invoices found for that date — add one in the Invoices tab first.';return;}
+  document.getElementById('pnl-food-in').value=Math.round(food*100)/100;
+  document.getElementById('pnl-oth-in').value=Math.round(other*100)/100;
+  var dEl=document.getElementById('pnl-date');
+  if(dEl&&!dEl.value.trim()){var d=new Date(dt+'T00:00:00');dEl.value=d.toLocaleDateString(undefined,{month:'short',day:'numeric'});}
+  if(note)note.innerHTML='✓ Pulled <b>'+invFmt(food)+'</b> food &amp; <b>'+invFmt(other)+'</b> other from '+n+' invoice'+(n===1?'':'s')+'.';
+}
 function savePnl() {
   var date=(document.getElementById('pnl-date').value||'').trim();
   var rev=parseFloat(document.getElementById('pnl-rev-in').value)||0;
