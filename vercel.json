@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/app/admin.html",
+      "destination": "/app/admin.html"
+    },
+    {
       "source": "/app",
       "destination": "/app/index.html"
     },
@@ -45,6 +49,13 @@
           "value": "application/xml"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/app/admin.html",
+      "permanent": false
     }
   ]
 }
