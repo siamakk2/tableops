@@ -235,7 +235,7 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
 
     <div class="atabs">
       <div class="atab on" id="tab-signin" onclick="showPanel('signin')">Sign in</div>
-      <div class="atab" id="tab-create" onclick="showPanel('create')">Create account</div>
+      <div class="atab" id="tab-create" onclick="showPanel('create')">Get access</div>
     </div>
 
     <div class="aerr" id="aerr"></div>
@@ -254,25 +254,18 @@ body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;height:100v
       <button class="abtn ghost" onclick="demo()">👀 Try demo — no account needed</button>
     </div>
 
-    <!-- CREATE ACCOUNT PANEL -->
+    <!-- GET ACCESS PANEL -->
     <div class="apanel" id="panel-create">
-      <div class="af"><label>Your name</label>
-        <input type="text" id="ca-name" placeholder="Siamak Kalhor" autocomplete="name"/>
-      </div><div class="af"><label>Restaurant name</label><input type="text" id="ca-rest" placeholder="e.g. Bella Italia" autocomplete="organization"/></div>
-      <div class="af"><label>Email</label>
-        <input type="email" id="ca-email" placeholder="you@restaurant.com" autocomplete="email"/>
-      </div>
-      <div class="af"><label>Password (min 8 characters)</label>
-        <input type="password" id="ca-pw" placeholder="Create a password" autocomplete="new-password" onkeydown="if(event.key==='Enter')createAccount()"/>
-      </div>
-      <div class="af"><label>Your role</label>
-        <select id="ca-role">
-          <option value="owner">Owner</option>
-          <option value="manager">General Manager</option>
-          <option value="chef">Executive Chef</option>
-        </select>
-      </div>
-      <button class="abtn" id="ca-btn" onclick="createAccount()">Create account</button>
+      <p style="color:#7a6a5d;font-size:14px;line-height:1.55;margin:2px 0 14px">Logins are set up for you — there's no public sign-up. To get yours:</p>
+      <ol style="margin:0 0 18px 20px;padding:0;font-size:14.5px;line-height:1.8;color:#4a3a30">
+        <li>Start your free month</li>
+        <li>We create your private login</li>
+        <li>Sign in here and you're live</li>
+      </ol>
+      <a class="abtn" href="https://buy.stripe.com/cNi28s8XecV26Neb2p0kE01" style="display:block;text-align:center;text-decoration:none">Start your free month →</a>
+      <div class="adiv">— or —</div>
+      <button class="abtn ghost" onclick="demo()">👀 Try the demo — no account needed</button>
+      <p style="color:#7a6a5d;font-size:12.5px;line-height:1.5;margin-top:14px;text-align:center">Already signed up but no login yet? <a href="https://resbizai.com/#contact" style="color:#ea5230;font-weight:600">Contact us</a>.</p>
     </div>
   </div>
 </div>
@@ -900,31 +893,13 @@ function signin() {
   if (!email) { msg('Please enter your email.', 'err'); return; }
   if (!pw) { msg('Please enter your password.', 'err'); return; }
   msg('', '');
-
-  // Check local accounts first — always instant
-  var accts = getAccounts();
-  if (accts[email]) {
-    if (accts[email].pw === pw) {
-      curUser = {email:email, name:accts[email].name, role:accts[email].role||'owner'};
-      enterApp();
-      return;
-    } else {
-      msg('Wrong password. Try the demo button or create a new account.', 'err');
-      return;
-    }
-  }
-
-  // No local account — try Supabase with hard 4s timeout
   setBtn('si-btn', true, 'Sign in');
   var done = false;
   var timer = setTimeout(function(){
     if(done) return; done=true;
     setBtn('si-btn', false, 'Sign in');
-    msg('Account not found. Please create one below.', 'err');
-    showPanel('create');
-    document.getElementById('ca-email').value = email;
-  }, 4000);
-
+    msg('That took too long — check your connection and try again.', 'err');
+  }, 9000);
   fetch(SB_URL + '/auth/v1/token?grant_type=password', {
     method:'POST',
     headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
@@ -934,60 +909,26 @@ function signin() {
   .then(function(d){
     if(done) return; done=true; clearTimeout(timer);
     setBtn('si-btn', false, 'Sign in');
-    if(d.access_token){
+    if(d && d.access_token){
       var meta=(d.user&&d.user.user_metadata)||{};
-      curUser={email:email,name:meta.name||email.split('@')[0],role:meta.role||'owner',token:d.access_token};
-      saveAccount(email,{name:curUser.name,role:curUser.role,pw:pw});
+      curUser={email:(d.user&&d.user.email)||email, name:meta.name||email.split('@')[0], role:meta.role||'owner', token:d.access_token};
+      saveSess(d);
       enterApp();
     } else {
-      msg('Account not found. Please create one.', 'err');
+      msg("Wrong email or password. If you haven't set up access yet, start your free month below — or try the demo.", 'err');
       showPanel('create');
-      document.getElementById('ca-email').value = email;
     }
   })
   .catch(function(){
     if(done) return; done=true; clearTimeout(timer);
     setBtn('si-btn', false, 'Sign in');
-    msg('Cannot connect. Check your internet and try again.', 'err');
+    msg('Could not reach the server. Please try again.', 'err');
   });
 }
 
-
-function createAccount() {
-  var name = (document.getElementById('ca-name').value || '').trim();
-  var email = (document.getElementById('ca-email').value || '').trim().toLowerCase();
-  var pw = document.getElementById('ca-pw').value || '';
-  var role = document.getElementById('ca-role').value || 'owner';
-  if (!name) { msg('Please enter your name.', 'err'); return; }
-  if (!email || email.indexOf('@') < 0) { msg('Please enter a valid email.', 'err'); return; }
-  if (pw.length < 8) { msg('Password must be at least 8 characters.', 'err'); return; }
-
-  var accts = getAccounts();
-  if (accts[email]) {
-    msg('This email already has an account. Sign in instead.', 'err');
-    showPanel('signin');
-    document.getElementById('si-email').value = email;
-    return;
-  }
-
-  // Save locally FIRST — this always works
-  curUser = {email:email, name:name, role:role};
-  saveAccount(email, {name:name, role:role, pw:pw});
-  var _r=(document.getElementById('ca-rest')?(document.getElementById('ca-rest').value||'').trim():''); saveRest({name:_r||(name+"'s Restaurant"),city:'',cuisine:''});
-
-  // Enter app immediately — don't wait for Supabase
-  enterApp();
-
-  // Sync to Supabase silently in background
-  fetch(SB_URL + '/auth/v1/signup', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
-    body:JSON.stringify({email:email, password:pw, data:{name:name, role:role}})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.access_token){ curUser.token=d.access_token; }
-  }).catch(function(){});
+function createAccount(){
+  window.location.href = "https://buy.stripe.com/cNi28s8XecV26Neb2p0kE01";
 }
-
 
 function getAccounts() {
   try { return JSON.parse(localStorage.getItem('to2_accounts') || '{}'); } catch(e) { return {}; }
@@ -997,6 +938,33 @@ function saveAccount(email, data) {
   var a = getAccounts();
   a[email.toLowerCase()] = data;
   try { localStorage.setItem('to2_accounts', JSON.stringify(a)); } catch(e) {}
+}
+
+function saveSess(d){
+  try{
+    localStorage.setItem('to2_sess', JSON.stringify({
+      access:d.access_token, refresh:d.refresh_token,
+      email:(d.user&&d.user.email)||(curUser&&curUser.email)||'',
+      name:(curUser&&curUser.name)||((d.user&&d.user.user_metadata&&d.user.user_metadata.name))||'',
+      exp:Date.now()+((d.expires_in||3600)*1000)
+    }));
+  }catch(e){}
+}
+function clearSess(){ try{ localStorage.removeItem('to2_sess'); }catch(e){} }
+function restoreSession(){
+  var s; try{ s=JSON.parse(localStorage.getItem('to2_sess')||'null'); }catch(e){ s=null; }
+  if(!s || !s.refresh){ return; }
+  fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify({refresh_token:s.refresh})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d && d.access_token){
+      var meta=(d.user&&d.user.user_metadata)||{};
+      curUser={email:(d.user&&d.user.email)||s.email, name:meta.name||s.name||(((d.user&&d.user.email)||s.email||'').split('@')[0]), role:meta.role||'owner', token:d.access_token};
+      saveSess(d); enterApp();
+    } else { clearSess(); }
+  }).catch(function(){});
 }
 
 function enterApp() {
@@ -1024,6 +992,8 @@ function enterApp() {
 
 function logout() {
   curUser = null;
+  try{ var _s=JSON.parse(localStorage.getItem('to2_sess')||'null'); if(_s&&_s.access){ fetch(SB_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+_s.access}}).catch(function(){}); } }catch(e){}
+  clearSess();
   if (window.speechSynthesis) speechSynthesis.cancel();
   document.getElementById('app').classList.remove('show');
   document.getElementById('vfab').classList.remove('show');
@@ -1601,5 +1571,6 @@ function stopVoice(){
   var lbl=document.getElementById('vlbl');if(lbl){lbl.textContent='Tap to speak';lbl.style.color='';}
 }
 </script>
+<script>if(typeof restoreSession==='function'){restoreSession();}</script>
 </body>
 </html>
