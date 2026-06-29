@@ -238,6 +238,54 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
 .demo-bar .db-txt b{font-weight:800;}
 .demo-bar .db-cta{background:#fff;color:#d23a17;font-weight:800;text-decoration:none;border-radius:8px;padding:7px 14px;white-space:nowrap;}
 .demo-bar .db-cta:hover{background:#fff3e9;}
+
+.inv-aitag{background:#15ac5b;color:#fff;padding:2px 7px;border-radius:6px;font-size:11px;vertical-align:middle;margin-left:6px;font-weight:700;}
+.inv-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.inv-card{background:#fff;border:1px solid #f0e2d4;border-radius:14px;padding:16px;}
+.inv-card.warn{border-color:#ffe0b8;}
+.inv-card.alert{border-color:#ffd0c4;}
+.inv-card-lbl{font-size:12px;color:#7d6e62;font-weight:600;}
+.inv-card-val{font-size:26px;font-weight:800;color:#2a1c14;margin:4px 0 2px;}
+.inv-card.warn .inv-card-val{color:#cc7a00;}
+.inv-card.alert .inv-card-val{color:#ff4f2e;}
+.inv-card-sub{font-size:11px;color:#aa9a8c;}
+.inv-sec-h{font-size:14px;font-weight:700;color:#2a1c14;margin-bottom:12px;}
+.inv-cats{display:flex;flex-direction:column;gap:10px;}
+.inv-cat-top{display:flex;justify-content:space-between;font-size:13px;color:#2a1c14;margin-bottom:4px;}
+.inv-cat-bar{height:7px;background:#f3ece2;border-radius:99px;overflow:hidden;}
+.inv-cat-bar i{display:block;height:100%;background:linear-gradient(90deg,#ffa620,#ff7518);}
+.inv-empty{color:#aa9a8c;font-size:13px;padding:14px 0;text-align:center;}
+.inv-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f3ece2;}
+.inv-item-main{flex:1;min-width:0;}
+.inv-item-v{font-weight:700;color:#2a1c14;font-size:14px;}
+.inv-num{color:#aa9a8c;font-weight:600;}
+.inv-item-d{font-size:12px;color:#7d6e62;margin-top:2px;}
+.inv-item-amt{font-weight:800;color:#2a1c14;white-space:nowrap;}
+.inv-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;margin-left:6px;}
+.inv-tag.dup{background:#fff3d6;color:#9a6700;}
+.inv-tag.alert{background:#ffe2da;color:#c0341a;}
+.inv-var{font-size:11px;color:#c0341a;margin-top:5px;line-height:1.5;}
+.inv-del2,.inv-del{background:none;border:none;color:#c9b8a8;cursor:pointer;font-size:14px;}
+.inv-modal-title{font-size:20px;font-weight:800;color:#2a1c14;margin:0 0 14px;}
+.inv-paste{background:#fffaf3;border:1px solid #f0e2d4;border-radius:12px;padding:14px;margin-bottom:14px;}
+.inv-paste label{display:block;font-size:12px;font-weight:600;color:#7d6e62;margin-bottom:6px;}
+.inv-paste textarea{width:100%;border:1px solid #e9dccd;border-radius:9px;padding:10px;font:inherit;font-size:13px;resize:vertical;box-sizing:border-box;}
+.inv-hint{display:block;font-size:12px;color:#15ac5b;margin-top:8px;font-weight:600;}
+.inv-fields{display:grid;grid-template-columns:2fr 1fr 1.3fr;gap:10px;margin-bottom:14px;}
+.inv-fields .fld label{display:block;font-size:11px;color:#7d6e62;font-weight:600;margin-bottom:4px;}
+.inv-fields .fld input{width:100%;border:1px solid #e9dccd;border-radius:8px;padding:9px;font:inherit;box-sizing:border-box;}
+.inv-lines-h{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:#2a1c14;margin:4px 0 8px;}
+.inv-row{display:grid;grid-template-columns:2.4fr .7fr 1fr 1.7fr auto;gap:6px;margin-bottom:6px;align-items:center;}
+.inv-row input,.inv-row select{border:1px solid #e9dccd;border-radius:7px;padding:8px;font:inherit;font-size:12px;width:100%;box-sizing:border-box;}
+.inv-total-row{text-align:right;font-size:15px;color:#2a1c14;margin:12px 0;}
+.inv-flags{margin:8px 0;}
+.inv-flag{padding:9px 12px;border-radius:9px;font-size:13px;font-weight:600;margin-bottom:8px;}
+.inv-flag.warn{background:#fff3d6;color:#9a6700;}
+.inv-flag.err{background:#ffe2da;color:#c0341a;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
+.btn.sm{padding:6px 11px;font-size:12px;}
+.btn.ghost{background:#fff;border:1px solid #e9dccd;color:#7d6e62;}
+@media(max-width:680px){.inv-cards{grid-template-columns:1fr;}.inv-fields{grid-template-columns:1fr;}.inv-row{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
@@ -315,6 +363,7 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
       <div class="sb-sec">Intelligence</div>
       <div class="sb-item" onclick="go('ai',this)"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>AI Assistant<span class="sb-badge g">AI</span></div>
       <div class="sb-sec">Finance</div>
+      <div class="sb-item" onclick="go('invoices',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>Invoices<span class="sb-badge g">AI</span></div>
       <div class="sb-item" onclick="go('pnl',this)"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Daily P&amp;L</div>
       <div class="sb-item" onclick="go('reports',this)"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Reports</div>
       <div class="sb-item" onclick="go('suppliers',this)"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Suppliers</div>
@@ -617,6 +666,43 @@ body{font-family:'Inter',sans-serif;background:#fff9f1;color:#2a1c14;height:100v
       </div>
     </div>
 
+    <!-- INVOICES -->
+    <div id="scr-invoices" class="scr">
+      <div class="topbar"><div><h1>Invoices <span class="inv-aitag">AI</span></h1><p>Snap or paste an invoice — AI reads it, codes it to the right account, and catches errors</p></div>
+        <div class="topbar-right"><button class="btn gold" onclick="invOpenAdd()">+ Add invoice</button></div>
+      </div>
+      <div style="padding:20px;">
+        <div class="inv-cards">
+          <div class="inv-card"><div class="inv-card-lbl">Total entered</div><div class="inv-card-val" id="inv-total">$0.00</div><div class="inv-card-sub" id="inv-count">0 invoices</div></div>
+          <div class="inv-card warn"><div class="inv-card-lbl">Duplicates flagged</div><div class="inv-card-val" id="inv-dups">0</div><div class="inv-card-sub">possible double-entry</div></div>
+          <div class="inv-card alert"><div class="inv-card-lbl">Price alerts</div><div class="inv-card-val" id="inv-alerts">0</div><div class="inv-card-sub">vendor price jumps</div></div>
+        </div>
+        <div class="card" style="margin-top:16px;"><div class="inv-sec-h">Spending by category</div><div id="inv-cats" class="inv-cats"></div></div>
+        <div class="card" style="margin-top:16px;"><div class="inv-sec-h">All invoices</div><div id="inv-list"></div></div>
+      </div>
+    </div>
+
+<div class="modal-bg" id="m-invoice"><div class="modal" style="max-width:680px;">
+      <h2 class="inv-modal-title">Add invoice</h2>
+      <div class="inv-paste">
+        <label>Paste invoice text — from an email, a PDF, or a photo's text</label>
+        <textarea id="inv-raw" rows="4" placeholder="e.g. Greenleaf Produce  Invoice #4471  6/24/2026   12 cs Roma tomatoes $48.00   4 cs spring mix $61.20 ..."></textarea>
+        <button class="btn gold" id="inv-extract-btn" onclick="invExtract()">&#10024; Extract with AI</button>
+        <span class="inv-hint" id="inv-extract-hint"></span>
+      </div>
+      <div class="inv-fields">
+        <div class="fld"><label>Vendor</label><input id="inv-vendor" type="text" placeholder="Greenleaf Produce"></div>
+        <div class="fld"><label>Invoice #</label><input id="inv-number" type="text" placeholder="4471"></div>
+        <div class="fld"><label>Date</label><input id="inv-date" type="date"></div>
+      </div>
+      <div class="inv-lines-h"><span>Line items</span><button class="btn sm" onclick="invAutoCode()">&#10024; Auto-code categories</button></div>
+      <div id="inv-rows"></div>
+      <button class="btn ghost sm" onclick="invAddRow()">+ Add line</button>
+      <div class="inv-total-row">Total: <b id="inv-modal-total">$0.00</b></div>
+      <div id="inv-flags" class="inv-flags"></div>
+      <div class="modal-actions"><button class="btn ghost" onclick="closeM('m-invoice')">Cancel</button><button class="btn gold" onclick="invSave()">Save invoice</button></div>
+    </div></div>
+
     <!-- SETTINGS -->
     <div id="scr-settings" class="scr">
       <div class="topbar"><div><h1>Restaurant settings</h1><p>Update your restaurant profile</p></div></div>
@@ -771,6 +857,8 @@ var pnl = [];
 var pnlId = 10;
 var menu = [];
 var menuId = 10;
+var invoices = [];
+var invId = 10;
 
 function uns(){ return (curUser && curUser.email ? curUser.email : 'anon').toLowerCase().replace(/[^a-z0-9]+/g,'_'); }
 function isDemo(){ return !!(curUser && curUser.email === 'demo@thejadeheron.com'); }
@@ -830,6 +918,12 @@ function loadData() {
   try { e86 = JSON.parse(localStorage.getItem('to2_'+uns()+'_e86') || '[]'); } catch(e) { e86 = []; }
   try { pnl = JSON.parse(localStorage.getItem('to2_'+uns()+'_pnl') || '[]'); } catch(e) { pnl = []; }
   try { menu = JSON.parse(localStorage.getItem('to2_'+uns()+'_menu') || '[]'); } catch(e) { menu = []; }
+  try { invoices = JSON.parse(localStorage.getItem('to2_'+uns()+'_invoices') || '[]'); } catch(e) { invoices = []; }
+  invoices.forEach(function(x){ if(x.id>=invId) invId=x.id+1; });
+  if (isDemo() && invoices.length===0) {
+    invoices=[{id:5,vendor:'Greenleaf Produce',number:'4471',date:new Date(Date.now()-3*86400000).toISOString().split('T')[0],total:218.40,created:Date.now(),lineItems:[{description:'Roma tomatoes (12 cs)',qty:12,amount:48.00,category:'Food — Produce'},{description:'Spring mix (4 cs)',qty:4,amount:61.20,category:'Food — Produce'},{description:'Hass avocado (2 cs)',qty:2,amount:54.00,category:'Food — Produce'},{description:'Lemons (1 cs)',qty:1,amount:55.20,category:'Food — Produce'}],flags:{dup:'',variance:[]}}];
+    invId=6;
+  }
 
   if (isDemo() && staff.length === 0) {
     staff = [
@@ -893,8 +987,8 @@ function loadData() {
 }
 
 function save(key) {
-  var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu'};
-  var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu};
+  var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu',invoices:'to2_invoices'};
+  var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu,invoices:invoices};
   try { localStorage.setItem('to2_'+uns()+'_'+key, JSON.stringify(data[key])); } catch(e) {}
 }
 
@@ -1044,12 +1138,138 @@ function logout() {
 
 // ── NAVIGATION ──
 function toggleNav(){ var sb=document.querySelector('.sb'); var bd=document.getElementById('mbackdrop'); if(!sb)return; var open=sb.classList.toggle('open'); if(bd) bd.classList.toggle('show',open); }
+
+var GL_CATS=['Food — Proteins','Food — Produce','Food — Dairy','Food — Dry/Grocery','Beverage — Alcohol','Beverage — Non-alcoholic','Paper & Disposables','Cleaning & Chemicals','Smallwares','Repairs & Maintenance','Utilities','Rent','Marketing','Other'];
+var _invRows=[];
+function invBlankRow(){return {description:'',qty:1,amount:0,category:'Other'};}
+function invFmt(n){n=Number(n||0);return '$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function invSetTxt(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function invAICall(sys,user,cb,errCb){
+  fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:sys,messages:[{role:'user',content:user}]})})
+  .then(function(r){return r.json();})
+  .then(function(d){var t=(d&&d.content&&d.content[0])?d.content[0].text:'';if(t){cb(t);}else{errCb&&errCb('No response');}})
+  .catch(function(e){errCb&&errCb(String(e));});
+}
+function invOpenAdd(){
+  var g=function(id){return document.getElementById(id);};
+  g('inv-raw').value='';g('inv-vendor').value='';g('inv-number').value='';
+  g('inv-date').value=new Date().toISOString().split('T')[0];
+  g('inv-extract-hint').textContent='';g('inv-flags').innerHTML='';
+  _invRows=[invBlankRow()];invRenderRows();openM('m-invoice');
+}
+function invExtract(){
+  var raw=(document.getElementById('inv-raw').value||'').trim();if(!raw)return;
+  var hint=document.getElementById('inv-extract-hint');hint.textContent='Reading the invoice…';
+  var btn=document.getElementById('inv-extract-btn');btn.disabled=true;
+  var sys='You are a restaurant bookkeeping assistant. Extract structured data from a vendor invoice. Return ONLY JSON, no markdown. Shape: {"vendor":"","number":"","date":"YYYY-MM-DD","lineItems":[{"description":"","qty":1,"amount":0,"category":"CATEGORY"}],"total":0}. Each category must be EXACTLY one of: '+GL_CATS.join(' | ')+'. amount is the line total in dollars as a number. If a field is missing leave it empty. Be precise with numbers.';
+  invAICall(sys,'Invoice text:\n'+raw,function(t){
+    btn.disabled=false;
+    try{
+      var j=t.replace(/```json/g,'').replace(/```/g,'').trim();var s=j.indexOf('{'),e=j.lastIndexOf('}');if(s>=0&&e>=0)j=j.substring(s,e+1);
+      var o=JSON.parse(j);
+      if(o.vendor)document.getElementById('inv-vendor').value=o.vendor;
+      if(o.number)document.getElementById('inv-number').value=o.number;
+      if(o.date)document.getElementById('inv-date').value=o.date;
+      _invRows=((o.lineItems)||[]).map(function(li){return {description:li.description||'',qty:parseFloat(li.qty)||1,amount:parseFloat(li.amount)||0,category:GL_CATS.indexOf(li.category)>=0?li.category:'Other'};});
+      if(!_invRows.length)_invRows=[invBlankRow()];
+      invRenderRows();hint.textContent='✓ Read '+_invRows.length+' line items — review and save.';
+    }catch(err){hint.textContent='Could not read that automatically — fill it in below.';}
+  },function(e){btn.disabled=false;hint.textContent='AI unavailable right now — fill it in below.';});
+}
+function invAutoCode(){
+  if(!_invRows.length)return;
+  var hint=document.getElementById('inv-extract-hint');hint.textContent='Coding categories…';
+  var sys='You are a restaurant bookkeeping assistant. Assign the best GL expense category to each line item. Return ONLY a JSON array of category strings, same order, each EXACTLY one of: '+GL_CATS.join(' | ')+'.';
+  var list=_invRows.map(function(r,i){return (i+1)+'. '+r.description+' ($'+r.amount+')';}).join('\n');
+  invAICall(sys,'Line items:\n'+list,function(t){
+    try{var j=t.replace(/```json/g,'').replace(/```/g,'').trim();var s=j.indexOf('['),e=j.lastIndexOf(']');if(s>=0&&e>=0)j=j.substring(s,e+1);var arr=JSON.parse(j);
+      arr.forEach(function(cat,i){if(_invRows[i]&&GL_CATS.indexOf(cat)>=0)_invRows[i].category=cat;});
+      invRenderRows();hint.textContent='✓ Categories coded.';
+    }catch(err){hint.textContent='Could not auto-code.';}
+  },function(e){hint.textContent='AI unavailable right now.';});
+}
+function invAddRow(){_invRows.push(invBlankRow());invRenderRows();}
+function invRenderRows(){
+  var box=document.getElementById('inv-rows');if(!box)return;
+  box.innerHTML=_invRows.map(function(r,i){
+    var opts=GL_CATS.map(function(cat){return '<option'+(cat===r.category?' selected':'')+'>'+esc(cat)+'</option>';}).join('');
+    return '<div class="inv-row"><input class="inv-desc" value="'+esc(r.description)+'" placeholder="Item" oninput="_invRows['+i+'].description=this.value"><input type="number" step="any" value="'+esc(r.qty)+'" oninput="_invRows['+i+'].qty=parseFloat(this.value)||0"><input type="number" step="0.01" value="'+esc(r.amount)+'" oninput="_invRows['+i+'].amount=parseFloat(this.value)||0;invModalTotal()"><select onchange="_invRows['+i+'].category=this.value">'+opts+'</select><button class="inv-del" onclick="_invRows.splice('+i+',1);invRenderRows()">✕</button></div>';
+  }).join('');
+  invModalTotal();
+}
+function invModalTotal(){var t=_invRows.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0);invSetTxt('inv-modal-total',invFmt(t));}
+function invDetectDup(cand){
+  for(var i=0;i<invoices.length;i++){var x=invoices[i];
+    if(x.vendor&&cand.vendor&&x.vendor.toLowerCase()===cand.vendor.toLowerCase()){
+      if(x.number&&cand.number&&String(x.number).toLowerCase()===String(cand.number).toLowerCase())return 'Same vendor and invoice # as one already entered';
+      var dd=Math.abs((new Date(x.date)-new Date(cand.date))/86400000);
+      if(Math.abs((x.total||0)-(cand.total||0))<0.01&&dd<=3)return 'Same vendor and total within 3 days — possible double entry';
+    }
+  }
+  return '';
+}
+function invDetectVariance(cand){
+  var alerts=[];
+  (cand.lineItems||[]).forEach(function(li){
+    if(!li.qty||!li.amount)return;var unit=li.amount/li.qty;
+    for(var i=0;i<invoices.length;i++){var x=invoices[i];if(!x.vendor||!cand.vendor||x.vendor.toLowerCase()!==cand.vendor.toLowerCase())continue;
+      var pls=x.lineItems||[];
+      for(var k=0;k<pls.length;k++){var pl=pls[k];if(!pl.qty||!pl.amount)continue;
+        var d1=(li.description||'').toLowerCase(),d2=(pl.description||'').toLowerCase();
+        if(d1&&d2&&(d1.indexOf(d2)>=0||d2.indexOf(d1)>=0)){
+          var pu=pl.amount/pl.qty;if(pu>0){var ch=(unit-pu)/pu;if(ch>=0.08){alerts.push((li.description||'item')+': up '+Math.round(ch*100)+'% ($'+pu.toFixed(2)+'→$'+unit.toFixed(2)+'/unit vs last)');}}
+          return;
+        }
+      }
+    }
+  });
+  return alerts;
+}
+function invSave(force){
+  var vendor=(document.getElementById('inv-vendor').value||'').trim();
+  var number=(document.getElementById('inv-number').value||'').trim();
+  var date=document.getElementById('inv-date').value||new Date().toISOString().split('T')[0];
+  var rows=_invRows.filter(function(r){return (r.description&&r.description.trim())||r.amount;});
+  var flagsBox=document.getElementById('inv-flags');
+  if(!vendor){flagsBox.innerHTML='<div class="inv-flag err">Enter a vendor name first.</div>';return;}
+  var total=rows.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0);
+  var cand={id:invId++,vendor:vendor,number:number,date:date,lineItems:rows,total:total,created:Date.now()};
+  var dup=invDetectDup(cand);
+  if(dup&&!force){invId--;flagsBox.innerHTML='<div class="inv-flag warn">⚠ '+esc(dup)+'.</div><button class="btn" onclick="invSave(true)">Save anyway</button>';return;}
+  cand.flags={dup:dup,variance:invDetectVariance(cand)};
+  invoices.unshift(cand);save('invoices');renderInvoices();closeM('m-invoice');
+}
+function invRemove(id){invoices=invoices.filter(function(x){return x.id!==id;});save('invoices');renderInvoices();}
+function renderInvoices(){
+  var list=document.getElementById('inv-list');if(!list)return;
+  var monthTot=0,cnt=0,dups=0,alerts=0,catTot={};
+  invoices.forEach(function(inv){
+    monthTot+=inv.total||0;cnt++;
+    if(inv.flags&&inv.flags.dup)dups++;
+    if(inv.flags&&inv.flags.variance&&inv.flags.variance.length)alerts+=inv.flags.variance.length;
+    (inv.lineItems||[]).forEach(function(li){var ct=li.category||'Other';catTot[ct]=(catTot[ct]||0)+(parseFloat(li.amount)||0);});
+  });
+  invSetTxt('inv-total',invFmt(monthTot));invSetTxt('inv-count',cnt+' invoice'+(cnt===1?'':'s'));
+  invSetTxt('inv-dups',dups);invSetTxt('inv-alerts',alerts);
+  var cats=document.getElementById('inv-cats');
+  var keys=Object.keys(catTot).sort(function(a,b){return catTot[b]-catTot[a];});
+  if(cats)cats.innerHTML=keys.length?keys.map(function(k){var pct=monthTot?Math.round(catTot[k]/monthTot*100):0;return '<div class="inv-cat"><div class="inv-cat-top"><span>'+esc(k)+'</span><b>'+invFmt(catTot[k])+'</b></div><div class="inv-cat-bar"><i style="width:'+pct+'%"></i></div></div>';}).join(''):'<div class="inv-empty">No invoices yet.</div>';
+  list.innerHTML=invoices.length?invoices.map(function(inv){
+    var flag='';
+    if(inv.flags&&inv.flags.dup)flag+='<span class="inv-tag dup">Possible duplicate</span>';
+    if(inv.flags&&inv.flags.variance&&inv.flags.variance.length)flag+='<span class="inv-tag alert">'+inv.flags.variance.length+' price alert'+(inv.flags.variance.length===1?'':'s')+'</span>';
+    var vlines=(inv.flags&&inv.flags.variance&&inv.flags.variance.length)?'<div class="inv-var">⚠ '+inv.flags.variance.map(function(v){return esc(v);}).join('<br>⚠ ')+'</div>':'';
+    return '<div class="inv-item"><div class="inv-item-main"><div class="inv-item-v">'+esc(inv.vendor)+(inv.number?' <span class="inv-num">#'+esc(inv.number)+'</span>':'')+'</div><div class="inv-item-d">'+esc(inv.date)+' · '+((inv.lineItems||[]).length)+' items '+flag+'</div>'+vlines+'</div><div class="inv-item-amt">'+invFmt(inv.total)+'</div><button class="inv-del2" onclick="invRemove('+inv.id+')">✕</button></div>';
+  }).join(''):'<div class="inv-empty">No invoices yet. Tap “+ Add invoice”, paste an invoice, and let AI read and code it for you.</div>';
+}
+
 function go(id, el) {
   document.querySelectorAll('.scr').forEach(function(s) { s.classList.remove('on'); s.style.display = ''; });
   var scr = document.getElementById('scr-' + id);
   if (scr) { scr.classList.add('on'); if (id === 'ai') scr.style.display = 'block'; }
   document.querySelectorAll('.sb-item').forEach(function(i) { i.classList.remove('on'); });
-  if (el) el.classList.add('on'); var _sb=document.querySelector('.sb'); if(_sb)_sb.classList.remove('open'); var _bd=document.getElementById('mbackdrop'); if(_bd)_bd.classList.remove('show');
+  if (el) el.classList.add('on');
+  if (id === 'invoices' && typeof renderInvoices === 'function') renderInvoices(); var _sb=document.querySelector('.sb'); if(_sb)_sb.classList.remove('open'); var _bd=document.getElementById('mbackdrop'); if(_bd)_bd.classList.remove('show');
 }
 
 // ── MODALS ──
