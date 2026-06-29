@@ -417,7 +417,7 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
 @media(max-width:900px){
   .hero-grid{grid-template-columns:1fr;gap:48px}
   .prob-grid,.feat-grid,.price-grid,.proof-stats{grid-template-columns:1fr}
-  .nav-menu{display:none}.nav-burger{display:block}
+  .nav-burger{display:block}.nav-menu{display:none}.nav.open .nav-menu{display:flex;flex-direction:column;align-items:stretch;gap:0;position:absolute;top:68px;left:0;right:0;background:#fff9f0;border-bottom:1px solid var(--line);box-shadow:0 14px 28px rgba(42,30,26,.12);padding:4px 24px 14px}.nav.open .nav-menu a{padding:14px 2px;font-size:16px;border-top:1px solid rgba(42,30,26,.07)}.nav-right .btn-text{display:none}
 }
 @media(max-width:640px){
   .sec{padding:64px 0}.hero{padding:56px 0 48px}
@@ -445,7 +445,7 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
       <a href="/app" class="btn btn-sm btn-text">Sign in</a>
       <a href="/app" class="btn btn-sm btn-tomato">Get started free</a>
     </div>
-    <button class="nav-burger" onclick="var m=document.querySelector('.nav-menu');m.style.display=m.style.display==='flex'?'none':'flex'">☰</button>
+    <button class="nav-burger" aria-label="Menu" onclick="this.closest('.nav').classList.toggle('open')">☰</button>
   </div>
 </nav>
 
@@ -932,5 +932,6 @@ elevenlabs-convai{z-index:2147483000!important;}
   ]
 }
 </script>
+<script>document.querySelectorAll('.nav-menu a').forEach(function(a){a.addEventListener('click',function(){var n=document.querySelector('.nav');if(n)n.classList.remove('open');});});</script>
 </body>
 </html>
