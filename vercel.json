@@ -1,14 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/app/reset.html",
-      "destination": "/app/reset.html"
-    },
-    {
-      "source": "/app/admin.html",
-      "destination": "/app/admin.html"
-    },
-    {
       "source": "/app",
       "destination": "/app/index.html"
     },
