@@ -21,7 +21,7 @@
   var s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
   var bar=document.createElement('div'); bar.className='shz'; bar.setAttribute('aria-label','Share this page');
   bar.innerHTML='<span class="shz-l">Share this page</span>'
-   +'<a class="fb" target="_blank" rel="noopener" aria-label="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u='+U+'">'+ICON.fb+'</a>'
+   +'<a class="fb" target="_blank" rel="noopener" aria-label="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u='+U+'" onclick="return __shzFB(this.href)">'+ICON.fb+'</a>'
    +'<a class="li" target="_blank" rel="noopener" aria-label="Share on LinkedIn" href="https://www.linkedin.com/sharing/share-offsite/?url='+U+'">'+ICON.li+'</a>'
    +'<button class="ig" type="button" aria-label="Share to Instagram" onclick="__shzGo(\'Instagram\')">'+ICON.ig+'</button>'
    +'<button class="tk" type="button" aria-label="Share to TikTok" onclick="__shzGo(\'TikTok\')">'+ICON.tk+'</button>';
@@ -35,5 +35,11 @@
     var done=function(){ var t=document.createElement('div'); t.className='shz-t'; t.textContent='Link copied — open '+net+' and paste it'; document.body.appendChild(t); requestAnimationFrame(function(){t.classList.add('on');}); setTimeout(function(){t.classList.remove('on'); setTimeout(function(){if(t.parentNode)t.remove();},300);},2800); };
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(cu).then(done,done); }
     else { var ta=document.createElement('textarea'); ta.value=cu; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+  };
+  window.__shzFB=function(url){
+    try{ if(navigator.share){ navigator.share({title:document.title,url:cu}).catch(function(){}); return false; } }catch(e){}
+    var w=window.open(url,'shzfb','width=600,height=560,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=yes');
+    if(w){ try{w.focus();}catch(e){} return false; }
+    return true;
   };
 })();
