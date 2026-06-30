@@ -934,5 +934,15 @@ elevenlabs-convai{z-index:2147483000!important;}
 }
 </script>
 <script>document.querySelectorAll('.nav-menu a').forEach(function(a){a.addEventListener('click',function(){var n=document.querySelector('.nav');if(n)n.classList.remove('open');});});</script>
+<script>
+/* GA: mark "Start free month" CTA clicks as a conversion event */
+document.addEventListener('click',function(e){
+  var a=e.target.closest('a[href^="/app"]'); if(!a||typeof gtag!=='function')return;
+  var t=(a.textContent||'').toLowerCase();
+  if(t.indexOf('start free')>-1||t.indexOf('get started free')>-1){
+    gtag('event','start_free_month',{event_category:'cta',event_label:a.textContent.trim().slice(0,50)});
+  }
+},true);
+</script>
 </body>
 </html>
