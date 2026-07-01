@@ -66,6 +66,15 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: false, error: 'Could not create your account. ' + String(m).slice(0, 140) });
     }
 
+    // Record this subscriber so the webhook can pause/reactivate them later
+    try {
+      await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/subs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SERVICE_KEY, 'Authorization': 'Bearer ' + SERVICE_KEY, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ email: email, stripe_customer: custId, stripe_subscription: subId, status: 'active' })
+      });
+    } catch (e) {}
+
     return res.status(200).json({ ok: true, email: email });
   } catch (e) {
     return res.status(200).json({ ok: false, error: 'Server error: ' + (e && e.message ? e.message : String(e)) });
