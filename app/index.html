@@ -1090,7 +1090,7 @@ function signin() {
       var meta=(d.user&&d.user.user_metadata)||{};
       curUser={email:(d.user&&d.user.email)||email, name:meta.name||email.split('@')[0], role:meta.role||'owner', token:d.access_token};
       saveSess(d);
-      enterApp();
+      gateEnter();
     } else {
       msg("Wrong email or password. If you haven't set up access yet, start your free month below — or try the demo.", 'err');
       showPanel('create');
@@ -1128,6 +1128,21 @@ function saveSess(d){
   }catch(e){}
 }
 function clearSess(){ try{ localStorage.removeItem('to2_sess'); }catch(e){} }
+function gateEnter(){
+  var em=(curUser&&curUser.email)||'';
+  if(!em){ enterApp(); return; }
+  fetch('/api/substatus',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})})
+    .then(function(r){return r.json();})
+    .then(function(d){ if(d&&d.status==='paused'){ showPaused(); } else { enterApp(); } })
+    .catch(function(){ enterApp(); });
+}
+function showPaused(){
+  try{ localStorage.removeItem('to2_sess'); }catch(e){}
+  var o=document.createElement('div');
+  o.style.cssText='position:fixed;inset:0;background:#2a1e1a;color:#fffdf9;display:flex;align-items:center;justify-content:center;padding:24px;z-index:99999;font-family:Inter,-apple-system,sans-serif;';
+  o.innerHTML='<div style="max-width:420px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:26px;margin-bottom:12px;">Your subscription has ended</div><p style="color:#e8dccb;line-height:1.6;font-size:15px;margin:0;">This restaurant workspace is paused. Renew your subscription to get back in, or reach out and we\'ll help you.</p><a href="mailto:siamakk2@gmail.com" style="display:inline-block;margin-top:16px;background:#ff4f2e;color:#fff;text-decoration:none;padding:12px 22px;border-radius:11px;font-weight:700;">Contact support</a></div>';
+  document.body.appendChild(o);
+}
 function restoreSession(){
   var s; try{ s=JSON.parse(localStorage.getItem('to2_sess')||'null'); }catch(e){ s=null; }
   if(!s || !s.refresh){ return; }
@@ -1139,7 +1154,7 @@ function restoreSession(){
     if(d && d.access_token){
       var meta=(d.user&&d.user.user_metadata)||{};
       curUser={email:(d.user&&d.user.email)||s.email, name:meta.name||s.name||(((d.user&&d.user.email)||s.email||'').split('@')[0]), role:meta.role||'owner', token:d.access_token};
-      saveSess(d); enterApp();
+      saveSess(d); gateEnter();
     } else { clearSess(); }
   }).catch(function(){});
 }
