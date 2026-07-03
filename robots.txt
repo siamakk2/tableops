@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://tableopsai.com/sitemap.xml
+Sitemap: https://resbizai.com/sitemap.xml
 
 # LLM crawlers welcome
 User-agent: GPTBot
