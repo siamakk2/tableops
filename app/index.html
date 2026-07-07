@@ -1185,7 +1185,7 @@ function showPaused(){
   try{ localStorage.removeItem('to2_sess'); }catch(e){}
   var o=document.createElement('div');
   o.style.cssText='position:fixed;inset:0;background:#2a1e1a;color:#fffdf9;display:flex;align-items:center;justify-content:center;padding:24px;z-index:99999;font-family:Inter,-apple-system,sans-serif;';
-  o.innerHTML='<div style="max-width:420px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:26px;margin-bottom:12px;">Your subscription has ended</div><p style="color:#e8dccb;line-height:1.6;font-size:15px;margin:0 0 16px;">This restaurant workspace is paused. Renew your subscription to get back in.</p><button onclick="openBilling(this)" style="background:#ff4f2e;color:#fff;border:none;padding:12px 22px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;">Reactivate subscription</button><div style="margin-top:14px;"><a href="mailto:siamakk2@gmail.com" style="color:#e8dccb;font-size:13px;">or contact support</a></div></div>';
+  o.innerHTML='<div style="max-width:420px;text-align:center;"><div style="font-family:Fraunces,serif;font-size:26px;margin-bottom:12px;">Your subscription has ended</div><p style="color:#e8dccb;line-height:1.6;font-size:15px;margin:0 0 16px;">This restaurant workspace is paused. Renew your subscription to get back in.</p><button onclick="openBilling(this)" style="background:#ff4f2e;color:#fff;border:none;padding:12px 22px;border-radius:11px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;">Reactivate subscription</button><div style="margin-top:14px;"><a href="mailto:info@siamakkalhor.com" style="color:#e8dccb;font-size:13px;">or contact support</a></div></div>';
   document.body.appendChild(o);
 }
 function openBilling(btn){
