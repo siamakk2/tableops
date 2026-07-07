@@ -89,7 +89,7 @@ module.exports = async function handler(req, res) {
           + '<div style="margin:22px 0;padding:16px;background:#fff4ec;border-radius:8px;font-size:14px;color:#2a1e1a;"><div style="margin-bottom:4px;"><b>Login page:</b> resbizai.com/app</div><div><b>Your login email:</b> ' + esc(email) + '</div><div style="color:#7a6a5d;margin-top:6px;">(Use the password you chose when you signed up.)</div></div>'
           + '<p style="font-size:14px;line-height:1.6;color:#7a6a5d;margin:0;">Your first 30 days are free. Any questions, just reply to this email.</p>'
           + '</div><div style="text-align:center;padding:16px;font-size:12px;color:#b3a596;">ResBizAI &middot; Built by Siamak Kalhor</div></div>';
-        await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Authorization': 'Bearer ' + RESEND, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: 'ResBizAI <welcome@resbizai.com>', to: [email], reply_to: 'siamakk2@gmail.com', subject: 'Welcome to ResBizAI \u2014 your workspace is ready', html: html }) });
+        await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'Authorization': 'Bearer ' + RESEND, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: 'ResBizAI <welcome@resbizai.com>', to: [email], reply_to: 'info@siamakkalhor.com', subject: 'Welcome to ResBizAI \u2014 your workspace is ready', html: html }) });
       }
     } catch (e) {}
 
