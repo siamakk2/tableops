@@ -377,6 +377,26 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #c22f
 section{content-visibility:auto;contain-intrinsic-size:0 900px;}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;}}
 </style>
+<style id="perf-paint-v2">
+/* The Orchamind 99 recipe, finally ported in full. */
+@media (max-width:899px){
+  /* backdrop-filter blur re-rasterizes the page behind the nav on every paint — the
+     single most expensive CSS effect on mobile. Solid near-opaque bg looks identical. */
+  .nav{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(255,253,251,.97)!important;}
+  /* 80px-blur double shadows in the hero cost real paint time under 4x CPU throttle */
+  .hero-right .brief{box-shadow:0 10px 26px rgba(0,0,0,.30)!important;}
+  .cta-card{box-shadow:0 12px 30px rgba(234,82,48,.20)!important;}
+  #chefBtn{box-shadow:0 6px 18px rgba(234,82,48,.40)!important;}
+}
+/* isolate hero rendering (it already clips via overflow:hidden, so paint containment is safe) */
+.hero{contain:layout paint style;}
+/* decorative animations wait until after first paint instead of churning frames at t=0 */
+html:not(.anims-on) .hero-pill .sizzle,
+html:not(.anims-on) .brief-live .ld,
+html:not(.anims-on) #chefBtn,
+html:not(.anims-on) #chefBtn .ic{animation-play-state:paused!important;}
+</style>
+<script>window.addEventListener("load",function(){requestAnimationFrame(function(){document.documentElement.classList.add("anims-on");});});</script>
 </head>
 <body>
 
