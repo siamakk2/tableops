@@ -314,9 +314,13 @@ svg{display:block}
 <style>
 /* ===== Bold food-forward hero (v2) ===== */
 .hero{
+  /* Mobile: pure-CSS hero (zero image bytes) — LCP becomes the headline text,
+     exactly like the sites scoring 99. Warm radial glows mimic the photo's tones
+     under what was a 90%-opaque gradient anyway. Desktop keeps the real photo. */
   background:
-    linear-gradient(103deg, rgba(22,11,8,.94) 0%, rgba(26,13,9,.80) 46%, rgba(32,17,11,.40) 100%),
-    #180d09 url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=480&q=45&fm=webp') center/cover no-repeat !important;
+    radial-gradient(120% 90% at 85% 10%, rgba(255,120,60,.28) 0%, rgba(60,24,12,0) 55%),
+    radial-gradient(100% 80% at 10% 95%, rgba(255,158,15,.14) 0%, rgba(24,13,9,0) 60%),
+    linear-gradient(103deg, #1d0f0a 0%, #241108 55%, #3a1c0d 100%) !important;
   padding:94px 0 98px !important;
 }
 .hero::before,.hero::after{display:none !important;}
@@ -350,7 +354,6 @@ svg{display:block}
 }
 </style>
 <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-<link rel="preload" as="image" fetchpriority="high" media="(max-width:899px)" href="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=480&q=45&fm=webp">
 <link rel="preload" as="image" fetchpriority="high" media="(min-width:900px)" href="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=64&fm=webp">
 <style id="a11y-perf-pass">
 /* WCAG AA contrast fixes (measured):
