@@ -846,7 +846,7 @@ elevenlabs-convai{z-index:2147483000!important;}
   if(cb) cb.addEventListener('click', openChef);
 })();
 </script>
-  <script src="/share.js" defer></script>
+  <script>window.addEventListener("load",function(){var f=function(){var s=document.createElement("script");s.src="/share.js";document.body.appendChild(s);};("requestIdleCallback" in window)?requestIdleCallback(f,{timeout:4000}):setTimeout(f,2500);});</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -993,6 +993,6 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
 .footer-copy strong{color:#c9bbae}
 </style>
 <script>(function(){var d=document.getElementById("deferred-css");function go(){if(d)d.media="all";}
-if(document.readyState!=="loading"){requestAnimationFrame(go);}else{document.addEventListener("DOMContentLoaded",function(){requestAnimationFrame(go);});}})();</script>
+if(document.readyState==="complete"){requestAnimationFrame(go);}else{window.addEventListener("load",function(){requestAnimationFrame(go);});}})();</script>
 </body>
 </html>
