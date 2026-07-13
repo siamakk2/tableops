@@ -98,8 +98,6 @@ if(document.readyState==='complete'){idle();}else{window.addEventListener('load'
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null;" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 <script type="application/ld+json">
   {
@@ -353,8 +351,6 @@ svg{display:block}
   html, body { max-width:100%; overflow-x:hidden; }
 }
 </style>
-<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-<link rel="preload" as="image" fetchpriority="high" media="(min-width:900px)" href="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=64&fm=webp">
 <style id="a11y-perf-pass">
 /* WCAG AA contrast fixes (measured):
    white-on-tomato #ff4a24 = 3.36 FAIL -> #c22f0e = 5.67 PASS
@@ -397,6 +393,7 @@ html:not(.anims-on) #chefBtn,
 html:not(.anims-on) #chefBtn .ic{animation-play-state:paused!important;}
 </style>
 <script>window.addEventListener("load",function(){requestAnimationFrame(function(){document.documentElement.classList.add("anims-on");});});</script>
+<script>window.addEventListener("load",function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap";document.head.appendChild(l);});</script>
 </head>
 <body>
 
