@@ -220,7 +220,7 @@ svg{display:block}
 .btn-cream{background:var(--white);color:var(--ink);border:1.5px solid var(--line-2)}
 .btn-cream:hover{border-color:var(--tomato);color:var(--tomato);transform:translateY(-2px)}
 .nav-burger{display:none;background:none;border:none;color:var(--ink);font-size:24px;cursor:pointer}
-.hero{position:relative;padding:80px 0 72px;overflow:hidden;background-color:#fff6ec;background-image:linear-gradient(100deg,#fff6ec 5%,rgba(255,246,236,.74) 26%,rgba(255,246,236,.12) 48%,rgba(255,246,236,0) 62%),url('/hero-produce.webp?v=4');background-size:cover;background-position:center right;background-repeat:no-repeat}
+.hero{position:relative;padding:80px 0 72px;overflow:hidden;background:linear-gradient(180deg,#fff5ea 0%,var(--cream) 55%)}
 @media(min-width:900px){.hero{background:linear-gradient(103deg,rgba(22,11,8,.94) 0%,rgba(26,13,9,.80) 46%,rgba(32,17,11,.40) 100%),#180d09!important;}}
 .hero::before{content:"";position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,158,15,.26),transparent 65%);pointer-events:none}
 .hero::after{content:"";position:absolute;bottom:-100px;left:-100px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(16,164,85,.16),transparent 65%);pointer-events:none}
@@ -394,7 +394,6 @@ html:not(.anims-on) #chefBtn .ic{animation-play-state:paused!important;}
 </style>
 <script>window.addEventListener("load",function(){requestAnimationFrame(function(){document.documentElement.classList.add("anims-on");});});</script>
 <script>window.addEventListener("load",function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap";document.head.appendChild(l);});</script>
-<style id="hero-produce-mobile">@media(max-width:768px){.hero{background-image:linear-gradient(180deg,#fff6ec 0%,rgba(255,246,236,.92) 22%,rgba(255,246,236,.34) 46%,rgba(255,246,236,0) 68%),url("/hero-produce-m.webp?v=4");background-size:cover;background-position:bottom center;padding-bottom:120px}}</style>
 </head>
 <body>
 
