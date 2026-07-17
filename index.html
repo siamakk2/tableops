@@ -221,7 +221,7 @@ svg{display:block}
 .btn-cream:hover{border-color:var(--tomato);color:var(--tomato);transform:translateY(-2px)}
 .nav-burger{display:none;background:none;border:none;color:var(--ink);font-size:24px;cursor:pointer}
 .hero{position:relative;padding:80px 0 72px;overflow:hidden;background-color:#fff6ec;background-image:linear-gradient(100deg,#fff6ec 5%,rgba(255,246,236,.74) 26%,rgba(255,246,236,.12) 48%,rgba(255,246,236,0) 62%),url('/hero-produce.webp?v=4');background-size:cover;background-position:center right;background-repeat:no-repeat}
-@media(min-width:900px){.hero{background:linear-gradient(103deg,rgba(22,11,8,.94) 0%,rgba(26,13,9,.80) 46%,rgba(32,17,11,.40) 100%),#180d09 url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=64&fm=webp') center/cover no-repeat!important;}}
+@media(min-width:900px){.hero{background:linear-gradient(103deg,rgba(22,11,8,.94) 0%,rgba(26,13,9,.80) 46%,rgba(32,17,11,.40) 100%),#180d09!important;}}
 .hero::before{content:"";position:absolute;top:-120px;right:-80px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,158,15,.26),transparent 65%);pointer-events:none}
 .hero::after{content:"";position:absolute;bottom:-100px;left:-100px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(16,164,85,.16),transparent 65%);pointer-events:none}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.02fr .98fr;gap:52px;align-items:center}
@@ -394,7 +394,6 @@ html:not(.anims-on) #chefBtn .ic{animation-play-state:paused!important;}
 </style>
 <script>window.addEventListener("load",function(){requestAnimationFrame(function(){document.documentElement.classList.add("anims-on");});});</script>
 <script>window.addEventListener("load",function(){var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap";document.head.appendChild(l);});</script>
-<link rel="preload" as="image" href="/hero-produce.webp?v=4" imagesrcset="/hero-produce-m.webp?v=4 900w, /hero-produce.webp?v=4 1600w" imagesizes="100vw" fetchpriority="high">
 <style id="hero-produce-mobile">@media(max-width:768px){.hero{background-image:linear-gradient(180deg,#fff6ec 0%,rgba(255,246,236,.92) 22%,rgba(255,246,236,.34) 46%,rgba(255,246,236,0) 68%),url("/hero-produce-m.webp?v=4");background-size:cover;background-position:bottom center;padding-bottom:120px}}</style>
 </head>
 <body>
@@ -1013,20 +1012,5 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
 </style>
 <script>(function(){var d=document.getElementById("deferred-css");function go(){if(d)d.media="all";}
 if(document.readyState==="complete"){requestAnimationFrame(go);}else{window.addEventListener("load",function(){requestAnimationFrame(go);});}})();</script>
-<style id="hero-fix-final">
-/* Hero: plain cream + produce as a bottom band beneath all content (readable, whole knife visible) */
-.hero{background:#fff6ec !important;position:relative !important;padding-bottom:206px !important;overflow:hidden;}
-.hero::before{display:none !important;}
-.hero::after{content:"" !important;display:block !important;position:absolute !important;left:0;right:0;bottom:0;height:196px;background:url('/hero-produce.webp?v=4') center bottom / cover no-repeat !important;pointer-events:none;z-index:0;}
-.hero .wrap{position:relative !important;z-index:2 !important;}
-.hero h1{color:var(--ink) !important;text-shadow:none !important;}
-.hero h1 em{color:var(--tomato) !important;}
-.hero-sub{color:var(--ink-soft) !important;}
-.hero-pill{background:var(--tomato-soft) !important;color:var(--tomato-d) !important;border:1px solid rgba(234,82,48,.18) !important;}
-.hero-trust-item{color:var(--muted) !important;}
-.hero-trust-item svg{color:var(--herb) !important;}
-.hero-right .brief{box-shadow:0 24px 60px rgba(60,24,10,.16),0 8px 20px rgba(60,24,10,.10) !important;}
-@media(max-width:768px){.hero{padding-bottom:140px !important;}.hero::after{height:124px;background-image:url('/hero-produce-m.webp?v=4') !important;background-position:center bottom !important;}}
-</style>
 </body>
 </html>
