@@ -1013,5 +1013,18 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
 </style>
 <script>(function(){var d=document.getElementById("deferred-css");function go(){if(d)d.media="all";}
 if(document.readyState==="complete"){requestAnimationFrame(go);}else{window.addEventListener("load",function(){requestAnimationFrame(go);});}})();</script>
+<style id="hero-fix-final">
+/* Authoritative hero: light produce image + dark text (overrides July-13 dark-photo/glow rules) */
+.hero{background-color:#fff6ec !important;background-image:linear-gradient(100deg,#fff6ec 6%,rgba(255,246,236,.72) 27%,rgba(255,246,236,.10) 50%,rgba(255,246,236,0) 64%),url('/hero-produce.webp?v=1') !important;background-size:cover !important;background-position:center right !important;background-repeat:no-repeat !important;}
+.hero::before,.hero::after{display:none !important;}
+.hero h1{color:var(--ink) !important;text-shadow:none !important;}
+.hero h1 em{color:var(--tomato) !important;}
+.hero-sub{color:var(--ink-soft) !important;}
+.hero-pill{background:var(--tomato-soft) !important;color:var(--tomato-d) !important;border:1px solid rgba(234,82,48,.18) !important;}
+.hero-trust-item{color:var(--muted) !important;}
+.hero-trust-item svg{color:var(--herb) !important;}
+.hero-right .brief{box-shadow:0 24px 60px rgba(60,24,10,.16),0 8px 20px rgba(60,24,10,.10) !important;}
+@media(max-width:768px){.hero{background-image:linear-gradient(180deg,#fff6ec 0%,rgba(255,246,236,.93) 24%,rgba(255,246,236,.34) 48%,rgba(255,246,236,0) 70%),url('/hero-produce-m.webp?v=1') !important;background-position:bottom center !important;padding-bottom:120px !important;}}
+</style>
 </body>
 </html>
