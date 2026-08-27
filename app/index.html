@@ -402,6 +402,38 @@ h1,h2,h3{letter-spacing:-0.012em;}
 body.supmode{padding-top:38px}
 body.supmode .sb{top:38px}
 </style>
+<style id="imp-css">
+.imp-bd{display:none;position:fixed;inset:0;background:rgba(20,12,8,.6);z-index:400}
+.imp-md{display:none;position:fixed;z-index:401;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(680px,94vw);max-height:88vh;overflow:auto;background:#fff;border-radius:16px;padding:28px;
+  box-shadow:0 24px 70px rgba(30,15,5,.34)}
+.imp-md h2{font-size:21px;margin:0 0 6px;color:#2a1e1a}
+.imp-md .imp-sub{font-size:14px;color:#7a6a5d;line-height:1.55;margin:0 0 20px}
+.imp-drop{border:2px dashed #e2d4c4;border-radius:12px;padding:34px 20px;text-align:center;
+  background:#fffaf6;cursor:pointer;transition:.18s}
+.imp-drop:hover,.imp-drop.on{border-color:#ff4f2e;background:#fff4ec}
+.imp-drop b{display:block;font-size:15px;color:#2a1e1a;margin-bottom:5px}
+.imp-drop span{font-size:13px;color:#8a7a6c}
+.imp-srcs{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:18px 0 4px}
+@media(min-width:560px){.imp-srcs{grid-template-columns:repeat(4,1fr)}}
+.imp-src{border:1px solid #f0e6da;border-radius:9px;padding:11px 9px;text-align:center;font-size:12px;
+  color:#7a6a5d;background:#fff}
+.imp-src b{display:block;color:#2a1e1a;font-size:12.5px;margin-bottom:3px}
+.imp-res{margin-top:18px}
+.imp-pill{display:inline-block;background:#e4f6ec;color:#127a45;font-size:11.5px;font-weight:700;
+  padding:5px 11px;border-radius:99px;letter-spacing:.04em}
+.imp-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
+.imp-tbl th{background:#f7f1ea;text-align:left;padding:8px 10px;font-size:10.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:#8a7a6c}
+.imp-tbl td{padding:8px 10px;border-top:1px solid #f0e6da;color:#4a3a30}
+.imp-note{font-size:12.5px;color:#8a7a6c;line-height:1.55;margin-top:12px}
+.imp-act{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.imp-btn{background:#ff4f2e;color:#fff;border:none;font-size:14px;font-weight:700;padding:12px 20px;
+  border-radius:9px;cursor:pointer;font-family:inherit}
+.imp-btn:hover{background:#e8401f}
+.imp-btn.g{background:#fff;color:#2a1e1a;border:1px solid #e2d4c4}
+.imp-err{background:#fdeaea;color:#c0392b;padding:11px 14px;border-radius:9px;font-size:13.5px;margin-top:14px}
+</style>
 </head>
 <body>
 
@@ -2067,9 +2099,9 @@ function stopVoice(){
 <script id="onb-js">
 (function(){
   var STEPS=[
-    {k:'invoice',t:'Snap your last delivery invoice',
-     s:'The AI reads it and builds your inventory for you \u2014 no typing.',
-     go:function(){go('invoices');},cta:'Start here \u2192',
+    {k:'invoice',t:'Bring your data in',
+     s:'Import your item list from Restaurant365, MarginEdge or Toast \u2014 or snap a delivery invoice and let the AI read it.',
+     go:function(){ if(typeof impOpen==='function') impOpen(); else go('invoices'); },cta:'Start here \u2192',
      done:function(){try{return (typeof invoices!=='undefined'&&invoices&&invoices.length>0)||(typeof inv!=='undefined'&&inv&&inv.length>0);}catch(e){return false;}}},
     {k:'menu',t:'Add a few menu items with recipes',
      s:'Link a recipe once and stock depletes itself as you sell.',
@@ -2150,6 +2182,34 @@ function stopVoice(){
   else setTimeout(boot,60);
 })();
 </script>
+
+<div class="imp-bd" id="imp-bd" onclick="impClose()"></div>
+<div class="imp-md" id="imp-md">
+  <h2>Bring your data across</h2>
+  <p class="imp-sub">Already using Restaurant365, MarginEdge or Toast? Export your item list as a CSV
+  and drop it here. We read the format, map the columns and show you exactly what will be imported
+  before anything is saved.</p>
+
+  <div class="imp-drop" id="imp-drop" onclick="document.getElementById('imp-file').click()">
+    <b>Drop your CSV here, or click to choose a file</b>
+    <span>Nothing is uploaded to a server &mdash; the file is read in your browser</span>
+  </div>
+  <input type="file" id="imp-file" accept=".csv,text/csv" style="display:none" onchange="impFile(this)">
+
+  <div class="imp-srcs">
+    <div class="imp-src"><b>Restaurant365</b>Operations &rarr; Inventory &rarr; Items &rarr; Export</div>
+    <div class="imp-src"><b>MarginEdge</b>Inventory &rarr; Counts &rarr; Export as CSV</div>
+    <div class="imp-src"><b>Toast</b>Menus &rarr; Items database &rarr; Export</div>
+    <div class="imp-src"><b>Anything else</b>Any spreadsheet with a name column</div>
+  </div>
+
+  <div class="imp-res" id="imp-res"></div>
+  <div class="imp-act">
+    <button class="imp-btn g" onclick="impClose()">Close</button>
+  </div>
+</div>
+
+<script src="/import.js"></script>
 <script id="sync-js">
 (function(){
   var QUEUE={}, TIMER=null, INFLIGHT=false;
@@ -2249,6 +2309,72 @@ function stopVoice(){
     }
   });
 })();
+</script>
+<script id="imp-js">
+var IMP=null;
+function impOpen(){ document.getElementById('imp-bd').style.display='block';
+  document.getElementById('imp-md').style.display='block';
+  document.getElementById('imp-res').innerHTML=''; IMP=null; }
+function impClose(){ document.getElementById('imp-bd').style.display='none';
+  document.getElementById('imp-md').style.display='none'; }
+function impFile(el){ var f=el.files&&el.files[0]; if(!f) return; impRead(f); el.value=''; }
+(function(){
+  var d=document.getElementById('imp-drop'); if(!d) return;
+  ['dragenter','dragover'].forEach(function(e){d.addEventListener(e,function(ev){
+    ev.preventDefault();d.classList.add('on');});});
+  ['dragleave','drop'].forEach(function(e){d.addEventListener(e,function(ev){
+    ev.preventDefault();d.classList.remove('on');});});
+  d.addEventListener('drop',function(ev){
+    var f=ev.dataTransfer&&ev.dataTransfer.files&&ev.dataTransfer.files[0]; if(f) impRead(f); });
+})();
+function impRead(file){
+  var r=new FileReader();
+  r.onload=function(){
+    var res=window.RBImport.analyse(String(r.result||''));
+    var box=document.getElementById('imp-res');
+    if(!res.ok){ box.innerHTML='<div class="imp-err">'+esc(res.error)+'</div>'; return; }
+    IMP=res;
+    var rows=res.items.slice(0,6).map(function(x){
+      return '<tr><td>'+esc(x.name)+'</td><td>'+(x.qty||'—')+'</td><td>'+esc(x.unit)+'</td>'
+            +'<td>'+(x.cost?'$'+x.cost.toFixed(2):'—')+'</td><td>'+esc(x.cat)+'</td></tr>';}).join('');
+    var extra=res.items.length>6?('<div class="imp-note">…and '+(res.items.length-6)+' more.</div>'):'';
+    var recNote=(res.recipes&&res.recipes.length)
+      ? '<div class="imp-note">'+res.recipes.length+' recipe rows were found and kept separate — '
+        +'they are not stock items.</div>' : '';
+    var unm=res.unmapped.length
+      ? '<div class="imp-note">Columns we did not need: '+esc(res.unmapped.slice(0,6).join(', '))+'</div>' : '';
+    box.innerHTML='<span class="imp-pill">Detected: '+esc(res.source.label)+'</span>'
+      +'<div class="imp-note"><b>'+res.items.length+'</b> items ready to import'
+      +(res.skipped?(' · '+res.skipped+' duplicate or blank rows skipped'):'')+'</div>'
+      +'<table class="imp-tbl"><thead><tr><th>Item</th><th>Qty</th><th>Unit</th><th>Cost</th>'
+      +'<th>Category</th></tr></thead><tbody>'+rows+'</tbody></table>'+extra+recNote+unm;
+    document.querySelector('.imp-act').innerHTML=
+       '<button class="imp-btn" onclick="impGo(\'inv\')">Import '+res.items.length+' items to Inventory</button>'
+      +'<button class="imp-btn g" onclick="impGo(\'menu\')">Import as Menu items</button>'
+      +'<button class="imp-btn g" onclick="impClose()">Cancel</button>';
+  };
+  r.readAsText(file);
+}
+function impGo(target){
+  if(!IMP) return;
+  try{
+    if(target==='inv'){
+      var startId=(inv.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1;
+      var add=window.RBImport.toInventory(IMP.items,startId);
+      inv=inv.concat(add); save('inv');
+      if(typeof renderInv==='function') renderInv();
+      impClose(); go('inventory');
+      alert('Imported '+add.length+' items into your inventory.');
+    } else {
+      var mStart=(menu.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1;
+      var addM=window.RBImport.toMenu(IMP.items,mStart);
+      menu=menu.concat(addM); save('menu');
+      if(typeof renderMenu==='function') renderMenu();
+      impClose(); go('menu');
+      alert('Imported '+addM.length+' items into your menu.');
+    }
+  }catch(e){ alert('Import failed: '+e.message); }
+}
 </script>
 </body>
 </html>
