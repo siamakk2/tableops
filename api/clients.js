@@ -81,10 +81,15 @@ module.exports = async function handler(req, res) {
         } catch (e) {}
         return out;
       }
+      // NOTE: workspace data currently lives in each browser's localStorage, not
+      // Postgres. These lookups return empty until the to_* tables exist, so the
+      // dashboard reports "not synced" rather than a misleading zero.
       var inv = await countFor('to_inventory', 'email');
       var pnl = await countFor('to_pnl', 'email');
       var stf = await countFor('to_staff', 'email');
       var mnu = await countFor('to_menu_items', 'email');
+      var serverSideData = Object.keys(inv).length + Object.keys(pnl).length
+                         + Object.keys(stf).length + Object.keys(mnu).length > 0;
 
       var list = users.map(function (u) {
         var em = String(u.email || '').toLowerCase();
@@ -97,7 +102,8 @@ module.exports = async function handler(req, res) {
         };
         var total = counts.inventory + counts.pnl + counts.staff + counts.menu;
         // Activation = has the workspace produced real value yet?
-        var stage = total === 0 ? 'empty'
+        var stage = !serverSideData ? 'unsynced'
+                  : total === 0 ? 'empty'
                   : (counts.pnl > 0 && counts.inventory > 0) ? 'active'
                   : 'started';
         return {
@@ -116,6 +122,7 @@ module.exports = async function handler(req, res) {
       });
 
       var summary = {
+        serverSideData: serverSideData,
         total: list.length,
         active: list.filter(function (x) { return x.status === 'active'; }).length,
         paused: list.filter(function (x) { return x.status === 'paused' || x.status === 'canceled'; }).length,
