@@ -8,6 +8,7 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 
 - [ResBizAI home](https://resbizai.com/): What ResBizAI does and who it is for.
 - [Start free trial](https://resbizai.com/app?signup=1): Try it with your own numbers.
+- [Frequently asked questions](https://resbizai.com/faq/): Food cost, inventory variance, prime cost, daily P&L, pricing and setup — answered.
 - [Privacy policy](https://resbizai.com/privacy.html): How restaurant data is handled.
 - [Terms of service](https://resbizai.com/terms.html): Terms of use.
 
