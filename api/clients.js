@@ -290,6 +290,51 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, email: dem, wiped: wiped });
     }
 
+
+    // ------------------------------------------------------- IMPERSONATE
+    // Mints a short-lived magic link for the client, so support can view the
+    // exact workspace the client sees. Every use is logged to admin_audit.
+    if (action === 'impersonate') {
+      var iem = String(body.email || '').toLowerCase().trim();
+      if (!iem) return res.status(200).json({ ok: false, error: 'No email given.' });
+      var iu = await findUser(iem);
+      if (!iu) return res.status(200).json({ ok: false, error: 'No account with that email.' });
+
+      // Supabase admin: generate a magiclink (does not change their password
+      // and does not sign them out of their own sessions)
+      var gr = await fetch(base + '/auth/v1/admin/generate_link', {
+        method: 'POST', headers: H,
+        body: JSON.stringify({ type: 'magiclink', email: iem })
+      });
+      var gd = await gr.json();
+      if (!gr.ok) {
+        var gm = (gd && (gd.msg || gd.message || gd.error)) || 'Could not create a support session.';
+        return res.status(200).json({ ok: false, error: String(gm).slice(0, 180) });
+      }
+
+      // Audit the access. Best-effort: never block support on a logging failure.
+      try {
+        await fetch(base + '/rest/v1/admin_audit', {
+          method: 'POST',
+          headers: Object.assign({}, H, { 'Prefer': 'return=minimal' }),
+          body: JSON.stringify({
+            action: 'impersonate',
+            target_email: iem,
+            reason: String(body.reason || '').slice(0, 300),
+            at: new Date().toISOString()
+          })
+        });
+      } catch (e) {}
+
+      return res.status(200).json({
+        ok: true, email: iem,
+        name: (iu.user_metadata && iu.user_metadata.name) || '',
+        restaurant: (iu.user_metadata && iu.user_metadata.restaurant) || '',
+        link: (gd && (gd.action_link || (gd.properties && gd.properties.action_link))) || '',
+        hashed_token: (gd && gd.properties && gd.properties.hashed_token) || ''
+      });
+    }
+
     return res.status(200).json({ ok: false, error: 'Unknown action.' });
   } catch (e) {
     return res.status(200).json({ ok: false, error: 'Server error: ' + (e && e.message ? e.message : String(e)) });
