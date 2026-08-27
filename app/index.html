@@ -486,7 +486,7 @@ body.supmode .sb{top:38px}
       <div class="sb-sec">Settings</div>
       <div class="sb-item" onclick="go('settings',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Restaurant settings</div>
     </div>
-    <div class="sb-foot" id="sb-foot"><div class="skc-appcredit" style="margin:12px 12px 10px;padding-top:12px;border-top:1px solid rgba(128,128,128,.2);"><div style="text-transform:uppercase;letter-spacing:.1em;font-size:9px;opacity:.55;margin-bottom:7px;font-weight:700;">More from Siamak Kalhor Consulting</div><a href="https://orchamind.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">Orchamind <span style="opacity:.55;">— AI for contractors</span></a><a href="https://aislebird.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">AisleBird <span style="opacity:.55;">— AI grocery lists</span></a><a href="https://bluemoonfabrics.com/pages/custom-pattern-studio" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">Blue Moon Pattern Studio <span style="opacity:.55;">— AI patterns for designers</span></a></div>
+    <div class="sb-foot" id="sb-foot"><span id="sync-dot" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:transparent;margin-right:7px;vertical-align:middle;transition:background .3s"></span><div class="skc-appcredit" style="margin:12px 12px 10px;padding-top:12px;border-top:1px solid rgba(128,128,128,.2);"><div style="text-transform:uppercase;letter-spacing:.1em;font-size:9px;opacity:.55;margin-bottom:7px;font-weight:700;">More from Siamak Kalhor Consulting</div><a href="https://orchamind.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">Orchamind <span style="opacity:.55;">— AI for contractors</span></a><a href="https://aislebird.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">AisleBird <span style="opacity:.55;">— AI grocery lists</span></a><a href="https://bluemoonfabrics.com/pages/custom-pattern-studio" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;display:block;padding:3px 0;font-size:12px;opacity:.85;">Blue Moon Pattern Studio <span style="opacity:.55;">— AI patterns for designers</span></a></div>
       <div class="sb-user">
         <div class="sb-av" id="sb-av">SK</div>
         <div><div class="sb-un" id="sb-un">Siamak Kalhor</div><div class="sb-ur" id="sb-ur">Owner</div></div>
@@ -1126,9 +1126,9 @@ function loadData() {
 }
 
 function save(key) {
-  var map = {staff:'to2_staff',inv:'to2_inv',prep:'to2_prep',e86:'to2_e86',pnl:'to2_pnl',menu:'to2_menu',invoices:'to2_invoices',locations:'to2_locations'};
   var data = {staff:staff,inv:inv,prep:prep,e86:e86,pnl:pnl,menu:menu,invoices:invoices,locations:locations};
   try { localStorage.setItem('to2_'+uns()+'_'+key, JSON.stringify(data[key])); } catch(e) {}
+  try { if(typeof syncPush==='function') syncPush(key, data[key]); } catch(e) {}
 }
 
 // ── AUTH ──
@@ -2148,6 +2148,106 @@ function stopVoice(){
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(boot,60);});
   else setTimeout(boot,60);
+})();
+</script>
+<script id="sync-js">
+(function(){
+  var QUEUE={}, TIMER=null, INFLIGHT=false;
+  function tok(){ try{ return (curUser&&curUser.token)||JSON.parse(localStorage.getItem('to2_sess')||'{}').access||''; }catch(e){ return ''; } }
+  function skip(){ try{ return (typeof isDemo==='function'&&isDemo()) || (window.__SUPPORT_MODE__===true) || !tok(); }catch(e){ return true; } }
+
+  function badge(state){
+    var el=document.getElementById('sync-dot'); if(!el) return;
+    var m={saving:['#ffa31e','Saving…'],saved:['#1a9e5c','All changes saved'],
+           off:['#c0392b','Offline — saved on this device only'],idle:['transparent','']};
+    var s=m[state]||m.idle; el.style.background=s[0]; el.title=s[1];
+  }
+
+  window.syncPush=function(key,data){
+    if(skip()) return;
+    QUEUE[key]=data;
+    badge('saving');
+    clearTimeout(TIMER);
+    TIMER=setTimeout(flush,900);          // debounce bursts of edits
+  };
+
+  async function flush(){
+    if(INFLIGHT||skip()) return;
+    var keys=Object.keys(QUEUE); if(!keys.length) return;
+    INFLIGHT=true;
+    var batch=QUEUE; QUEUE={};
+    var okAll=true;
+    for(var i=0;i<keys.length;i++){
+      try{
+        var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token:tok(),action:'push',key:keys[i],data:batch[keys[i]]})});
+        var j=await r.json();
+        if(!j.ok) okAll=false;
+      }catch(e){ okAll=false; }
+    }
+    INFLIGHT=false;
+    badge(okAll?'saved':'off');
+    if(!okAll){ keys.forEach(function(k){ if(!(k in QUEUE)) QUEUE[k]=batch[k]; }); }
+    else setTimeout(function(){ if(!Object.keys(QUEUE).length) badge('idle'); },2200);
+  }
+
+  // Pull server data at sign-in; server wins when it has more records.
+  window.syncPull=async function(){
+    if(skip()) return false;
+    try{
+      var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token:tok(),action:'pull'})});
+      var j=await r.json();
+      if(!j.ok||!j.data) return false;
+      var stores={staff:'staff',inv:'inv',prep:'prep',e86:'e86',pnl:'pnl',menu:'menu',
+                  invoices:'invoices',locations:'locations'};
+      var pulled=0, pushedBack=false;
+      Object.keys(stores).forEach(function(k){
+        var srv=j.data[k];
+        if(!Array.isArray(srv)) return;
+        var loc=window[k];
+        if(srv.length>=((loc&&loc.length)||0)){
+          window[k]=srv; pulled+=srv.length;
+          try{ localStorage.setItem('to2_'+uns()+'_'+k, JSON.stringify(srv)); }catch(e){}
+        } else if(loc&&loc.length){ syncPush(k,loc); pushedBack=true; }
+      });
+      if(j.data.rest&&j.data.rest.name){ try{ saveRest(j.data.rest); }catch(e){} }
+      return pulled>0||pushedBack;
+    }catch(e){ return false; }
+  };
+
+  // First run after this update: lift whatever is already on the device.
+  window.syncSeed=async function(){
+    if(skip()) return;
+    try{
+      var all={};
+      ['staff','inv','prep','e86','pnl','menu','invoices','locations'].forEach(function(k){
+        if(Array.isArray(window[k])&&window[k].length) all[k]=window[k];
+      });
+      try{ var r=JSON.parse(localStorage.getItem('to2_'+uns()+'_rest')||'null'); if(r&&r.name) all.rest=r; }catch(e){}
+      if(!Object.keys(all).length) return;
+      await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token:tok(),action:'pushAll',all:all})});
+      badge('saved');
+    }catch(e){}
+  };
+
+  // After the app opens: pull, then seed anything the server did not have.
+  var _enter=window.gateEnter||window.enterApp;
+  function afterEnter(){
+    setTimeout(async function(){
+      var got=await window.syncPull();
+      if(!got) await window.syncSeed();
+      try{ if(typeof renderDash==='function') renderDash(); }catch(e){}
+      try{ if(typeof refreshAll==='function') refreshAll(); }catch(e){}
+    },400);
+  }
+  ['gateEnter','enterApp'].forEach(function(n){
+    var f=window[n];
+    if(typeof f==='function'){
+      window[n]=function(){ var r=f.apply(this,arguments); try{afterEnter();}catch(e){} return r; };
+    }
+  });
 })();
 </script>
 </body>
