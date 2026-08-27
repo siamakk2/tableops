@@ -124,6 +124,25 @@ tr:hover td{background:#fffaf6}
   </div>
 </div>
 
+
+<div id="edit-bd" style="display:none;position:fixed;inset:0;background:rgba(20,12,8,.55);z-index:200"></div>
+<div id="edit-md" style="display:none;position:fixed;z-index:201;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(460px,92vw);background:#fff;border-radius:16px;padding:28px;box-shadow:0 20px 60px rgba(30,15,5,.3)">
+  <h2 style="font-size:19px;margin:0 0 4px">Edit account</h2>
+  <p class="hint" id="e-orig" style="margin:0 0 18px"></p>
+  <label>Owner name</label><input id="e-name">
+  <label>Restaurant</label><input id="e-rest">
+  <label>Login email</label><input id="e-email" type="email">
+  <p class="hint">Changing this changes how they sign in. Tell them if you do.</p>
+  <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:6px">
+    <button class="btn" onclick="saveEdit()">Save changes</button>
+    <button class="btn g" onclick="closeEdit()">Cancel</button>
+    <button class="btn g" style="margin-left:auto;color:#c0392b;border-color:#f3d2cd"
+            onclick="delAcct()">Delete account</button>
+  </div>
+  <div id="emsg"></div>
+</div>
+
 <script>
 var SECRET='', DATA=[], SUM={};
 
@@ -197,6 +216,7 @@ function draw(){
       +(st==='paused'
         ? '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'resume\')">Resume</button>'
         : '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'pause\')">Pause</button>')
+      +'<button class="btn g sm" onclick="openEdit(\''+esc(c.email)+'\')">Edit</button>'
       +'<button class="btn g sm" onclick="resetPw(\''+esc(c.email)+'\')">Reset password</button>'
       +'</div></td></tr>';
   });
@@ -241,6 +261,40 @@ async function createAcct(){
     load();
   } else say('cmsg',esc(j.error),'err');
 }
+
+
+var EDITING='';
+function openEdit(email){
+  var c=DATA.filter(function(x){return x.email===email;})[0]; if(!c) return;
+  EDITING=email;
+  el('e-orig').textContent='Currently signing in as '+email;
+  el('e-name').value=c.name||''; el('e-rest').value=c.restaurant||''; el('e-email').value=c.email;
+  el('emsg').innerHTML='';
+  el('edit-bd').style.display=''; el('edit-md').style.display='';
+}
+function closeEdit(){el('edit-bd').style.display='none'; el('edit-md').style.display='none'; EDITING='';}
+async function saveEdit(){
+  var j=await call('update',{email:EDITING,newEmail:el('e-email').value.trim(),
+    name:el('e-name').value.trim(),restaurant:el('e-rest').value.trim()});
+  if(j.ok){ closeEdit();
+    say('msg', j.emailChanged ? ('Updated. Their login is now '+esc(j.email)+' — let them know.')
+                              : 'Account updated.', 'ok');
+    load();
+  } else say('emsg',esc(j.error),'err');
+}
+async function delAcct(){
+  var em=EDITING;
+  var c=DATA.filter(function(x){return x.email===em;})[0]||{records:0};
+  var warn='Delete '+em+' permanently?\n\nThis removes their login and erases '+
+    (c.records||0)+' saved records (inventory, P&L, staff, menu). It cannot be undone.'+
+    '\n\nType the email to confirm:';
+  var typed=prompt(warn,'');
+  if(!typed) return;
+  var j=await call('delete',{email:em,confirm:typed});
+  if(j.ok){ closeEdit(); say('msg','Deleted '+esc(j.email)+' and cleared their workspace.','ok'); load(); }
+  else say('emsg',esc(j.error),'err');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeEdit();});
 
 function exportCsv(){
   var rows=[['Email','Name','Restaurant','Joined','Last sign-in','Subscription','Setup stage','Inventory','P&L','Staff','Menu']];
