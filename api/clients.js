@@ -196,6 +196,100 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, email: em3 });
     }
 
+
+    // ---------------------------------------------------------------- FIND
+    async function findUser(em) {
+      var page = 1;
+      while (page <= 10) {
+        var ur = await fetch(base + '/auth/v1/admin/users?page=' + page + '&per_page=100', { headers: H });
+        if (!ur.ok) return null;
+        var ud = await ur.json();
+        var batch = (ud && ud.users) || [];
+        for (var i = 0; i < batch.length; i++) {
+          if (String(batch[i].email || '').toLowerCase() === em) return batch[i];
+        }
+        if (batch.length < 100) return null;
+        page++;
+      }
+      return null;
+    }
+
+    // ---------------------------------------------------------------- UPDATE
+    if (action === 'update') {
+      var uem = String(body.email || '').toLowerCase().trim();
+      if (!uem) return res.status(200).json({ ok: false, error: 'No email given.' });
+      var u = await findUser(uem);
+      if (!u) return res.status(200).json({ ok: false, error: 'No account with that email.' });
+
+      var patch = {};
+      var meta = Object.assign({}, u.user_metadata || {});
+      if (typeof body.name === 'string') meta.name = body.name.trim();
+      if (typeof body.restaurant === 'string') meta.restaurant = body.restaurant.trim();
+      patch.user_metadata = meta;
+
+      var newEmail = String(body.newEmail || '').toLowerCase().trim();
+      var emailChanged = false;
+      if (newEmail && newEmail !== uem) {
+        if (newEmail.indexOf('@') < 0) return res.status(200).json({ ok: false, error: 'That new email is not valid.' });
+        patch.email = newEmail;
+        patch.email_confirm = true;
+        emailChanged = true;
+      }
+
+      var pr2 = await fetch(base + '/auth/v1/admin/users/' + u.id, {
+        method: 'PUT', headers: H, body: JSON.stringify(patch)
+      });
+      var pd = await pr2.json();
+      if (!pr2.ok) {
+        var pm = (pd && (pd.msg || pd.message || pd.error_description || pd.error)) || 'Could not update.';
+        return res.status(200).json({ ok: false, error: String(pm).slice(0, 180) });
+      }
+
+      // keep the subs row in step if the login email moved
+      if (emailChanged) {
+        try {
+          await fetch(base + '/rest/v1/subs?email=eq.' + encodeURIComponent(uem), {
+            method: 'PATCH',
+            headers: Object.assign({}, H, { 'Prefer': 'return=minimal' }),
+            body: JSON.stringify({ email: newEmail })
+          });
+        } catch (e) {}
+      }
+      return res.status(200).json({ ok: true, email: newEmail || uem, emailChanged: emailChanged });
+    }
+
+    // ---------------------------------------------------------------- DELETE
+    if (action === 'delete') {
+      var dem = String(body.email || '').toLowerCase().trim();
+      if (!dem) return res.status(200).json({ ok: false, error: 'No email given.' });
+      if (String(body.confirm || '').toLowerCase().trim() !== dem) {
+        return res.status(200).json({ ok: false, error: 'Confirmation did not match the email.' });
+      }
+      var du = await findUser(dem);
+      if (!du) return res.status(200).json({ ok: false, error: 'No account with that email.' });
+
+      var dr = await fetch(base + '/auth/v1/admin/users/' + du.id, { method: 'DELETE', headers: H });
+      if (!dr.ok) return res.status(200).json({ ok: false, error: 'Could not delete that account.' });
+
+      // clear their workspace rows and subscription record
+      var wiped = {};
+      var tables = ['to_inventory', 'to_pnl', 'to_staff', 'to_menu_items', 'to_prep', 'to_restaurants'];
+      for (var t = 0; t < tables.length; t++) {
+        try {
+          var wr = await fetch(base + '/rest/v1/' + tables[t] + '?email=eq.' + encodeURIComponent(dem), {
+            method: 'DELETE', headers: Object.assign({}, H, { 'Prefer': 'return=minimal' })
+          });
+          wiped[tables[t]] = wr.ok;
+        } catch (e) { wiped[tables[t]] = false; }
+      }
+      try {
+        await fetch(base + '/rest/v1/subs?email=eq.' + encodeURIComponent(dem), {
+          method: 'DELETE', headers: Object.assign({}, H, { 'Prefer': 'return=minimal' })
+        });
+      } catch (e) {}
+      return res.status(200).json({ ok: true, email: dem, wiped: wiped });
+    }
+
     return res.status(200).json({ ok: false, error: 'Unknown action.' });
   } catch (e) {
     return res.status(200).json({ ok: false, error: 'Server error: ' + (e && e.message ? e.message : String(e)) });
