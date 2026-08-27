@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ResBizAI — Client Management</title>
+<link rel="icon" href="/favicon.ico?v=4" sizes="any">
+<style>
+:root{--ink:#2a1e1a;--soft:#7a6a5d;--dim:#aa9a8c;--line:#efe6db;--cream:#fffdf9;
+  --tomato:#ff4f2e;--honey:#ffa31e;--herb:#1a9e5c;--surface:#fff;--bg:#faf6f1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;-webkit-font-smoothing:antialiased}
+.top{background:var(--ink);color:#fff;padding:16px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.top b{font-size:19px;color:var(--tomato)}
+.top span{font-size:13px;color:#c9bbae}
+.top .sp{margin-left:auto;font-size:13px}
+.top a{color:#ffb9a6;text-decoration:none}
+.wrap{max-width:1240px;margin:0 auto;padding:26px 22px 70px}
+.gate{max-width:420px;margin:70px auto;background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;padding:34px}
+.gate h1{font-size:22px;margin:0 0 8px}
+.gate p{font-size:14px;color:var(--soft);line-height:1.55;margin:0 0 20px}
+label{display:block;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--soft);margin:0 0 6px}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:9px;
+  font-size:15px;font-family:inherit;background:#fff;color:var(--ink);outline:none;margin-bottom:14px}
+input:focus,select:focus{border-color:var(--tomato)}
+.btn{background:var(--tomato);color:#fff;border:none;padding:12px 20px;border-radius:9px;
+  font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:hover{background:#e8401f}
+.btn.g{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.g:hover{border-color:var(--tomato)}
+.btn.sm{padding:7px 12px;font-size:12.5px;border-radius:7px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+@media(min-width:820px){.cards{grid-template-columns:repeat(6,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center}
+.card b{display:block;font-size:26px;font-weight:800;line-height:1}
+.card span{display:block;margin-top:6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.card.t b{color:var(--tomato)} .card.h b{color:var(--herb)} .card.o b{color:var(--honey)}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.bar input{margin:0;max-width:280px}
+.bar select{margin:0;width:auto;min-width:150px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;font-size:14px}
+th{background:#f7f1ea;text-align:left;padding:12px 14px;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--soft);font-weight:700;white-space:nowrap}
+td{padding:13px 14px;border-top:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:#fffaf6}
+.em{font-weight:700}
+.sub{font-size:12px;color:var(--dim)}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px}
+.p-active{background:#e4f6ec;color:#127a45} .p-paused{background:#fdeaea;color:#c0392b}
+.p-unknown{background:#f1ece6;color:#8a7a6c}
+.s-empty{background:#fdeaea;color:#c0392b} .s-started{background:#fff4e2;color:#a06a00}
+.s-active{background:#e4f6ec;color:#127a45}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.msg{padding:12px 14px;border-radius:9px;font-size:14px;margin:14px 0;line-height:1.5}
+.msg.ok{background:#e4f6ec;color:#127a45} .msg.err{background:#fdeaea;color:#c0392b}
+.msg.info{background:#f1ece6;color:#7a6a5d}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:26px}
+.sec h2{font-size:17px;margin:0 0 14px}
+.row2{display:grid;grid-template-columns:1fr;gap:0 14px}
+@media(min-width:700px){.row2{grid-template-columns:1fr 1fr}}
+.hint{font-size:12.5px;color:var(--dim);line-height:1.5;margin:-6px 0 14px}
+.empty{text-align:center;padding:44px 20px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <h1>Client management</h1>
+  <p>Sign in with your admin password to see every ResBizAI account, their subscription status and
+  how far each one has actually got with setup.</p>
+  <label>Admin password</label>
+  <input id="pw" type="password" placeholder="ADMIN_SECRET" onkeydown="if(event.key==='Enter')signIn()">
+  <button class="btn" style="width:100%" onclick="signIn()">Sign in</button>
+  <div id="gmsg"></div>
+</div>
+
+<div id="main" style="display:none">
+  <div class="top">
+    <b>ResBizAI</b><span>Client management</span>
+    <span class="sp"><a href="/app">Open app →</a> &nbsp; <a href="#" onclick="signOut();return false">Sign out</a></span>
+  </div>
+  <div class="wrap">
+    <div class="cards" id="cards"></div>
+
+    <div class="bar">
+      <input id="q" placeholder="Search email, name or restaurant…" oninput="draw()">
+      <select id="f" onchange="draw()">
+        <option value="">All accounts</option>
+        <option value="active">Subscription: active</option>
+        <option value="paused">Subscription: paused</option>
+        <option value="stage-empty">Never entered data</option>
+        <option value="stage-started">Started setup</option>
+        <option value="stage-active">Fully activated</option>
+        <option value="new7">Joined last 7 days</option>
+      </select>
+      <button class="btn g sm" onclick="load()">Refresh</button>
+      <button class="btn g sm" onclick="exportCsv()">Export CSV</button>
+    </div>
+
+    <div id="msg"></div>
+    <div id="tblwrap"></div>
+
+    <div class="sec">
+      <h2>Create an account manually</h2>
+      <p class="hint">Owners normally sign themselves up through Stripe. Use this for comps,
+      pilots or when someone paid outside the normal flow.</p>
+      <div class="row2">
+        <div><label>Owner name</label><input id="c-name" placeholder="Maria Sanchez"></div>
+        <div><label>Restaurant</label><input id="c-rest" placeholder="Bella Napa"></div>
+        <div><label>Email (their login)</label><input id="c-email" type="email" placeholder="owner@restaurant.com"></div>
+        <div><label>Temporary password</label>
+          <input id="c-pw" placeholder="min 8 characters">
+          <button class="btn g sm" style="margin:-6px 0 14px" onclick="genPw()">Generate</button></div>
+      </div>
+      <button class="btn" onclick="createAcct()">Create account</button>
+      <div id="cmsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var SECRET='', DATA=[], SUM={};
+
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function say(box,txt,cls){el(box).innerHTML='<div class="msg '+(cls||'info')+'">'+txt+'</div>';}
+
+async function call(action,extra){
+  var body=Object.assign({secret:SECRET,action:action},extra||{});
+  var r=await fetch('/api/clients',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return await r.json();
+}
+
+async function signIn(){
+  SECRET=el('pw').value.trim();
+  if(!SECRET){say('gmsg','Enter your admin password.','err');return;}
+  say('gmsg','Checking…','info');
+  var j=await call('list');
+  if(!j.ok){say('gmsg',esc(j.error||'Could not sign in.'),'err');return;}
+  try{sessionStorage.setItem('rb_admin',SECRET);}catch(e){}
+  el('gate').style.display='none'; el('main').style.display='';
+  DATA=j.clients||[]; SUM=j.summary||{}; render();
+}
+function signOut(){try{sessionStorage.removeItem('rb_admin');}catch(e){}location.reload();}
+
+async function load(){
+  say('msg','Refreshing…','info');
+  var j=await call('list');
+  if(!j.ok){say('msg',esc(j.error),'err');return;}
+  DATA=j.clients||[]; SUM=j.summary||{}; el('msg').innerHTML=''; render();
+}
+
+function render(){
+  el('cards').innerHTML=
+    card('t',SUM.total||0,'Total accounts')+
+    card('h',SUM.active||0,'Active subs')+
+    card('',SUM.paused||0,'Paused')+
+    card('h',SUM.activated||0,'Fully activated')+
+    card('o',SUM.empty||0,'No data yet')+
+    card('t',SUM.last7||0,'New this week');
+  draw();
+}
+function card(c,n,l){return '<div class="card '+c+'"><b>'+n+'</b><span>'+l+'</span></div>';}
+
+function draw(){
+  var q=(el('q').value||'').toLowerCase(), f=el('f').value;
+  var rows=DATA.filter(function(c){
+    if(q && (c.email+' '+c.name+' '+c.restaurant).toLowerCase().indexOf(q)<0) return false;
+    if(f==='active'&&c.status!=='active') return false;
+    if(f==='paused'&&!(c.status==='paused'||c.status==='canceled')) return false;
+    if(f.indexOf('stage-')===0 && c.stage!==f.slice(6)) return false;
+    if(f==='new7'){ if(!c.created_at||(Date.now()-new Date(c.created_at).getTime())>7*864e5) return false; }
+    return true;
+  });
+  if(!rows.length){el('tblwrap').innerHTML='<div class="empty">No accounts match that filter.</div>';return;}
+  var h='<table><thead><tr><th>Account</th><th>Restaurant</th><th>Joined</th><th>Last sign-in</th>'
+       +'<th>Subscription</th><th>Setup</th><th>Data</th><th></th></tr></thead><tbody>';
+  rows.forEach(function(c){
+    var st=(c.status||'unknown').toLowerCase();
+    var stc=st==='active'?'p-active':(st==='paused'||st==='canceled')?'p-paused':'p-unknown';
+    h+='<tr>'
+      +'<td><div class="em">'+esc(c.email)+'</div><div class="sub">'+esc(c.name||'—')+'</div></td>'
+      +'<td>'+esc(c.restaurant||'—')+'</td>'
+      +'<td>'+fmt(c.created_at)+'</td>'
+      +'<td>'+fmt(c.last_sign_in_at)+'</td>'
+      +'<td><span class="pill '+stc+'">'+esc(st)+'</span></td>'
+      +'<td><span class="pill s-'+esc(c.stage)+'">'+(c.stage==='empty'?'no data':c.stage)+'</span></td>'
+      +'<td class="sub">'+c.counts.inventory+' inv · '+c.counts.pnl+' P&amp;L · '
+        +c.counts.staff+' staff · '+c.counts.menu+' menu</td>'
+      +'<td><div class="acts">'
+      +(st==='paused'
+        ? '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'resume\')">Resume</button>'
+        : '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'pause\')">Pause</button>')
+      +'<button class="btn g sm" onclick="resetPw(\''+esc(c.email)+'\')">Reset password</button>'
+      +'</div></td></tr>';
+  });
+  el('tblwrap').innerHTML=h+'</tbody></table>';
+}
+
+function fmt(d){
+  if(!d) return '<span class="sub">never</span>';
+  var t=new Date(d); if(isNaN(t)) return '<span class="sub">—</span>';
+  var days=Math.floor((Date.now()-t.getTime())/864e5);
+  var lbl=days===0?'today':days===1?'yesterday':days<30?(days+'d ago'):t.toLocaleDateString();
+  return '<span title="'+t.toLocaleString()+'">'+lbl+'</span>';
+}
+
+async function setStatus(email,action){
+  if(!confirm((action==='pause'?'Pause':'Resume')+' access for '+email+'?')) return;
+  var j=await call(action,{email:email});
+  say('msg', j.ok ? (esc(email)+' is now '+j.status+'.') : esc(j.error), j.ok?'ok':'err');
+  if(j.ok) load();
+}
+
+async function resetPw(email){
+  var p=prompt('New password for '+email+' (min 8 characters):');
+  if(!p) return;
+  var j=await call('reset',{email:email,password:p});
+  say('msg', j.ok ? ('Password reset for '+esc(email)+'. Send it to them securely.') : esc(j.error), j.ok?'ok':'err');
+}
+
+function genPw(){
+  var c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789', p='';
+  for(var i=0;i<12;i++) p+=c.charAt(Math.floor(Math.random()*c.length));
+  el('c-pw').value=p;
+}
+
+async function createAcct(){
+  var j=await call('create',{
+    email:el('c-email').value.trim(), password:el('c-pw').value,
+    name:el('c-name').value.trim(), restaurant:el('c-rest').value.trim()});
+  if(j.ok){
+    say('cmsg','Account created for '+esc(j.email)+'. Send them the password securely — they sign in at resbizai.com/app','ok');
+    ['c-email','c-name','c-rest'].forEach(function(i){el(i).value='';});
+    load();
+  } else say('cmsg',esc(j.error),'err');
+}
+
+function exportCsv(){
+  var rows=[['Email','Name','Restaurant','Joined','Last sign-in','Subscription','Setup stage','Inventory','P&L','Staff','Menu']];
+  DATA.forEach(function(c){rows.push([c.email,c.name,c.restaurant,c.created_at,c.last_sign_in_at,
+    c.status,c.stage,c.counts.inventory,c.counts.pnl,c.counts.staff,c.counts.menu]);});
+  var csv=rows.map(function(r){return r.map(function(x){
+    return '"'+String(x==null?'':x).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='resbizai-clients-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+try{var s=sessionStorage.getItem('rb_admin'); if(s){el('pw').value=s; signIn();}}catch(e){}
+</script>
+</body>
+</html>
