@@ -216,6 +216,7 @@ function draw(){
       +(st==='paused'
         ? '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'resume\')">Resume</button>'
         : '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'pause\')">Pause</button>')
+      +'<button class="btn g sm" onclick="viewAs(\''+esc(c.email)+'\')" title="Open their workspace for support">View as</button>'
       +'<button class="btn g sm" onclick="openEdit(\''+esc(c.email)+'\')">Edit</button>'
       +'<button class="btn g sm" onclick="resetPw(\''+esc(c.email)+'\')">Reset password</button>'
       +'</div></td></tr>';
@@ -262,6 +263,23 @@ async function createAcct(){
   } else say('cmsg',esc(j.error),'err');
 }
 
+
+
+async function viewAs(email){
+  var c=DATA.filter(function(x){return x.email===email;})[0]||{};
+  var reason=prompt('Open '+email+"'s workspace in support mode?\n\n"+
+    'You will see their real business data. This is logged.\n\n'+
+    'Reason (optional, for the audit log):','Support request');
+  if(reason===null) return;
+  say('msg','Opening support session…','info');
+  var j=await call('impersonate',{email:email,reason:reason});
+  if(!j.ok){ say('msg',esc(j.error),'err'); return; }
+  var u='/app/?support='+encodeURIComponent(j.email)
+      +'&sname='+encodeURIComponent(j.name||'')
+      +'&srest='+encodeURIComponent(j.restaurant||'');
+  say('msg','Support session opened for '+esc(j.email)+' in a new tab. Access was logged.','ok');
+  window.open(u,'_blank','noopener');
+}
 
 var EDITING='';
 function openEdit(email){
