@@ -24,6 +24,8 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 - **Labor cost and prime cost** — the two numbers that decide whether a restaurant survives.
 - **Plain-language answers** — ask "why was my food cost up last week?" and get a real answer, not a chart to interpret.
 - **Profitability at a glance** — know where the money went before the month closes.
+- **Switch without re-typing** — import your item list straight from Restaurant365, MarginEdge, Toast or any spreadsheet; the format is detected and previewed before anything saves.
+- **Works on every device** — inventory, menu, P&L and staff sync to the server, so a phone and a laptop show the same numbers.
 - **Built for independents** — no enterprise contract, no consultant required.
 
 ## Who it is for
