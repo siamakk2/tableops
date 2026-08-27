@@ -56,6 +56,7 @@ tr:hover td{background:#fffaf6}
 .p-unknown{background:#f1ece6;color:#8a7a6c}
 .s-empty{background:#fdeaea;color:#c0392b} .s-started{background:#fff4e2;color:#a06a00}
 .s-active{background:#e4f6ec;color:#127a45}
+.s-unsynced{background:#eef1f6;color:#5a6b82}
 .acts{display:flex;gap:6px;flex-wrap:wrap}
 .msg{padding:12px 14px;border-radius:9px;font-size:14px;margin:14px 0;line-height:1.5}
 .msg.ok{background:#e4f6ec;color:#127a45} .msg.err{background:#fdeaea;color:#c0392b}
@@ -176,6 +177,11 @@ async function load(){
 }
 
 function render(){
+  if(SUM.serverSideData===false){
+    say('msg','Note: client workspace data (inventory, P&L, staff, menu) is stored in each '
+      +'owner\'s browser, not on the server — so setup progress cannot be measured here yet. '
+      +'Accounts, subscriptions and sign-ins are accurate.','info');
+  }
   el('cards').innerHTML=
     card('t',SUM.total||0,'Total accounts')+
     card('h',SUM.active||0,'Active subs')+
@@ -209,9 +215,11 @@ function draw(){
       +'<td>'+fmt(c.created_at)+'</td>'
       +'<td>'+fmt(c.last_sign_in_at)+'</td>'
       +'<td><span class="pill '+stc+'">'+esc(st)+'</span></td>'
-      +'<td><span class="pill s-'+esc(c.stage)+'">'+(c.stage==='empty'?'no data':c.stage)+'</span></td>'
-      +'<td class="sub">'+c.counts.inventory+' inv · '+c.counts.pnl+' P&amp;L · '
-        +c.counts.staff+' staff · '+c.counts.menu+' menu</td>'
+      +'<td><span class="pill s-'+esc(c.stage)+'" title="'+(c.stage==='unsynced'?'Workspace data is stored in the client browser, not the server':'')+'">'
+        +(c.stage==='empty'?'no data':c.stage==='unsynced'?'local only':c.stage)+'</span></td>'
+      +'<td class="sub">'+(c.stage==='unsynced' ? 'in their browser'
+        : c.counts.inventory+' inv · '+c.counts.pnl+' P&amp;L · '
+          +c.counts.staff+' staff · '+c.counts.menu+' menu')+'</td>'
       +'<td><div class="acts">'
       +(st==='paused'
         ? '<button class="btn g sm" onclick="setStatus(\''+esc(c.email)+'\',\'resume\')">Resume</button>'
