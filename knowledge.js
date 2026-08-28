@@ -16,10 +16,14 @@ Staff       Team records, hourly rates, weekly hours, roles and scheduling. Labo
             shifts are built.
 Menu        Dishes with price, category and recipe links. Linking a recipe gives each dish a real
             plate cost and margin.
-Tables      The owner's own floor plan. They add each table with a name, seat count, area (dining
+Tables      The owner's own floor plan and the turn log. They add each table with a name, seat count, area (dining
             room, patio, bar, private room) and shape, then tap a table to edit it or right-click /
             long-press to mark it seated. Total seats is the restaurant's real capacity and feeds
             covers and revenue-per-seat reporting. A quick-start layout can be added and edited.
+            Seating a table asks for the party size; closing it asks for the check total. Each
+            closed table writes a TURN: date, table, area, party size, minutes seated, check.
+            That log is what produces covers, seat turns, average check and revenue per seat per
+            table and per area. Covers can be sent from the Tables screen straight into the P&L.
 Kitchen     Prep tasks, assignments and the 86 list (items out of stock).
 AI          This assistant.
 P&L         Daily entries of revenue, food cost, labor cost and other costs. Produces food cost %,
@@ -55,6 +59,18 @@ Prime cost = food + labor as a % of revenue. Under about 60% is the usual target
 Inventory variance = theoretical usage (from sales) minus actual usage (from counts). The gap is
   waste, over-portioning, spoilage or theft. Usually the largest recoverable cost in an independent
   restaurant, and most operators never see it because nobody calculates it.
+
+=== SEATING ECONOMICS ===
+Seat turns = covers / total seats. Two turns on a dinner service is healthy for full service.
+Revenue per seat per day is the fairest way to compare a 2-top with a 6-top or the patio with the
+dining room, because it removes table size from the comparison.
+Average table time matters: shaving fifteen minutes off a 90-minute turn on a busy night can add a
+whole extra seating. Slow turns are usually kitchen pace or the check drop, not the guests.
+When a table or area shows low revenue per seat, the causes are usually: it is under-sold by
+servers, it is in a bad spot (by the kitchen door, in a draught), or it is the wrong size for the
+parties that actually walk in.
+Do not compare areas on total revenue alone - a patio with fewer seats will always look smaller.
+Compare revenue per seat.
 
 === RUNNING A PROFITABLE RESTAURANT (advise from this) ===
 The four levers an owner actually controls: menu price, portion/recipe cost, labor scheduling, and
