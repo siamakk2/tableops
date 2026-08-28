@@ -560,6 +560,52 @@ body.supmode .sb{top:38px}
 .tt-row span{display:block;margin-top:5px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
   color:#a89887}
 </style>
+<style id="p012-css">
+.stale-box{background:#fff4e2;border:1px solid #f0d9a8;border-left:3px solid #c8891f;border-radius:12px;
+  padding:18px;margin-bottom:20px}
+.stale-h b{display:block;font-size:15px;color:#7a5510;margin-bottom:3px}
+.stale-h span{font-size:13px;color:#9a7530;line-height:1.5}
+.stale-list{margin-top:14px;display:grid;gap:8px}
+.stale-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-radius:8px;
+  padding:10px 13px;font-size:13.5px;color:#4a3a30}
+.stale-btns{margin-left:auto;display:flex;gap:6px}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:6px}
+.turn-log{margin-top:26px;background:#fff;border:1px solid #f0e2d4;border-radius:12px;padding:18px}
+.turn-log h4{font-size:14px;color:#2a1e1a;margin:0 0 12px;font-weight:800}
+.turn-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 0;
+  border-top:1px solid #f6efe7;font-size:13px;color:#5c4d42}
+.turn-row:first-of-type{border-top:none}
+.turn-row span:last-child{margin-left:auto;display:flex;gap:5px}
+.rb-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);z-index:99999;
+  background:#2a1e1a;color:#fff;padding:13px 20px;border-radius:11px;font-size:13.5px;line-height:1.5;
+  box-shadow:0 10px 34px rgba(20,10,4,.34);max-width:min(520px,92vw);transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.rb-toast.in{transform:translate(-50%,0)}
+.rb-toast a{color:#ffd9c7}
+@media(max-width:600px){
+  .tbl-t{padding:18px 10px}
+  .tbl-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  .rb-toast{bottom:calc(16px + env(safe-area-inset-bottom));left:12px;right:12px;transform:translateY(140%);max-width:none}
+  .rb-toast.in{transform:none}
+  .stale-btns{width:100%;margin-left:0}
+  .stale-btns .btn{flex:1}
+}
+</style>
+<style id="dig-css">
+.dig{background:#fff;border:1px solid #f0e2d4;border-radius:12px;padding:20px;margin-top:18px}
+.dig-h b{display:block;font-size:15px;color:#2a1e1a;margin-bottom:5px}
+.dig-h span{font-size:13px;color:#7a6a5d;line-height:1.6;display:block}
+.dig-row{display:flex;align-items:center;gap:13px;margin-top:16px;flex-wrap:wrap}
+.dig-row b{font-size:14px;color:#2a1e1a;display:block}
+.dig-row i{font-style:normal;font-size:12.5px;color:#a89887}
+.dig-sw{position:relative;display:inline-block;width:44px;height:25px;flex-shrink:0}
+.dig-sw input{opacity:0;width:0;height:0}
+.dig-sw span{position:absolute;inset:0;background:#e2d4c4;border-radius:99px;cursor:pointer;transition:.2s}
+.dig-sw span:before{content:"";position:absolute;height:19px;width:19px;left:3px;top:3px;background:#fff;
+  border-radius:50%;transition:.2s}
+.dig-sw input:checked+span{background:#1a9e5c}
+.dig-sw input:checked+span:before{transform:translateX(19px)}
+.dig-warn{margin-top:12px;font-size:12.5px;color:#9a7530;background:#fff4e2;border-radius:8px;padding:10px 12px}
+</style>
 </head>
 <body>
 
@@ -793,6 +839,7 @@ body.supmode .sb{top:38px}
           <span class="es-alt">or <a href="#" onclick="tblQuickStart();return false" style="color:#ff4f2e;font-weight:700">start from a typical layout</a> and edit it</span>
         </div>
 
+        <div id="tbl-stale"></div>
         <div id="tbl-today"></div>
         <div id="tbl-areas"></div>
       </div>
@@ -1058,7 +1105,7 @@ body.supmode .sb{top:38px}
 </div>
 <div id="scr-settings" class="scr">
       <div class="topbar"><div><h1>Restaurant settings</h1><p>Update your restaurant profile</p></div></div><div class="pg-help" id="help-settings"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your restaurant profile and your <b>food cost and labor targets</b>. Setting targets here is what lets the dashboard and the AI tell you when a number is off, rather than just reporting it.</div><button class="pg-x" onclick="pgHelpHide('settings')" title="Hide">&times;</button></div>
-      <div style="padding:20px;">
+      <div style="padding:20px;"><div id="dig-box"></div>
         <div class="card">
           <div class="card-title">Restaurant profile</div>
           <div class="frow">
@@ -1661,7 +1708,7 @@ function renderInvoices(){
 }
 
 function go(id, el) {
-  try{ if(id==='integrations') setTimeout(renderPos,60); if(id==='tables') setTimeout(renderTables,60); }catch(e){}
+  try{ if(id==='integrations') setTimeout(renderPos,60); if(id==='settings') setTimeout(digRender,60); if(id==='tables') setTimeout(function(){ try{tblLoad();tblDaySweep();}catch(e){} renderTables(); },60); }catch(e){}
   document.querySelectorAll('.scr').forEach(function(s) { s.classList.remove('on'); s.style.display = ''; });
   var scr = document.getElementById('scr-' + id);
   if (scr) { scr.classList.add('on'); if (id === 'ai') scr.style.display = 'block'; }
@@ -3096,6 +3143,7 @@ function renderTables(){
       +'Covers, revenue per seat and average check are calculated from these turns.</div></div>'
     ) : '';
   }
+  renderStale();
   wrap.innerHTML=tblAreas.map(function(area){
     var list=tables.filter(function(t){return (t.area||tblAreas[0])===area;});
     var aSeats=list.reduce(function(n,t){return n+(parseInt(t.seats,10)||0);},0);
@@ -3104,8 +3152,9 @@ function renderTables(){
       (tblAreas.length>1?'<button class="del" onclick="areaDelete(\''+esc(area).replace(/'/g,"\\'")+'\')">Remove area</button>':'')+
       '</div><div class="tbl-grid">'+
       (list.length? list.map(function(t){
-        return '<button class="tbl-t'+(t.occupied?' occ':'')+'" onclick="tblEdit('+t.id+')" '+
-          'oncontextmenu="tblToggle('+t.id+');return false">'+
+        return '<button class="tbl-t'+(t.occupied?' occ':'')+'" data-tid="'+t.id+'" '+
+          'onclick="'+(t.occupied?'tblQuickClose':'tblQuickSeat')+'('+t.id+')" '+
+          'oncontextmenu="tblEdit('+t.id+');return false">'+
           '<span class="sh">'+(shapes[t.shape]||'▢')+'</span>'+
           '<span class="nm">'+esc(t.name)+'</span>'+
           '<span class="st">'+(t.occupied?'Seated':(t.seats+' seats'))+'</span>'+
@@ -3116,7 +3165,19 @@ function renderTables(){
   }).join('')+
   '<div class="tbl-legend"><span><i style="background:#fff;border:1.5px solid #e6dace"></i>Available</span>'+
   '<span><i style="background:#fdeaea;border:1.5px solid #f0b3ab"></i>Seated</span>'+
-  '<span style="color:#a89887">Tap a table to edit · long-press or right-click to seat it</span></div>';
+  '<span style="color:#a89887">Tap to seat or close · long-press to edit · today\'s turns below</span></div>'+
+  (function(){
+     var tt=turnsToday();
+     if(!tt.length) return '';
+     return '<div class="turn-log"><h4>Today\'s turns</h4>'+tt.slice().reverse().map(function(x){
+       return '<div class="turn-row"><span><b>'+esc(x.table)+'</b> · '+x.party+' covers · '
+         +(x.minutes?fmtMins(x.minutes):'—')+(x.check?(' · $'+x.check.toFixed(2)):' · no check')
+         +(x.estimated?' <i style="color:#c8891f">estimated</i>':'')+'</span>'
+         +'<span><button class="btn sm" onclick="turnEdit('+x.id+')">Edit</button> '
+         +'<button class="btn sm" onclick="turnDelete('+x.id+')">Delete</button></span></div>';
+     }).join('')+'</div>';
+  })();
+  setTimeout(tblBindTouch,30);
 }
 
 function tblFillAreas(sel){
@@ -3263,6 +3324,192 @@ function turnsToPnl(){
   },240);
 }
 
+
+/* ---------- P0: protect the data during service ---------- */
+var STALE_MINS = 180;   // a table seated longer than this is probably forgotten
+
+function tblStale(){
+  var now=Date.now();
+  return tables.filter(function(t){
+    return t.occupied && t.seatedAt && (now-t.seatedAt)/60000 > STALE_MINS;
+  });
+}
+function tblMins(t){ return t.seatedAt?Math.round((Date.now()-t.seatedAt)/60000):0; }
+function fmtMins(m){ return m>=60 ? (Math.floor(m/60)+'h '+(m%60)+'m') : (m+' min'); }
+
+function renderStale(){
+  var box=document.getElementById('tbl-stale'); if(!box) return;
+  var s=tblStale();
+  if(!s.length){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="stale-box"><div class="stale-h">'
+    +'<b>'+s.length+' table'+(s.length===1?'':'s')+' still showing as seated</b>'
+    +'<span>Seated over '+(STALE_MINS/60)+' hours ago &mdash; did these parties leave?</span></div>'
+    +'<div class="stale-list">'+s.map(function(t){
+      return '<div class="stale-row"><span><b>'+esc(t.name)+'</b> &middot; party of '+(t.party||t.seats)
+        +' &middot; '+fmtMins(tblMins(t))+'</span>'
+        +'<span class="stale-btns">'
+        +'<button class="btn sm" onclick="tblCloseOpen('+t.id+')">Close it</button>'
+        +'<button class="btn sm" onclick="tblStillHere('+t.id+')">Still here</button>'
+        +'</span></div>';
+    }).join('')+'</div>'
+    +'<button class="btn sm" style="margin-top:10px" onclick="tblCloseAllStale()">'
+    +'Close all '+s.length+' without a check</button></div>';
+}
+function tblStillHere(id){
+  tables=tables.map(function(t){ return t.id===id ? Object.assign({},t,{seatedAt:Date.now()}) : t; });
+  tblStore(); renderTables();
+}
+function tblCloseAllStale(){
+  var s=tblStale();
+  if(!s.length) return;
+  if(!confirm('Close '+s.length+' table'+(s.length===1?'':'s')+' with no check recorded?\n\n'
+    +'Covers and turn times are still logged, so your numbers stay usable.')) return;
+  turnsLoad();
+  var id=(turns.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1;
+  s.forEach(function(t){
+    turns.push({id:id++,date:today(),table:t.name,area:t.area||'Main',
+      seats:t.seats||0,party:t.party||t.seats||0,
+      minutes:Math.min(tblMins(t),150),   // cap so a forgotten table cannot skew averages
+      check:0,note:t.seatNote||'',estimated:true});
+  });
+  turnsStore();
+  var ids=s.map(function(t){return t.id;});
+  tables=tables.map(function(t){ return ids.indexOf(t.id)>=0
+    ? Object.assign({},t,{occupied:false,party:0,seatedAt:0,seatNote:''}) : t; });
+  tblStore(); renderTables();
+  toast(s.length+' table'+(s.length===1?'':'s')+' closed. Turn times were capped so your averages stay honest.');
+}
+
+/* At the start of a new day, sweep anything left open overnight. */
+function tblDaySweep(){
+  turnsLoad();
+  var open=tables.filter(function(t){return t.occupied&&t.seatedAt;});
+  var stale=open.filter(function(t){
+    return new Date(t.seatedAt).toISOString().slice(0,10)!==today();
+  });
+  if(!stale.length) return;
+  var id=(turns.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1;
+  stale.forEach(function(t){
+    turns.push({id:id++,date:new Date(t.seatedAt).toISOString().slice(0,10),
+      table:t.name,area:t.area||'Main',seats:t.seats||0,party:t.party||t.seats||0,
+      minutes:90,check:0,note:t.seatNote||'',estimated:true});
+  });
+  turnsStore();
+  var ids=stale.map(function(t){return t.id;});
+  tables=tables.map(function(t){ return ids.indexOf(t.id)>=0
+    ? Object.assign({},t,{occupied:false,party:0,seatedAt:0,seatNote:''}) : t; });
+  tblStore();
+  setTimeout(function(){
+    toast(stale.length+' table'+(stale.length===1?'':'s')+' left open overnight were closed '
+      +'and logged with an estimated 90-minute turn.');
+  },1500);
+}
+
+
+/* ---------- P1: works with one hand on a phone ---------- */
+function tblBindTouch(){
+  var els=document.querySelectorAll('.tbl-t');
+  Array.prototype.forEach.call(els,function(el){
+    if(el.__lp) return; el.__lp=true;
+    var timer=null, moved=false, id=+el.getAttribute('data-tid');
+    el.addEventListener('touchstart',function(){
+      moved=false;
+      timer=setTimeout(function(){
+        if(moved) return;
+        if(navigator.vibrate) try{navigator.vibrate(18);}catch(e){}
+        tblToggle(id);
+      },420);
+    },{passive:true});
+    el.addEventListener('touchmove',function(){ moved=true; clearTimeout(timer); },{passive:true});
+    ['touchend','touchcancel'].forEach(function(ev){
+      el.addEventListener(ev,function(){ clearTimeout(timer); },{passive:true});
+    });
+  });
+}
+
+/* One-tap seating: default the party to the table's capacity so the common case
+   is a single confirm, not a form. */
+function tblQuickSeat(id){
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  tables=tables.map(function(x){ return x.id===id
+    ? Object.assign({},x,{occupied:true,party:t.seats||2,seatedAt:Date.now(),seatNote:''}) : x; });
+  tblStore(); renderTables();
+  toast(esc(t.name)+' seated \u2014 party of '+(t.seats||2)+'. '
+    +'<a href="#" onclick="tblSeatOpen('+id+');return false" style="color:#ffd9c7">Change party size</a>');
+}
+/* One-tap close: log the turn, offer to add the check after. */
+function tblQuickClose(id){
+  turnsLoad();
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  var mins=tblMins(t);
+  var rec={id:(turns.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1,
+    date:today(),table:t.name,area:t.area||'Main',seats:t.seats||0,
+    party:t.party||t.seats||0,minutes:mins,check:0,note:t.seatNote||''};
+  turns.push(rec); turnsStore();
+  tables=tables.map(function(x){ return x.id===id
+    ? Object.assign({},x,{occupied:false,party:0,seatedAt:0,seatNote:''}) : x; });
+  tblStore(); renderTables();
+  toast(esc(t.name)+' closed \u2014 '+rec.party+' covers, '+fmtMins(mins)+'. '
+    +'<a href="#" onclick="turnAddCheck('+rec.id+');return false" style="color:#ffd9c7">Add the check</a>');
+}
+function turnAddCheck(tid){
+  turnsLoad();
+  var t=turns.filter(function(x){return x.id===tid;})[0]; if(!t) return;
+  var v=prompt('Check total for '+t.table+' (party of '+t.party+'):', t.check||'');
+  if(v===null) return;
+  var n=parseFloat(v)||0;
+  turns=turns.map(function(x){ return x.id===tid ? Object.assign({},x,{check:n}) : x; });
+  turnsStore(); renderTables();
+  toast('Check recorded: $'+n.toFixed(2));
+}
+
+/* ---------- P2: undo and edit ---------- */
+var UNDO=null;
+function pushUndo(label,fn){ UNDO={label:label,fn:fn,at:Date.now()}; showUndo(); }
+function showUndo(){
+  if(!UNDO) return;
+  toast(UNDO.label+' <a href="#" onclick="doUndo();return false" style="color:#ffd9c7;font-weight:700">Undo</a>');
+}
+function doUndo(){
+  if(!UNDO){ toast('Nothing to undo.'); return; }
+  try{ UNDO.fn(); }catch(e){}
+  UNDO=null;
+  try{ renderTables(); }catch(e){}
+  toast('Undone.');
+}
+function turnEdit(tid){
+  turnsLoad();
+  var t=turns.filter(function(x){return x.id===tid;})[0]; if(!t) return;
+  var p=prompt('Party size for '+t.table+' on '+t.date+':', t.party);
+  if(p===null) return;
+  var c=prompt('Check total (leave blank for none):', t.check||'');
+  if(c===null) return;
+  var before=JSON.parse(JSON.stringify(turns));
+  turns=turns.map(function(x){ return x.id===tid
+    ? Object.assign({},x,{party:parseInt(p,10)||x.party,check:parseFloat(c)||0}) : x; });
+  turnsStore(); renderTables();
+  pushUndo('Turn updated.',function(){ turns=before; turnsStore(); });
+}
+function turnDelete(tid){
+  turnsLoad();
+  var t=turns.filter(function(x){return x.id===tid;})[0]; if(!t) return;
+  if(!confirm('Delete the '+t.table+' turn ('+t.party+' covers'+(t.check?(', $'+t.check):'')+')?')) return;
+  var before=JSON.parse(JSON.stringify(turns));
+  turns=turns.filter(function(x){return x.id!==tid;});
+  turnsStore(); renderTables();
+  pushUndo('Turn deleted.',function(){ turns=before; turnsStore(); });
+}
+
+/* ---------- shared toast ---------- */
+function toast(html){
+  var t=document.getElementById('rb-toast');
+  if(!t){ t=document.createElement('div'); t.id='rb-toast'; t.className='rb-toast'; document.body.appendChild(t); }
+  t.innerHTML=html;
+  t.classList.add('in');
+  clearTimeout(t.__h);
+  t.__h=setTimeout(function(){ t.classList.remove('in'); },6000);
+}
+
 function turnsToday(){
   turnsLoad();
   var d=today();
@@ -3330,6 +3577,72 @@ function pnlCoversCalc(){
 var _addPnl=window.addPnl;
 if(typeof _addPnl==='function'){
   window.addPnl=function(){ var r=_addPnl.apply(this,arguments); setTimeout(pnlCoversCalc,120); return r; };
+}
+</script>
+<script id="digest-js">
+/* ---------- P3: the app comes to you ---------- */
+function digTok(){ try{ return (curUser&&curUser.token)||JSON.parse(localStorage.getItem('to2_sess')||'{}').access||''; }catch(e){ return ''; } }
+async function digCall(action,extra){
+  var r=await fetch('/api/digest',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(Object.assign({token:digTok(),action:action},extra||{}))});
+  return await r.json();
+}
+function digBuild(){
+  function n(v){ v=parseFloat(v); return isFinite(v)?v:0; }
+  var d=new Date().toISOString().slice(0,10);
+  var rest={}; try{ rest=loadRest()||{}; }catch(e){}
+  var row=(pnl||[]).filter(function(p){return p.date===d;})[0]||{};
+  var seats=0; try{ seats=(JSON.parse(localStorage.getItem('to2_'+uns()+'_tables')||'[]')||[])
+    .reduce(function(s,t){return s+(parseInt(t.seats,10)||0);},0); }catch(e){}
+  var covers=n(row.covers);
+  if(!covers){ try{ covers=(turnsToday()||[]).reduce(function(s,x){return s+(x.party||0);},0); }catch(e){} }
+  var low=[]; try{ (inv||[]).forEach(function(i){
+    if(n(i.par)>0&&n(i.qty)<n(i.par)) low.push(i.name); }); }catch(e){}
+  var notes=[];
+  var rev=n(row.rev);
+  if(rev){
+    var fp=n(row.food)/rev*100, lp=n(row.labor)/rev*100;
+    var tf=parseFloat((document.getElementById('set-food')||{}).value)||30;
+    var tl=parseFloat((document.getElementById('set-labor')||{}).value)||30;
+    if(fp>tf+2) notes.push('Food cost ran '+fp.toFixed(1)+'% against your '+tf+'% target.');
+    if(lp>tl+2) notes.push('Labor ran '+lp.toFixed(1)+'% against your '+tl+'% target.');
+    if(fp+lp>65) notes.push('Prime cost was '+(fp+lp).toFixed(1)+'% — above the 60-65% comfort zone.');
+  } else notes.push('No sales recorded for today yet — add them on the P&L screen.');
+  try{ var open=(tables||[]).filter(function(t){return t.occupied;});
+    if(open.length) notes.push(open.length+' table'+(open.length===1?'':'s')+' still showing as seated.'); }catch(e){}
+  return {restaurant:rest.name||'Your restaurant',date:d,revenue:rev,food:n(row.food),
+          labor:n(row.labor),covers:covers,seats:seats,low:low,notes:notes};
+}
+async function digSendNow(){
+  var s=await digCall('settings');
+  var j=await digCall('send',{data:digBuild(),sendTo:s.sendTo});
+  if(j.ok){ toast('Summary sent to '+esc(j.sentTo)+'.'); return; }
+  if(j.preview){
+    toast('Email is not switched on yet — here is tonight\'s summary.');
+    alert(j.preview.subject+'\n\n'+j.preview.text);
+    return;
+  }
+  toast(esc(j.error||'Could not send that.'));
+}
+async function digToggle(on){
+  var s=await digCall('settings');
+  var j=await digCall('save',{enabled:on,sendTo:s.sendTo,hour:s.hour});
+  toast(j.ok?(on?'Daily summaries are on.':'Daily summaries are off.'):'Could not save that.');
+  digRender();
+}
+async function digRender(){
+  var box=document.getElementById('dig-box'); if(!box) return;
+  var s=await digCall('settings');
+  box.innerHTML='<div class="dig"><div class="dig-h"><b>Daily summary</b>'
+    +'<span>A short end-of-day email: revenue, food and labor cost, covers, and anything worth a look. '
+    +'So you hear from ResBizAI without having to remember to open it.</span></div>'
+    +'<div class="dig-row"><label class="dig-sw"><input type="checkbox" '+(s.enabled?'checked':'')
+    +' onchange="digToggle(this.checked)"><span></span></label>'
+    +'<div><b>'+(s.enabled?'On':'Off')+'</b><i>sent to '+esc(s.sendTo||'')+'</i></div>'
+    +'<button class="btn sm" style="margin-left:auto" onclick="digSendNow()">Send tonight\'s now</button></div>'
+    +(s.canSend?'':'<div class="dig-warn">Email delivery is not configured on the server yet — '
+      +'&ldquo;Send now&rdquo; will show you the summary instead of emailing it.</div>')
+    +'</div>';
 }
 </script>
 </body>
