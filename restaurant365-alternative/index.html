@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<!-- Consent Mode v2 defaults — must load ahead of gtag.js. Keep it directly after the charset meta tag. -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+(function(){var d='denied',g='granted',B={ad_storage:d,ad_user_data:d,ad_personalization:d,functionality_storage:d,personalization_storage:d,security_storage:g,wait_for_update:500},m=function(o){var r={},k;for(k in B)r[k]=B[k];for(k in o)r[k]=o[k];return r};
+gtag('consent','default',m({analytics_storage:g}));
+gtag('consent','default',m({analytics_storage:d,region:'AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE IS LI NO GB CH'.split(' ')}));
+try{var c=JSON.parse(localStorage.getItem('sk_consent_v1'));if(c&&c.v===1&&Date.now()-c.ts<15552e6){var a=c.ads?g:d,n=c.analytics?g:d,f=c.functional?g:d;gtag('consent','update',{ad_storage:a,ad_user_data:a,ad_personalization:a,analytics_storage:n,functionality_storage:f,personalization_storage:f,security_storage:g});}}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Restaurant365 Alternative for Independent Restaurants | ResBizAI</title>
 <meta name="description" content="Everything Restaurant365 does for your back office — inventory, recipe costing, daily P&L, scheduling — without the enterprise price or the 90-day setup. AI-powered, live tonight. Free to try."/>
 <link rel="canonical" href="https://resbizai.com/restaurant365-alternative/"/>
@@ -435,5 +442,6 @@ section.r365{padding:60px 0}
 <div class="skc-portfolio" style="max-width:1080px;margin:18px auto 0;padding:18px 24px 4px;border-top:1px solid rgba(128,128,128,.22);"><div style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;opacity:.55;margin-bottom:12px;font-weight:700;">More from <a href="https://www.linkedin.com/in/siamakkalhor/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Siamak Kalhor Consulting</a></div><div style="display:flex;flex-wrap:wrap;gap:10px 26px;font-size:13px;line-height:1.5;"><a href="https://orchamind.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;opacity:.92;font-weight:600;">Orchamind <span style="opacity:.6;font-weight:400;">— AI software for contractors</span></a><a href="https://aislebird.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;opacity:.92;font-weight:600;">AisleBird <span style="opacity:.6;font-weight:400;">— AI grocery-list app</span></a><a href="https://bluemoonfabrics.com/pages/custom-pattern-studio" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;opacity:.92;font-weight:600;">Blue Moon Pattern Studio <span style="opacity:.6;font-weight:400;">— AI custom patterns for fashion designers</span></a></div></div>
 </footer>
 <script src="/consent.js" defer></script>
+<script defer src="/consent.js"></script>
 </body>
 </html>
