@@ -446,6 +446,54 @@ body.supmode .sb{top:38px}
   cursor:pointer;line-height:1;padding:0 0 0 8px;font-family:inherit}
 .pg-help .pg-x:hover{color:#8a7a6c}
 </style>
+<style id="wiz-css">
+.wz-bd{display:none;position:fixed;inset:0;background:rgba(24,14,8,.72);z-index:500;backdrop-filter:blur(3px)}
+.wz{display:none;position:fixed;z-index:501;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(560px,94vw);max-height:92vh;overflow:auto;background:#fff;border-radius:20px;
+  box-shadow:0 30px 80px rgba(30,15,5,.4)}
+.wz-top{background:linear-gradient(135deg,#2a1e1a,#4a3128);color:#fff;padding:26px 30px 22px;
+  border-radius:20px 20px 0 0}
+.wz-step{font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:#ffb9a6;margin-bottom:9px}
+.wz-top h2{font-size:23px;margin:0 0 7px;font-weight:800;line-height:1.2}
+.wz-top p{font-size:14px;color:#d8c9bd;margin:0;line-height:1.55}
+.wz-body{padding:26px 30px 28px}
+.wz-body label{display:block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:#8a7a6c;margin:0 0 7px}
+.wz-body input,.wz-body select{width:100%;padding:13px 15px;border:1px solid #e6dace;border-radius:10px;
+  font-size:16px;font-family:inherit;color:#2a1e1a;background:#fffdf9;outline:none;margin-bottom:18px}
+.wz-body input:focus,.wz-body select:focus{border-color:#ff4f2e;background:#fff}
+.wz-row{display:grid;grid-template-columns:1fr;gap:0 14px}
+@media(min-width:520px){.wz-row{grid-template-columns:1fr 1fr}}
+.wz-hint{font-size:12.5px;color:#9a8b7d;margin:-12px 0 18px;line-height:1.5}
+.wz-opts{display:grid;gap:10px;margin-bottom:6px}
+.wz-opt{display:flex;align-items:flex-start;gap:13px;border:1.5px solid #eee2d6;border-radius:12px;
+  padding:16px 17px;cursor:pointer;background:#fff;transition:.16s;text-align:left;width:100%;font-family:inherit}
+.wz-opt:hover{border-color:#ff4f2e;background:#fffaf6}
+.wz-opt .ic{font-size:22px;line-height:1;flex-shrink:0}
+.wz-opt b{display:block;font-size:15px;color:#2a1e1a;margin-bottom:3px;font-weight:700}
+.wz-opt span{font-size:13px;color:#7a6a5d;line-height:1.5}
+.wz-act{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.wz-btn{background:#ff4f2e;color:#fff;border:none;font-size:15px;font-weight:700;padding:14px 26px;
+  border-radius:10px;cursor:pointer;font-family:inherit}
+.wz-btn:hover{background:#e8401f}
+.wz-btn.g{background:#fff;color:#7a6a5d;border:1px solid #e6dace}
+.wz-skip{margin-left:auto;background:none;border:none;color:#a89887;font-size:13px;cursor:pointer;
+  text-decoration:underline;font-family:inherit}
+.wz-dots{display:flex;gap:6px;justify-content:center;padding:0 0 22px}
+.wz-dots i{width:7px;height:7px;border-radius:50%;background:#e6dace;display:block}
+.wz-dots i.on{background:#ff4f2e;width:22px;border-radius:99px}
+.wz-done{text-align:center;padding:8px 0 4px}
+.wz-done .big{font-size:44px;margin-bottom:12px}
+.wz-done h3{font-size:20px;color:#2a1e1a;margin:0 0 8px}
+.wz-done p{font-size:14.5px;color:#7a6a5d;line-height:1.6;margin:0 auto 22px;max-width:40ch}
+</style>
+<style id="fh-css">
+.fld-hint{font-size:12px;color:#a89887;margin:-9px 0 13px;line-height:1.45}
+.modal-note{background:#fff6ee;border:1px solid #f3e3d3;border-radius:9px;padding:11px 13px;
+  font-size:12.5px;color:#7a6a5d;line-height:1.55;margin:0 0 16px}
+.modal-note b{color:#2a1e1a}
+</style>
 </head>
 <body>
 
@@ -958,16 +1006,16 @@ body.supmode .sb{top:38px}
 <div class="modal-bg" id="m-inv"><div class="modal">
   <h2>Add inventory item <button class="mclose" onclick="closeM('m-inv')">×</button></h2>
   <input type="hidden" id="inv-eid"/>
-  <div class="frow"><div class="field"><label>Item name *</label><input type="text" id="inv-name" placeholder="Salmon filet"/></div><div class="field"><label>Category</label><select id="inv-cat"><option>Proteins</option><option>Seafood</option><option>Produce</option><option>Dairy</option><option>Dry goods</option><option>Beverages</option><option>Other</option></select></div></div>
+  <div class="frow"><div class="field"><div class="modal-note">Only the <b>name</b> is required. Add a <b>par level</b> and you get a low-stock alert before you run out; add a <b>cost</b> and ResBizAI can work out your food cost. You can fill these in later.</div><label>Item name *</label><input type="text" id="inv-name" placeholder="Salmon filet"/></div><div class="field"><label>Category</label><select id="inv-cat"><option>Proteins</option><option>Seafood</option><option>Produce</option><option>Dairy</option><option>Dry goods</option><option>Beverages</option><option>Other</option></select></div></div>
   <div class="frow"><div class="field"><label>Unit</label><select id="inv-unit"><option>portions</option><option>lbs</option><option>kg</option><option>each</option><option>cans</option><option>liters</option><option>bottles</option></select></div><div class="field"><label>Supplier</label><input type="text" id="inv-sup" placeholder="Sysco"/></div></div>
-  <div class="frow"><div class="field"><label>Current stock</label><input type="number" id="inv-qty" placeholder="20" min="0"/></div><div class="field"><label>Par level</label><input type="number" id="inv-par" placeholder="10" min="0"/></div></div>
-  <div class="field"><label>Cost per unit ($)</label><input type="number" id="inv-cost" placeholder="8.50" min="0" step="0.01"/></div>
+  <div class="frow"><div class="field"><label>Current stock</label><input type="number" id="inv-qty" placeholder="20" min="0"/><div class="fld-hint">Roughly how much you have on hand right now.</div></div><div class="field"><label>Par level</label><input type="number" id="inv-par" placeholder="10" min="0"/><div class="fld-hint">The level at which you want a reorder alert.</div></div></div>
+  <div class="field"><label>Cost per unit ($)</label><input type="number" id="inv-cost" placeholder="8.50" min="0" step="0.01"/><div class="fld-hint">What you pay per unit — used to calculate food cost.</div></div>
   <div class="brow"><button class="btn gold" onclick="saveInv()">Save</button><button class="btn" onclick="closeM('m-inv')">Cancel</button></div>
 </div></div>
 
 <div class="modal-bg" id="m-dish"><div class="modal">
   <h2>Add menu item <button class="mclose" onclick="closeM('m-dish')">×</button></h2>
-  <div class="field"><label>Dish name *</label><input type="text" id="dish-name" placeholder="Napa Valley Roll"/></div>
+  <div class="field"><div class="modal-note">Name and price are enough to start. Come back later and <b>link the recipe</b> — that is what gives you the real plate cost and margin.</div><label>Dish name *</label><input type="text" id="dish-name" placeholder="Napa Valley Roll"/></div>
   <div class="frow"><div class="field"><label>Category</label><select id="dish-cat"><option>Weekly Features</option><option>Signature Rolls</option><option>Hand Rolls</option><option>Japanese Tapas</option><option>Entrees</option><option>Sushi Sets</option><option>Nigiri/Sashimi</option><option>Soup & Salad</option><option>Desserts</option><option>Beverages</option></select></div><div class="field"><label>Price ($)</label><input type="number" id="dish-price" placeholder="24" min="0"/></div></div>
   <div class="field"><label>Description</label><textarea id="dish-desc" rows="2" placeholder="Ingredients and description..."></textarea></div>
   <div class="brow"><button class="btn gold" onclick="saveDish()">Save</button><button class="btn" onclick="closeM('m-dish')">Cancel</button></div>
@@ -2195,6 +2243,18 @@ function stopVoice(){
 })();
 </script>
 
+
+<div class="wz-bd" id="wz-bd"></div>
+<div class="wz" id="wz">
+  <div class="wz-top">
+    <div class="wz-step" id="wz-step">Step 1 of 3</div>
+    <h2 id="wz-h">Welcome to ResBizAI</h2>
+    <p id="wz-p">Two quick questions and you're set up. This takes under a minute.</p>
+  </div>
+  <div class="wz-body" id="wz-body"></div>
+  <div class="wz-dots" id="wz-dots"></div>
+</div>
+
 <div class="imp-bd" id="imp-bd" onclick="impClose()"></div>
 <div class="imp-md" id="imp-md">
   <h2>Bring your data across</h2>
@@ -2511,6 +2571,138 @@ function pgHelpHide(id){
     Object.keys(s).forEach(function(id){
       var el=document.getElementById('help-'+id); if(el) el.style.display='none'; });
   }catch(e){}
+})();
+</script>
+<script id="wiz-js">
+var WZ={i:0,rest:{name:'',city:'',cuisine:''},path:''};
+function wzKey(){ try{ return 'wz_done_'+(typeof uns==='function'?uns():'u'); }catch(e){ return 'wz_done'; } }
+function wzShow(){ document.getElementById('wz-bd').style.display='block';
+  document.getElementById('wz').style.display='block'; wzRender(); }
+function wzHide(){ document.getElementById('wz-bd').style.display='none';
+  document.getElementById('wz').style.display='none'; }
+function wzFinish(){
+  try{ localStorage.setItem(wzKey(),'1'); }catch(e){}
+  wzHide();
+  try{ renderDash(); }catch(e){}
+}
+function wzNext(){ WZ.i++; wzRender(); }
+
+function wzRender(){
+  var b=document.getElementById('wz-body'), s=document.getElementById('wz-step'),
+      hh=document.getElementById('wz-h'), pp=document.getElementById('wz-p'),
+      dots=document.getElementById('wz-dots');
+  dots.innerHTML=[0,1,2].map(function(n){return '<i class="'+(n<=WZ.i?'on':'')+'"></i>';}).join('');
+
+  if(WZ.i===0){
+    s.textContent='Step 1 of 3';
+    hh.textContent='Welcome to ResBizAI';
+    pp.textContent="First, what should we call your restaurant? This is how it appears across the app.";
+    var r={}; try{ r=loadRest()||{}; }catch(e){}
+    b.innerHTML=
+      '<label>Restaurant name</label>'+
+      '<input id="wz-name" placeholder="e.g. The Jade Heron" value="'+esc(WZ.rest.name||'')+'">'+
+      '<div class="wz-row">'+
+        '<div><label>City</label><input id="wz-city" placeholder="Napa" value="'+esc(WZ.rest.city||'')+'"></div>'+
+        '<div><label>Cuisine</label><input id="wz-cui" placeholder="Japanese" value="'+esc(WZ.rest.cuisine||'')+'"></div>'+
+      '</div>'+
+      '<p class="wz-hint">You can change any of this later in Settings.</p>'+
+      '<div class="wz-act"><button class="wz-btn" onclick="wzSaveRest()">Continue</button>'+
+      '<button class="wz-skip" onclick="wzFinish()">Skip setup</button></div>';
+    setTimeout(function(){ var n=document.getElementById('wz-name'); if(n) n.focus(); },80);
+    return;
+  }
+
+  if(WZ.i===1){
+    s.textContent='Step 2 of 3';
+    hh.textContent='How would you like to start?';
+    pp.textContent='Pick whichever is easiest — you can do the others any time.';
+    b.innerHTML=
+      '<div class="wz-opts">'+
+      '<button class="wz-opt" onclick="wzPick(\'import\')"><span class="ic">\u{1F4E5}</span>'+
+        '<span><b>Import from my current software</b><span>Coming from Restaurant365, MarginEdge or '+
+        'Toast? Export your item list and drop the CSV in. Fastest if you already have data.</span></span></button>'+
+      '<button class="wz-opt" onclick="wzPick(\'invoice\')"><span class="ic">\u{1F9FE}</span>'+
+        '<span><b>Photograph a delivery invoice</b><span>The AI reads the line items, quantities and '+
+        'prices and builds your inventory for you. No typing.</span></span></button>'+
+      '<button class="wz-opt" onclick="wzPick(\'pnl\')"><span class="ic">\u{1F4C8}</span>'+
+        '<span><b>Enter one day of sales</b><span>Quickest way to see a real number \u2014 your food '+
+        'cost %, labor % and net profit for the day.</span></span></button>'+
+      '<button class="wz-opt" onclick="wzPick(\'look\')"><span class="ic">\u{1F440}</span>'+
+        '<span><b>Just show me around first</b><span>Have a look at the app before entering anything.'+
+        '</span></span></button>'+
+      '</div>'+
+      '<div class="wz-act"><button class="wz-skip" onclick="wzFinish()">Skip setup</button></div>';
+    return;
+  }
+
+  // step 3 — confirmation + hand-off
+  var msg={
+    import:['\u{1F4E5}','Let\'s bring your data across',
+      'We\'ll open the importer. Export your item list from your current system as a CSV, then drop it in \u2014 nothing saves until you\'ve seen a preview.'],
+    invoice:['\u{1F9FE}','Grab your last delivery invoice',
+      'We\'ll open the Invoices screen. Photograph or upload any invoice and the AI reads it, then updates your inventory and costs.'],
+    pnl:['\u{1F4C8}','Let\'s get one day in',
+      'We\'ll open the P&L screen. Enter yesterday\'s revenue, food cost and labor \u2014 your percentages calculate straight away.'],
+    look:['\u{1F44B}','You\'re all set',
+      'Have a look around. Every screen has a short note at the top explaining what it does, and the checklist on your dashboard is there whenever you\'re ready.']
+  }[WZ.path]||['\u{1F44B}','You\'re all set','The checklist on your dashboard will guide you whenever you\'re ready.'];
+  s.textContent='Step 3 of 3';
+  hh.textContent='Ready when you are';
+  pp.textContent='One last thing before you go.';
+  b.innerHTML='<div class="wz-done"><div class="big">'+msg[0]+'</div>'+
+    '<h3>'+msg[1]+'</h3><p>'+msg[2]+'</p></div>'+
+    '<p class="wz-hint" style="text-align:center;margin-bottom:18px">Stuck at any point? Open the '+
+    '<b>AI</b> screen and ask \u2014 it knows how every part of ResBizAI works, and it can see your numbers.</p>'+
+    '<div class="wz-act"><button class="wz-btn" style="width:100%" onclick="wzGo()">'+
+    (WZ.path==='look'?'Start looking around':'Let\'s go')+'</button></div>';
+}
+
+function wzSaveRest(){
+  var n=(document.getElementById('wz-name').value||'').trim();
+  if(!n){ document.getElementById('wz-name').focus(); return; }
+  WZ.rest={name:n,city:(document.getElementById('wz-city').value||'').trim(),
+           cuisine:(document.getElementById('wz-cui').value||'').trim()};
+  try{ saveRest(WZ.rest); }catch(e){}
+  try{ if(typeof syncPush==='function') syncPush('rest',WZ.rest); }catch(e){}
+  try{
+    var sn=document.getElementById('set-name'); if(sn) sn.value=WZ.rest.name;
+    var sc=document.getElementById('set-city'); if(sc) sc.value=WZ.rest.city;
+    var su=document.getElementById('set-cuisine'); if(su) su.value=WZ.rest.cuisine;
+  }catch(e){}
+  wzNext();
+}
+function wzPick(p){ WZ.path=p; wzNext(); }
+function wzGo(){
+  var p=WZ.path; wzFinish();
+  setTimeout(function(){
+    try{
+      if(p==='import' && typeof impOpen==='function') impOpen();
+      else if(p==='invoice') go('invoices');
+      else if(p==='pnl') go('pnl');
+    }catch(e){}
+  },260);
+}
+
+/* Show once, for real accounts only, after the app opens. */
+(function(){
+  function maybe(){
+    try{
+      if(typeof isDemo==='function'&&isDemo()) return;
+      if(window.__SUPPORT_MODE__===true) return;
+      if(localStorage.getItem(wzKey())==='1') return;
+      var hasData=false;
+      ['staff','inv','pnl','menu','invoices'].forEach(function(k){
+        if(Array.isArray(window[k])&&window[k].length) hasData=true; });
+      if(hasData){ try{localStorage.setItem(wzKey(),'1');}catch(e){} return; }
+      WZ.i=0; WZ.path='';
+      try{ var r=loadRest()||{}; if(r.name&&!/'s Restaurant$|^My Restaurant$/.test(r.name)) WZ.rest=r; }catch(e){}
+      setTimeout(wzShow,650);
+    }catch(e){}
+  }
+  ['gateEnter','enterApp'].forEach(function(n){
+    var f=window[n];
+    if(typeof f==='function'){ window[n]=function(){ var r=f.apply(this,arguments); try{maybe();}catch(e){} return r; }; }
+  });
 })();
 </script>
 </body>
