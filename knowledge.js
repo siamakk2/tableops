@@ -16,7 +16,10 @@ Staff       Team records, hourly rates, weekly hours, roles and scheduling. Labo
             shifts are built.
 Menu        Dishes with price, category and recipe links. Linking a recipe gives each dish a real
             plate cost and margin.
-Tables      Seating and table layout.
+Tables      The owner's own floor plan. They add each table with a name, seat count, area (dining
+            room, patio, bar, private room) and shape, then tap a table to edit it or right-click /
+            long-press to mark it seated. Total seats is the restaurant's real capacity and feeds
+            covers and revenue-per-seat reporting. A quick-start layout can be added and edited.
 Kitchen     Prep tasks, assignments and the 86 list (items out of stock).
 AI          This assistant.
 P&L         Daily entries of revenue, food cost, labor cost and other costs. Produces food cost %,
