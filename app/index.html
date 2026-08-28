@@ -434,6 +434,18 @@ body.supmode .sb{top:38px}
 .imp-btn.g{background:#fff;color:#2a1e1a;border:1px solid #e2d4c4}
 .imp-err{background:#fdeaea;color:#c0392b;padding:11px 14px;border-radius:9px;font-size:13.5px;margin-top:14px}
 </style>
+<style id="pghelp-css">
+.pg-help{display:flex;align-items:flex-start;gap:10px;background:#fff6ee;border:1px solid #f3e3d3;
+  border-left:3px solid #ff4f2e;border-radius:9px;padding:12px 15px;margin:0 0 18px;
+  font-size:13.5px;line-height:1.6;color:#6b5a4d;max-width:900px}
+.pg-help svg{flex-shrink:0;width:16px;height:16px;stroke:#ff4f2e;fill:none;stroke-width:2;margin-top:2px}
+.pg-help b{color:#2a1e1a;font-weight:700}
+.pg-help a{color:#ff4f2e;font-weight:700;text-decoration:none;cursor:pointer}
+.pg-help a:hover{text-decoration:underline}
+.pg-help .pg-x{margin-left:auto;background:none;border:none;color:#c4b3a3;font-size:16px;
+  cursor:pointer;line-height:1;padding:0 0 0 8px;font-family:inherit}
+.pg-help .pg-x:hover{color:#8a7a6c}
+</style>
 </head>
 <body>
 
@@ -532,7 +544,7 @@ body.supmode .sb{top:38px}
 
     <!-- DASHBOARD -->
     <div id="scr-dashboard" class="scr on"><div class="onb" id="onb" style="display:none"><div class="onb-top"><div><h3 id="onb-h">Let's get your numbers live</h3><p id="onb-p">Four short steps. Most owners finish in about ten minutes &mdash; and the first one does most of the work for you.</p></div><div class="onb-prog"><b id="onb-n">0/4</b><span>Complete</span></div></div><div class="onb-bar"><i id="onb-fill" style="width:0%"></i></div><div class="onb-steps" id="onb-steps"></div><button class="onb-hide" onclick="onbHide()">Hide this &mdash; I'll set up later</button></div>
-      <div class="topbar"><div><h1 id="dash-greet">Good evening</h1><p id="dash-sub">The Jade Heron · 3 alerts need attention</p></div>
+      <div class="pg-help" id="help-dashboard"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your whole restaurant at a glance. The tiles show revenue, food cost, labor cost and covers; alerts below flag anything needing attention. <b>Figures show a dash until you add a day on the P&amp;L screen.</b></div><button class="pg-x" onclick="pgHelpHide('dashboard')" title="Hide">&times;</button></div><div class="topbar"><div><h1 id="dash-greet">Good evening</h1><p id="dash-sub">The Jade Heron · 3 alerts need attention</p></div>
         <div class="topbar-right"><button class="btn" onclick="askAI('Give me my full evening briefing for tonight')">Evening briefing</button></div>
       </div>
       <div style="padding:20px;">
@@ -571,7 +583,7 @@ body.supmode .sb{top:38px}
           <button class="btn" onclick="openM('m-staff')">+ Add staff</button>
           <button class="btn gold" onclick="exportPayroll()">⬇ Payroll CSV</button>
         </div>
-      </div>
+      </div><div class="pg-help" id="help-staff"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Everyone on payroll, with hourly rate and weekly hours. Adding your team here is what lets ResBizAI calculate <b>labor cost percentage</b> — one half of prime cost, the number that decides whether a restaurant survives.</div><button class="pg-x" onclick="pgHelpHide('staff')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="g2" style="margin-bottom:16px;">
           <div class="metric"><div class="mlbl">Total staff</div><div class="mval" id="s-count">0</div></div>
@@ -601,7 +613,7 @@ body.supmode .sb{top:38px}
 <button class="btn" onclick="openCount()">Count &amp; reconcile</button>
           <button class="btn gold" onclick="askAI('Draft a full supplier order based on current inventory levels for tonight at The Jade Heron with 120 covers')">Auto-order draft</button>
         </div>
-      </div>
+      </div><div class="pg-help" id="help-inventory"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Every stock item with quantity, par level and cost. Set a <b>par level</b> and you get a low-stock alert before you run out. Stock depletes on its own once dishes are linked to recipes. <a onclick="impOpen()">Import from Restaurant365, MarginEdge or Toast</a></div><button class="pg-x" onclick="pgHelpHide('inventory')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="card">
           <div class="card-title">Stock levels <span class="card-act" style="color:#aa9a8c;font-size:11px;" onclick="clearInv()">Clear all demo</span></div>
@@ -621,7 +633,7 @@ body.supmode .sb{top:38px}
           <button class="btn" onclick="askAI('Suggest 3 new creative sushi rolls for The Jade Heron that fit their bold flavor style and would maximize margin')">AI ideas</button>
           <button class="btn gold" onclick="openM('m-dish')">+ Add dish</button>
         </div>
-      </div>
+      </div><div class="pg-help" id="help-menu"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your dishes with prices and recipes. <b>Link a dish to its ingredients</b> and ResBizAI gives you the real plate cost and margin on every item — so menu decisions become arithmetic instead of instinct.</div><button class="pg-x" onclick="pgHelpHide('menu')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="card">
           <div class="card-title">Ask AI about any dish or cuisine</div>
@@ -642,7 +654,7 @@ body.supmode .sb{top:38px}
 
     <!-- TABLES -->
     <div id="scr-tables" class="scr">
-      <div class="topbar"><div><h1>Tables & Seating</h1><p>The Jade Heron layout · 120 covers capacity</p></div></div>
+      <div class="topbar"><div><h1>Tables & Seating</h1><p>The Jade Heron layout · 120 covers capacity</p></div></div><div class="pg-help" id="help-tables"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your floor plan and seating capacity. Used to track covers and turn times, which feed the revenue-per-seat figures in your reports.</div><button class="pg-x" onclick="pgHelpHide('tables')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="metrics">
           <div class="metric"><div class="mlbl">Indoor tables</div><div class="mval">20</div><div class="mchg">80 seats</div></div>
@@ -694,7 +706,7 @@ body.supmode .sb{top:38px}
           <button class="btn" onclick="openM('m-prep')">+ Add task</button>
           <button class="btn gold" onclick="askAI('Generate a complete prep list for tonight at The Jade Heron — 120 covers, sushi restaurant, with timing and who does each task')">AI generate list</button>
         </div>
-      </div>
+      </div><div class="pg-help" id="help-kitchen"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Tonight's prep list and the 86 board. Assign prep tasks to staff, and mark items 86'd when you run out so servers and the AI both know what is unavailable.</div><button class="pg-x" onclick="pgHelpHide('kitchen')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="g2">
           <div class="card">
@@ -720,7 +732,7 @@ body.supmode .sb{top:38px}
             <button class="btn" id="tts-btn" onclick="toggleTTS()">🔇 Voice off</button>
             <button class="btn" onclick="clearChat()">Clear chat</button>
           </div>
-        </div>
+        </div><div class="pg-help" id="help-ai"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Ask anything in plain language. The assistant <b>can see your actual numbers</b> — your food cost trend, what is low in stock, which dishes have thin margins — and it knows how every screen in ResBizAI works. Ask "why was my food cost up?" and you get your figures, not a lecture.</div><button class="pg-x" onclick="pgHelpHide('ai')" title="Hide">&times;</button></div>
         <div class="ai-msgs" id="ai-msgs">
           <div class="amsg bot">
             <div class="amsg-av">T</div>
@@ -755,7 +767,7 @@ body.supmode .sb{top:38px}
           <button class="btn" onclick="openPnlM()">+ Add entry</button>
           <button class="btn gold" onclick="printPnl()">⬇ Export</button>
         </div>
-      </div>
+      </div><div class="pg-help" id="help-pnl"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Enter one day of revenue, food cost and labor and ResBizAI calculates <b>food cost %, labor % and net profit immediately</b>. This is the screen that makes everything else work — a monthly P&amp;L tells you about a problem five weeks too late.</div><button class="pg-x" onclick="pgHelpHide('pnl')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="metrics">
           <div class="metric"><div class="mlbl">Week revenue</div><div class="mval" id="pnl-rev">$0</div></div>
@@ -778,7 +790,7 @@ body.supmode .sb{top:38px}
     <div id="scr-reports" class="scr">
       <div class="topbar"><div><h1>Reports</h1><p>Generate · download · print · email</p></div>
         <div class="topbar-right"><button class="btn gold" onclick="askAI('Generate a complete monthly business summary for The Jade Heron — revenue, costs, net profit, top dishes, and 3 recommendations')">AI monthly summary</button></div>
-      </div>
+      </div><div class="pg-help" id="help-reports"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Written reports on any part of the business, generated from your own data. Ask for a weekly summary, a food cost analysis, or a staffing review — then print, download or email it.</div><button class="pg-x" onclick="pgHelpHide('reports')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="rcards">
           <div class="rcard"><div class="ricon" style="background:#dcfce7;color:#166534;"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="rname">Daily P&L</div><div class="rdesc">Revenue, food %, labor %, net profit vs last week</div><div class="ract"><button onclick="genReport('Generate a detailed daily P&L report for The Jade Heron this week. Show revenue, food cost percentage, labor cost percentage, and net profit for each day in a clean table.')">Generate</button><button onclick="window.print()">Print</button><button onclick="emailRpt('Daily P&L')">Email</button></div></div>
@@ -802,7 +814,7 @@ body.supmode .sb{top:38px}
     <div id="scr-suppliers" class="scr">
       <div class="topbar"><div><h1>Suppliers & Orders</h1><p>6 active suppliers</p></div>
         <div class="topbar-right"><button class="btn gold" onclick="askAI('Draft a complete weekly supplier order for The Jade Heron based on current inventory levels and 120 covers tonight')">Draft weekly order</button></div>
-      </div>
+      </div><div class="pg-help" id="help-suppliers"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your vendors and order history. Keeping suppliers here lets ResBizAI draft an order from current stock levels instead of you rebuilding it from memory each week.</div><button class="pg-x" onclick="pgHelpHide('suppliers')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="card">
           <div class="tblx"><table class="tbl"><thead><tr><th>Supplier</th><th>Category</th><th>Last order</th><th>Monthly spend</th><th>Status</th><th></th></tr></thead>
@@ -822,7 +834,7 @@ body.supmode .sb{top:38px}
     <div id="scr-invoices" class="scr">
       <div class="topbar"><div><h1>Invoices <span class="inv-aitag">AI</span></h1><p>Snap or paste an invoice — AI reads it, codes it to the right account, and catches errors</p></div>
         <div class="topbar-right"><button class="btn gold" onclick="invOpenAdd()">+ Add invoice</button></div>
-      </div>
+      </div><div class="pg-help" id="help-invoices"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div><b>The fastest way to get data in.</b> Photograph any delivery invoice and the AI reads the line items, quantities and prices, then updates your inventory costs and food cost percentage. No typing.</div><button class="pg-x" onclick="pgHelpHide('invoices')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="inv-cards">
           <div class="inv-card"><div class="inv-card-lbl">Total entered</div><div class="inv-card-val" id="inv-total">$0.00</div><div class="inv-card-sub" id="inv-count">0 invoices</div></div>
@@ -857,7 +869,7 @@ body.supmode .sb{top:38px}
 
     <!-- SETTINGS -->
     <div id="scr-settings" class="scr">
-      <div class="topbar"><div><h1>Restaurant settings</h1><p>Update your restaurant profile</p></div></div>
+      <div class="topbar"><div><h1>Restaurant settings</h1><p>Update your restaurant profile</p></div></div><div class="pg-help" id="help-settings"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg><div>Your restaurant profile and your <b>food cost and labor targets</b>. Setting targets here is what lets the dashboard and the AI tell you when a number is off, rather than just reporting it.</div><button class="pg-x" onclick="pgHelpHide('settings')" title="Hide">&times;</button></div>
       <div style="padding:20px;">
         <div class="card">
           <div class="card-title">Restaurant profile</div>
@@ -2484,6 +2496,22 @@ function rbSystem(){
     '\nUse these figures when the owner asks about their business. If something is not listed above, ' +
     'say which screen to enter it on rather than guessing.';
 }
+</script>
+<script id="pghelp-js">
+function pgHelpHide(id){
+  var el=document.getElementById('help-'+id); if(el) el.style.display='none';
+  try{ var k='pghelp_'+(typeof uns==='function'?uns():'u'); 
+    var s=JSON.parse(localStorage.getItem(k)||'{}'); s[id]=1;
+    localStorage.setItem(k,JSON.stringify(s)); }catch(e){}
+}
+(function(){
+  try{
+    var k='pghelp_'+(typeof uns==='function'?uns():'u');
+    var s=JSON.parse(localStorage.getItem(k)||'{}');
+    Object.keys(s).forEach(function(id){
+      var el=document.getElementById('help-'+id); if(el) el.style.display='none'; });
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
