@@ -845,5 +845,25 @@ a.cta-contact-item:hover .cta-contact-val{opacity:.8}
 </style>
 <script>(function(){var d=document.getElementById("deferred-css");function go(){if(d)d.media="all";}
 if(document.readyState==="complete"){requestAnimationFrame(go);}else{window.addEventListener("load",function(){requestAnimationFrame(go);});}})();</script>
+<style id="mobile-grid-fix">
+/* Mobile column collapse. These rules live at the end of the document on purpose:
+   several grid definitions appear after the earlier @media block, so an override
+   placed earlier loses on source order. */
+@media (max-width: 900px){
+  .feat-grid, .prob-grid, .price-grid, .proof-stats, .hero-grid, .step-grid, .faq-grid{
+    grid-template-columns: 1fr !important;
+  }
+  .feat-card{ padding: 26px !important; }
+  .feat-card h3{ font-size: 19px !important; line-height: 1.28 !important; }
+  .feat-card p{ font-size: 15px !important; line-height: 1.62 !important; }
+  .sec-h{ font-size: clamp(26px, 7vw, 36px) !important; line-height: 1.14 !important; }
+  .sec-lead{ font-size: 16px !important; }
+}
+@media (max-width: 640px){
+  .wrap{ padding-left: 20px !important; padding-right: 20px !important; }
+  .feat-card{ padding: 22px !important; }
+  .feat-emoji{ width: 46px !important; height: 46px !important; font-size: 22px !important; }
+}
+</style>
 </body>
 </html>
