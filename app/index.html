@@ -764,9 +764,7 @@ body.supmode .sb{top:38px}
       </div>
       <div class="pg-help" id="help-tables">
         <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        <div>Build your own floor plan. Add each table with its seat count and area &mdash; dining room,
-        patio, bar, private room, whatever you have. <b>Tap any table to edit it or mark it occupied.</b>
-        Your capacity feeds the covers and revenue-per-seat figures in your reports.</div>
+        <div>Add each table with its seat count and area &mdash; dining room, patio, bar, private room. <b>Tap a table to edit it; right-click or long-press to seat it.</b> Your total seats become your real capacity, which turns the covers you record on the P&amp;L screen into <b>seat turns</b> and <b>revenue per seat</b> &mdash; the numbers that tell you whether a busy-looking night actually made money.</div>
         <button class="pg-x" onclick="pgHelpHide('tables')" title="Hide">&times;</button>
       </div>
 
@@ -1144,7 +1142,7 @@ body.supmode .sb{top:38px}
   <div class="field"><label>Date *</label><input type="text" id="pnl-date" placeholder="Jun 27"/></div>
   <div class="field"><label>Location</label><select id="pnl-loc-in"></select></div>
   <div class="frow"><div class="field"><label>Revenue ($)</label><input type="number" id="pnl-rev-in" placeholder="9200" min="0"/></div><div class="field"><label>Food cost ($)</label><input type="number" id="pnl-food-in" placeholder="2944" min="0"/></div></div>
-  <div class="frow"><div class="field"><label>Labor cost ($)</label><input type="number" id="pnl-lab-in" placeholder="2668" min="0"/></div><div class="field"><label>Other costs ($)</label><input type="number" id="pnl-oth-in" placeholder="800" min="0"/></div></div>
+  <div class="frow"><div class="field"><label>Labor cost ($)</label><input type="number" id="pnl-lab-in" placeholder="2668" min="0"/></div><div class="field"><label>Other costs ($)</label><input type="number" id="pnl-oth-in" placeholder="800" min="0"/></div></div><div class="frow"><div class="field"><label>Covers (guests served)</label><input type="number" id="pnl-cov-in" placeholder="0" min="0"/><div class="fld-hint" id="pnl-cov-hint">How many guests you served. With your floor plan set up, this gives you seat turns and revenue per seat.</div></div><div class="field"><label>&nbsp;</label><div id="pnl-cov-calc" class="fld-hint" style="padding-top:12px;line-height:1.6"></div></div></div>
   <div class="pnl-pull"><div class="pnl-pull-row"><label>Auto-fill costs from your AI-coded invoices for:</label><input type="date" id="pnl-pull-date"/><button class="btn sm" onclick="pnlPullInvoices()">↻ Pull</button></div><div class="pnl-pull-note" id="pnl-pull-note"></div></div>
   <div class="brow"><button class="btn gold" onclick="savePnl()">Save</button><button class="btn" onclick="closeM('m-pnl')">Cancel</button></div>
 </div></div>
@@ -2091,7 +2089,7 @@ function savePnl() {
   if(!date){alert('Date is required.');return;}
   if(!rev){alert('Revenue is required.');return;}
   var eid=parseInt(document.getElementById('pnl-eid').value)||0;
-  var data={date:date,rev:rev,food:parseFloat(document.getElementById('pnl-food-in').value)||0,labor:parseFloat(document.getElementById('pnl-lab-in').value)||0,other:parseFloat(document.getElementById('pnl-oth-in').value)||0,loc:(document.getElementById('pnl-loc-in')?document.getElementById('pnl-loc-in').value:'')};
+  var data={date:date,rev:rev,food:parseFloat(document.getElementById('pnl-food-in').value)||0,labor:parseFloat(document.getElementById('pnl-lab-in').value)||0,other:parseFloat(document.getElementById('pnl-oth-in').value)||0,covers:parseInt(document.getElementById('pnl-cov-in')?document.getElementById('pnl-cov-in').value:0,10)||0,loc:(document.getElementById('pnl-loc-in')?document.getElementById('pnl-loc-in').value:'')};
   if(eid){var idx=pnl.findIndex(function(x){return x.id===eid;}); if(idx>=0)pnl[idx]=Object.assign({id:eid},data);}
   else{data.id=pnlId++;pnl.push(data);}
   save('pnl');renderPnl();closeM('m-pnl');
@@ -2630,6 +2628,33 @@ function rbLiveContext(){
     } else L.push('STAFF: none added.');
   }catch(e){}
 
+  // --- seating capacity + seat economics ---
+  try{
+    var tb=JSON.parse(localStorage.getItem('to2_'+uns()+'_tables')||'[]');
+    if(Array.isArray(tb)&&tb.length){
+      var cap=tb.reduce(function(s,t){return s+(parseInt(t.seats,10)||0);},0);
+      var areas={};
+      tb.forEach(function(t){var a=t.area||'Main'; areas[a]=(areas[a]||0)+(parseInt(t.seats,10)||0);});
+      L.push('SEATING: '+tb.length+' tables, '+cap+' seats total ('+
+        Object.keys(areas).map(function(a){return a+' '+areas[a];}).join(', ')+')');
+      // turns and revenue per seat from the P&L days that recorded covers
+      try{
+        var withCov=(pnl||[]).filter(function(p){return n(p.covers)>0;})
+          .sort(function(a,b){return String(b.date).localeCompare(String(a.date));}).slice(0,7);
+        if(withCov.length&&cap){
+          var C=0,R=0; withCov.forEach(function(p){C+=n(p.covers);R+=n(p.rev);});
+          L.push('SEAT ECONOMICS (last '+withCov.length+' days with covers recorded): '
+            +C+' covers, '+(C/(cap*withCov.length)).toFixed(2)+' turns per day, '
+            +money(R/(cap*withCov.length))+' revenue per seat per day, '
+            +money(R/C)+' average per cover');
+        } else if(cap){
+          L.push('SEAT ECONOMICS: capacity is known but covers have not been recorded on the P&L '
+            +'screen, so turns and revenue per seat cannot be calculated yet.');
+        }
+      }catch(e){}
+    } else L.push('SEATING: no floor plan set up (Tables screen).');
+  }catch(e){}
+
   // --- 86 list ---
   try{ if(e86&&e86.length) L.push("86'D RIGHT NOW: "+e86.map(function(x){return x.item;}).join(', ')); }catch(e){}
 
@@ -3064,6 +3089,40 @@ function tblQuickStart(){
   for(var j=1;j<=4;j++)  tables.push({id:id++,name:'P'+j,seats:4,area:'Patio',shape:'round',occupied:false,notes:''});
   for(var k=1;k<=6;k++)  tables.push({id:id++,name:'Bar '+k,seats:1,area:'Bar',shape:'bar',occupied:false,notes:''});
   tblStore(); renderTables();
+}
+</script>
+<script id="seatecon-js">
+/* Ties the floor plan to the money: capacity turns covers into seat turns and
+   revenue per seat — the numbers that say whether a full-looking night was good. */
+function seatCapacity(){
+  try{
+    var t=JSON.parse(localStorage.getItem('to2_'+uns()+'_tables')||'[]');
+    if(!Array.isArray(t)) return 0;
+    return t.reduce(function(n,x){return n+(parseInt(x.seats,10)||0);},0);
+  }catch(e){ return 0; }
+}
+function pnlCoversCalc(){
+  var box=document.getElementById('pnl-cov-calc'); if(!box) return;
+  var cap=seatCapacity();
+  var cov=parseInt((document.getElementById('pnl-cov-in')||{}).value,10)||0;
+  var rev=parseFloat((document.getElementById('pnl-rev-in')||{}).value)||0;
+  if(!cap){
+    box.innerHTML='<a href="#" onclick="closeM(\'m-pnl\');go(\'tables\');return false" '
+      +'style="color:#ff4f2e;font-weight:700">Set up your floor plan</a> to see seat turns '
+      +'and revenue per seat.';
+    return;
+  }
+  if(!cov){ box.innerHTML='Capacity <b>'+cap+' seats</b>. Add covers to see your turns.'; return; }
+  var turns=(cov/cap), rps=cap?(rev/cap):0, rpc=cov?(rev/cov):0;
+  box.innerHTML='Capacity <b>'+cap+' seats</b> &middot; <b>'+turns.toFixed(2)+'</b> turns'
+    +(rev?(' &middot; <b>$'+rps.toFixed(2)+'</b> per seat &middot; <b>$'+rpc.toFixed(2)+'</b> per cover'):'');
+}
+['pnl-cov-in','pnl-rev-in'].forEach(function(id){
+  document.addEventListener('input',function(e){ if(e.target&&e.target.id===id) pnlCoversCalc(); });
+});
+var _addPnl=window.addPnl;
+if(typeof _addPnl==='function'){
+  window.addPnl=function(){ var r=_addPnl.apply(this,arguments); setTimeout(pnlCoversCalc,120); return r; };
 }
 </script>
 </body>
