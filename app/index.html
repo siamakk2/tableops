@@ -1992,7 +1992,7 @@ function sendMsg(){
   fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:AI_SYS,messages:aiHistory})
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:rbSystem(),messages:aiHistory})
   }).then(function(r){return r.json();}).then(function(d){
     hideTyping();
     var reply=(d.content&&d.content[0])?d.content[0].text:'Sorry, try again.';
@@ -2023,7 +2023,7 @@ function genReport(prompt) {
   fetch('/api/claude',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:AI_SYS,messages:[{role:'user',content:prompt+' Do not use asterisks or markdown symbols. Write in clean paragraphs.'}]})
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:rbSystem(),messages:[{role:'user',content:prompt+' Do not use asterisks or markdown symbols. Write in clean paragraphs.'}]})
   }).then(function(r){return r.json();}).then(function(d){
     var text=(d.content&&d.content[0])?d.content[0].text:'Could not generate report.';
     curReportText=text;content.textContent=text;
@@ -2210,6 +2210,7 @@ function stopVoice(){
 </div>
 
 <script src="/import.js"></script>
+<script src="/knowledge.js"></script>
 <script id="sync-js">
 (function(){
   var QUEUE={}, TIMER=null, INFLIGHT=false;
@@ -2374,6 +2375,114 @@ function impGo(target){
       alert('Imported '+addM.length+' items into your menu.');
     }
   }catch(e){ alert('Import failed: '+e.message); }
+}
+</script>
+<script id="aictx-js">
+/* Builds a compact snapshot of THIS restaurant's real numbers for the assistant.
+   Kept small and summarised so it fits comfortably in the system prompt. */
+function rbLiveContext(){
+  function n(v){ v=parseFloat(v); return isFinite(v)?v:0; }
+  function money(v){ return '$'+n(v).toFixed(2); }
+  var L=[];
+  try{
+    var r=(typeof loadRest==='function')?loadRest():{name:'this restaurant'};
+    L.push('RESTAURANT: '+(r.name||'—')+(r.city?(', '+r.city):'')+(r.cuisine?(' — '+r.cuisine):''));
+  }catch(e){}
+
+  // --- P&L: last 7 entries + period averages ---
+  try{
+    if(pnl&&pnl.length){
+      var rows=pnl.slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
+      var recent=rows.slice(0,7);
+      var tR=0,tF=0,tLa=0;
+      recent.forEach(function(p){ tR+=n(p.rev); tF+=n(p.food); tLa+=n(p.labor); });
+      if(tR>0){
+        L.push('LAST '+recent.length+' DAYS: revenue '+money(tR)
+          +', food cost '+(tF/tR*100).toFixed(1)+'%'
+          +', labor '+(tLa/tR*100).toFixed(1)+'%'
+          +', prime cost '+((tF+tLa)/tR*100).toFixed(1)+'%');
+      }
+      L.push('RECENT DAILY ENTRIES:');
+      recent.forEach(function(p){
+        var rev=n(p.rev);
+        L.push('  '+p.date+': revenue '+money(rev)
+          +(rev? (', food '+(n(p.food)/rev*100).toFixed(1)+'%, labor '+(n(p.labor)/rev*100).toFixed(1)+'%'):'' )
+          +', net '+money(rev-n(p.food)-n(p.labor)-n(p.other)));
+      });
+      // week over week
+      if(rows.length>=14){
+        function agg(a){var R=0,F=0,La=0;a.forEach(function(p){R+=n(p.rev);F+=n(p.food);La+=n(p.labor);});return {R:R,F:F,L:La};}
+        var w1=agg(rows.slice(0,7)), w2=agg(rows.slice(7,14));
+        if(w1.R>0&&w2.R>0){
+          L.push('WEEK OVER WEEK: revenue '+money(w1.R)+' vs '+money(w2.R)
+            +'; food cost '+(w1.F/w1.R*100).toFixed(1)+'% vs '+(w2.F/w2.R*100).toFixed(1)+'%'
+            +'; labor '+(w1.L/w1.R*100).toFixed(1)+'% vs '+(w2.L/w2.R*100).toFixed(1)+'%');
+        }
+      }
+    } else L.push('P&L: no entries yet (owner should add a day on the P&L screen).');
+  }catch(e){}
+
+  // --- inventory: totals, low items, most valuable ---
+  try{
+    if(inv&&inv.length){
+      var val=0, low=[];
+      inv.forEach(function(i){
+        val+=n(i.qty)*n(i.cost);
+        if(n(i.par)>0&&n(i.qty)<n(i.par)) low.push(i.name+' ('+n(i.qty)+' of '+n(i.par)+' '+(i.unit||'')+')');
+      });
+      L.push('INVENTORY: '+inv.length+' items, on-hand value '+money(val));
+      if(low.length) L.push('LOW OR OUT ('+low.length+'): '+low.slice(0,12).join('; '));
+      var top=inv.slice().sort(function(a,b){return (n(b.qty)*n(b.cost))-(n(a.qty)*n(a.cost));}).slice(0,6);
+      L.push('HIGHEST-VALUE STOCK: '+top.map(function(i){
+        return i.name+' '+money(n(i.qty)*n(i.cost));}).join('; '));
+    } else L.push('INVENTORY: empty (owner can import a list or photograph an invoice).');
+  }catch(e){}
+
+  // --- menu: pricing and any costed margins ---
+  try{
+    if(menu&&menu.length){
+      L.push('MENU: '+menu.length+' items');
+      var costed=menu.filter(function(m){return n(m.cost)>0;});
+      if(costed.length){
+        var worst=costed.slice().sort(function(a,b){
+          return (n(a.price)-n(a.cost))/(n(a.price)||1)-(n(b.price)-n(b.cost))/(n(b.price)||1);}).slice(0,5);
+        L.push('THINNEST MARGINS: '+worst.map(function(m){
+          var pc=n(m.price)?((n(m.cost)/n(m.price))*100).toFixed(0):'—';
+          return m.name+' (price '+money(m.price)+', cost '+money(m.cost)+', food cost '+pc+'%)';}).join('; '));
+      } else L.push('MENU COSTING: no dishes have recipe costs yet.');
+    } else L.push('MENU: empty.');
+  }catch(e){}
+
+  // --- staff ---
+  try{
+    if(staff&&staff.length){
+      var wk=0; staff.forEach(function(s){ wk+=n(s.rate)*n(s.hrs); });
+      L.push('STAFF: '+staff.length+' on payroll, scheduled weekly wage cost '+money(wk));
+    } else L.push('STAFF: none added.');
+  }catch(e){}
+
+  // --- 86 list ---
+  try{ if(e86&&e86.length) L.push("86'D RIGHT NOW: "+e86.map(function(x){return x.item;}).join(', ')); }catch(e){}
+
+  // --- targets ---
+  try{
+    var f=document.getElementById('set-food'), la=document.getElementById('set-labor');
+    if(f&&f.value) L.push('TARGETS: food cost '+f.value+'%'+(la&&la.value?(', labor '+la.value+'%'):''));
+  }catch(e){}
+
+  return L.join('\n');
+}
+
+/* Full system prompt: persona + product knowledge + this restaurant's live numbers. */
+function rbSystem(){
+  var base = (typeof AI_SYS==='string')?AI_SYS:'';
+  var know = (typeof window.RB_KNOWLEDGE==='string')?window.RB_KNOWLEDGE:'';
+  var live = '';
+  try{ live = rbLiveContext(); }catch(e){}
+  return base + '\n' + know +
+    '\n=== THIS RESTAURANT RIGHT NOW ===\n' + live +
+    '\nUse these figures when the owner asks about their business. If something is not listed above, ' +
+    'say which screen to enter it on rather than guessing.';
 }
 </script>
 </body>
