@@ -627,17 +627,36 @@ html:not(.anims-on) #chefBtn .ic{animation-play-state:paused!important;}
         <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2"/><path d="M18 15h-4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2z"/></svg></span>
         <span class="footer-logo">ResBizAI</span>
       </div>
-      <div class="footer-links">
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="/faq/">FAQ</a><a href="/restaurant365-alternative/">Restaurant365 alternative</a><a href="/food-cost-percentage/">Food cost guide</a><a href="/reduce-labor-cost/">Reduce labor cost</a><a href="/restaurant-pl/">Restaurant P&amp;L</a>
-        <a href="#contact">Contact</a>
-        <a href="/app">Sign in</a>
-        <a href="https://aislebird.com" target="_blank">AisleBird</a>
-        <a href="https://orchamind.com" target="_blank">Orchamind</a>
-         <a href="/terms">Terms</a>
-         <a href="/privacy">Privacy</a>
-      </div>
+      <div class="footer-cols">
+          <div class="fcol">
+            <h4>Product</h4>
+            <a href="/#features">Features</a>
+            <a href="/#pricing">Pricing</a>
+            <a href="/#who">Who it's for</a>
+            <a href="/app">Sign in</a>
+          </div>
+          <div class="fcol">
+            <h4>Resources</h4>
+            <a href="/faq/">Frequently asked questions</a>
+            <a href="/food-cost-percentage/">Food cost percentage guide</a>
+            <a href="/reduce-labor-cost/">How to reduce labor cost</a>
+            <a href="/restaurant-pl/">Restaurant P&amp;L explained</a>
+          </div>
+          <div class="fcol">
+            <h4>Compare</h4>
+            <a href="/restaurant365-alternative/">Restaurant365 alternative</a>
+            <a href="/faq/#switching-from-another-system">Switching from another system</a>
+            <a href="/#contact">Contact us</a>
+          </div>
+          <div class="fcol">
+            <h4>Company</h4>
+            <a href="/terms">Terms of service</a>
+            <a href="/privacy">Privacy policy</a>
+            <a href="#" onclick="rbConsentReopen();return false;">Cookie choices</a>
+            <a href="https://aislebird.com" target="_blank" rel="noopener">AisleBird</a>
+            <a href="https://orchamind.com" target="_blank" rel="noopener">Orchamind</a>
+          </div>
+        </div>
     </div>
     <div class="footer-copy">© 2026 ResBizAI · resbizai.com · AI-powered restaurant operations · Made by <strong>Siamak Kalhor</strong></div>
   </div>
@@ -865,5 +884,17 @@ if(document.readyState==="complete"){requestAnimationFrame(go);}else{window.addE
   .feat-emoji{ width: 46px !important; height: 46px !important; font-size: 22px !important; }
 }
 </style>
+<style id="footer-cols-css">
+.footer-in{display:block !important}
+.footer-l{margin-bottom:26px}
+.footer-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px 20px;width:100%}
+@media(min-width:760px){.footer-cols{grid-template-columns:repeat(4,1fr);gap:30px}}
+.fcol h4{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.45);
+  margin:0 0 12px;font-weight:700}
+.fcol a{display:block;font-size:14px;color:rgba(255,255,255,.78);text-decoration:none;
+  padding:5px 0;line-height:1.45}
+.fcol a:hover{color:#ffa31e}
+</style>
+<script src="/consent.js" defer></script>
 </body>
 </html>
