@@ -24,6 +24,14 @@ Tables      The owner's own floor plan and the turn log. They add each table wit
             closed table writes a TURN: date, table, area, party size, minutes seated, check.
             That log is what produces covers, seat turns, average check and revenue per seat per
             table and per area. Covers can be sent from the Tables screen straight into the P&L.
+            Tap a table to seat it (party defaults to the table's capacity); tap again to close it.
+            Long-press or right-click opens the editor. Today's turns are listed below the floor
+            plan and each one can be edited or deleted, with an undo.
+            If a table is left seated over three hours the app flags it and offers to close it,
+            capping the turn time so forgotten tables cannot skew the averages. Anything left open
+            overnight is closed automatically the next day and logged as an estimated 90-minute turn.
+Settings    Also holds the Daily summary switch - a short end-of-day email with revenue, food and
+            labor cost, covers and anything worth a look.
 Kitchen     Prep tasks, assignments and the 86 list (items out of stock).
 AI          This assistant.
 P&L         Daily entries of revenue, food cost, labor cost and other costs. Produces food cost %,
