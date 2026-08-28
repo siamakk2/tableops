@@ -12,7 +12,7 @@ function readBody(req) {
 }
 
 var KEYS = ['staff', 'inv', 'prep', 'e86', 'pnl', 'menu', 'invoices', 'locations', 'rest',
-            'tables', 'tblareas'];
+            'tables', 'tblareas', 'turns'];
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
