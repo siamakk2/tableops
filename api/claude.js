@@ -12,7 +12,9 @@ module.exports = async function handler(req, res) {
     if (!body || typeof body !== 'object') body = {};
     const maxTokens = Math.min(body.max_tokens || 1500, 1500);
     const messages = Array.isArray(body.messages) ? body.messages : [];
-    const system = (body.system || '').toString().slice(0, 8000);
+    // The assistant's prompt carries product knowledge, business expertise and the
+// owner's live figures. 8k truncated that mid-context and lost the numbers.
+    const system = (body.system || '').toString().slice(0, 24000);
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
