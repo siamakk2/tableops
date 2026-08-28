@@ -547,6 +547,19 @@ body.supmode .sb{top:38px}
 .tbl-legend span{display:flex;align-items:center;gap:6px}
 .tbl-legend i{width:9px;height:9px;border-radius:3px;display:block}
 </style>
+<style id="turns-css">
+.tbl-today{background:linear-gradient(135deg,#fff6ee,#fff);border:1px solid #f0e2d4;border-radius:14px;
+  padding:20px;margin-bottom:24px}
+.tbl-today .tt-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.tbl-today .tt-h b{font-size:16px;color:#2a1e1a}
+.tbl-today .tt-h span{font-size:12.5px;color:#a89887}
+.tt-row{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:600px){.tt-row{grid-template-columns:repeat(4,1fr)}}
+.tt-row div{text-align:center}
+.tt-row b{display:block;font-size:22px;font-weight:800;color:#ff4f2e;line-height:1}
+.tt-row span{display:block;margin-top:5px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:#a89887}
+</style>
 </head>
 <body>
 
@@ -780,6 +793,7 @@ body.supmode .sb{top:38px}
           <span class="es-alt">or <a href="#" onclick="tblQuickStart();return false" style="color:#ff4f2e;font-weight:700">start from a typical layout</a> and edit it</span>
         </div>
 
+        <div id="tbl-today"></div>
         <div id="tbl-areas"></div>
       </div>
     </div>
@@ -812,6 +826,38 @@ body.supmode .sb{top:38px}
       </div>
     </div></div>
 
+
+    <div class="modal-bg" id="m-seat"><div class="modal">
+      <h2 id="seat-title">Seat table <button class="mclose" onclick="closeM('m-seat')">&times;</button></h2>
+      <input type="hidden" id="seat-tid"/>
+      <div class="modal-note">Recording the party size is what lets ResBizAI work out your covers,
+      seat turns and revenue per seat &mdash; without you counting anything at the end of the night.</div>
+      <div class="frow">
+        <div class="field"><label>Party size</label>
+          <input type="number" id="seat-party" min="1" max="40" value="2"/>
+          <div class="fld-hint">Table holds <span id="seat-max">—</span></div></div>
+        <div class="field"><label>Note (optional)</label>
+          <input type="text" id="seat-note" placeholder="Anniversary, allergy, VIP…"/></div>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:18px">
+        <button class="btn" style="margin-left:auto" onclick="closeM('m-seat')">Cancel</button>
+        <button class="btn gold" onclick="tblSeatConfirm()">Seat them</button>
+      </div>
+    </div></div>
+
+    <div class="modal-bg" id="m-close"><div class="modal">
+      <h2 id="close-title">Close table <button class="mclose" onclick="closeM('m-close')">&times;</button></h2>
+      <input type="hidden" id="close-tid"/>
+      <div class="modal-note" id="close-info"></div>
+      <div class="field"><label>Check total ($) &mdash; optional</label>
+        <input type="number" id="close-check" placeholder="0.00" min="0" step="0.01"/>
+        <div class="fld-hint">Add it and you get revenue per seat and average check by table and
+        area. Leave blank and we still record the cover and the turn time.</div></div>
+      <div style="display:flex;gap:9px;margin-top:18px">
+        <button class="btn" style="margin-left:auto" onclick="closeM('m-close')">Cancel</button>
+        <button class="btn gold" onclick="tblCloseConfirm()">Close table</button>
+      </div>
+    </div></div>
     <div class="modal-bg" id="m-area"><div class="modal">
       <h2>Add an area <button class="mclose" onclick="closeM('m-area')">&times;</button></h2>
       <div class="modal-note">Areas group your tables &mdash; Dining room, Patio, Bar, Private room,
@@ -2637,6 +2683,56 @@ function rbLiveContext(){
       tb.forEach(function(t){var a=t.area||'Main'; areas[a]=(areas[a]||0)+(parseInt(t.seats,10)||0);});
       L.push('SEATING: '+tb.length+' tables, '+cap+' seats total ('+
         Object.keys(areas).map(function(a){return a+' '+areas[a];}).join(', ')+')');
+      // per-table performance from the recorded turn log
+      try{
+        var tl=JSON.parse(localStorage.getItem('to2_'+uns()+'_turns')||'[]');
+        if(Array.isArray(tl)&&tl.length){
+          var days={}; tl.forEach(function(x){days[x.date]=1;});
+          var nd=Math.max(1,Object.keys(days).length);
+          var tot=tl.length, cov=0, chk=0, mins=[];
+          var byTable={}, byArea={};
+          tl.forEach(function(x){
+            cov+=n(x.party); chk+=n(x.check);
+            if(n(x.minutes)>0) mins.push(n(x.minutes));
+            var k=x.table||'?';
+            byTable[k]=byTable[k]||{turns:0,cov:0,chk:0,seats:n(x.seats)};
+            byTable[k].turns++; byTable[k].cov+=n(x.party); byTable[k].chk+=n(x.check);
+            var a=x.area||'Main';
+            byArea[a]=byArea[a]||{turns:0,cov:0,chk:0};
+            byArea[a].turns++; byArea[a].cov+=n(x.party); byArea[a].chk+=n(x.check);
+          });
+          var avgMin=mins.length?Math.round(mins.reduce(function(s,v){return s+v;},0)/mins.length):0;
+          L.push('TABLE TURNS LOGGED: '+tot+' turns over '+nd+' day'+(nd===1?'':'s')+', '
+            +cov+' covers'+(chk?(', '+money(chk)+' in checks'):'')
+            +(avgMin?(', average table time '+avgMin+' min'):''));
+          if(chk&&cov) L.push('AVERAGE CHECK PER GUEST: '+money(chk/cov));
+          // best and worst performing tables by revenue per seat
+          var rows=Object.keys(byTable).map(function(k){
+            var b=byTable[k];
+            return {t:k, turns:b.turns, cov:b.cov, chk:b.chk,
+                    rps:(b.seats?b.chk/(b.seats*nd):0)};
+          }).filter(function(r){return r.chk>0;});
+          if(rows.length>2){
+            rows.sort(function(a,b){return b.rps-a.rps;});
+            L.push('BEST TABLES (revenue per seat per day): '+rows.slice(0,4).map(function(r){
+              return r.t+' '+money(r.rps);}).join(', '));
+            L.push('WEAKEST TABLES: '+rows.slice(-3).map(function(r){
+              return r.t+' '+money(r.rps);}).join(', '));
+          }
+          var ak=Object.keys(byArea);
+          if(ak.length>1){
+            L.push('BY AREA: '+ak.map(function(a){
+              var b=byArea[a];
+              return a+' '+b.turns+' turns, '+b.cov+' covers'+(b.chk?(', '+money(b.chk)):'');
+            }).join(' | '));
+          }
+        } else {
+          L.push('TABLE TURNS: no turns recorded yet. The owner seats a table on the Tables screen and '
+            +'closes it when the party leaves; that is what produces covers, turn times and revenue '
+            +'per seat.');
+        }
+      }catch(e){}
+
       // turns and revenue per seat from the P&L days that recorded covers
       try{
         var withCov=(pnl||[]).filter(function(p){return n(p.covers)>0;})
@@ -2977,6 +3073,29 @@ function renderTables(){
   if(!tables.length){ empty.style.display=''; wrap.innerHTML=''; return; }
   empty.style.display='none';
   var shapes={square:'▢',round:'○',booth:'▤',bar:'▬',high:'▲'};
+  // today's recorded turns — the bridge to the P&L
+  var tt=turnsToday();
+  var tCov=tt.reduce(function(n,x){return n+(x.party||0);},0);
+  var tChk=tt.reduce(function(n,x){return n+(x.check||0);},0);
+  var tMin=tt.filter(function(x){return x.minutes>0;});
+  var avgMin=tMin.length?Math.round(tMin.reduce(function(n,x){return n+x.minutes;},0)/tMin.length):0;
+  var todayBox=document.getElementById('tbl-today');
+  if(todayBox){
+    todayBox.innerHTML = tt.length ? (
+      '<div class="tbl-today"><div class="tt-h"><b>Today so far</b>'
+      +'<span>'+tt.length+' turn'+(tt.length===1?'':'s')+' recorded</span></div>'
+      +'<div class="tt-row">'
+      +'<div><b>'+tCov+'</b><span>covers served</span></div>'
+      +'<div><b>'+(seats?(tCov/seats).toFixed(2):'—')+'</b><span>seat turns</span></div>'
+      +'<div><b>'+(avgMin?avgMin+' min':'—')+'</b><span>avg table time</span></div>'
+      +'<div><b>'+(tChk?('$'+tChk.toFixed(0)):'—')+'</b><span>checks logged</span></div>'
+      +'</div>'
+      +'<button class="es-btn" style="margin-top:14px" onclick="turnsToPnl()">'
+      +'Send today\'s covers to my P&amp;L &rarr;</button>'
+      +'<div style="font-size:12px;color:#a89887;margin-top:9px">'
+      +'Covers, revenue per seat and average check are calculated from these turns.</div></div>'
+    ) : '';
+  }
   wrap.innerHTML=tblAreas.map(function(area){
     var list=tables.filter(function(t){return (t.area||tblAreas[0])===area;});
     var aSeats=list.reduce(function(n,t){return n+(parseInt(t.seats,10)||0);},0);
@@ -3057,9 +3176,97 @@ function tblDelete(){
   tables=tables.filter(function(x){return x.id!==id;});
   tblStore(); closeM('m-tbl'); renderTables();
 }
+/* Seating a table starts a turn; closing it records the turn with party size,
+   duration and (optionally) the check total. That log is what makes the floor
+   plan financially meaningful instead of decorative. */
+var turns = (typeof turns!=='undefined' && turns) ? turns : [];
+function turnsLoad(){
+  try{ var t=JSON.parse(localStorage.getItem('to2_'+uns()+'_turns')||'null');
+       if(Array.isArray(t)) turns=t; }catch(e){}
+}
+function turnsStore(){
+  try{ localStorage.setItem('to2_'+uns()+'_turns', JSON.stringify(turns)); }catch(e){}
+  try{ if(typeof syncPush==='function') syncPush('turns',turns); }catch(e){}
+}
+function today(){ return new Date().toISOString().slice(0,10); }
+
 function tblToggle(id){
-  tables=tables.map(function(t){ return t.id===id ? Object.assign({},t,{occupied:!t.occupied}) : t; });
-  tblStore(); renderTables();
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  if(t.occupied) tblCloseOpen(id); else tblSeatOpen(id);
+}
+function tblSeatOpen(id){
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  document.getElementById('seat-tid').value=id;
+  document.getElementById('seat-title').innerHTML='Seat '+esc(t.name)+
+    ' <button class="mclose" onclick="closeM(\'m-seat\')">&times;</button>';
+  document.getElementById('seat-party').value=t.seats||2;
+  document.getElementById('seat-note').value='';
+  document.getElementById('seat-max').textContent=t.seats+' seats';
+  openM('m-seat');
+  setTimeout(function(){var p=document.getElementById('seat-party'); if(p){p.focus();p.select();}},90);
+}
+function tblSeatConfirm(){
+  var id=+document.getElementById('seat-tid').value;
+  var party=parseInt(document.getElementById('seat-party').value,10)||1;
+  var note=(document.getElementById('seat-note').value||'').trim();
+  tables=tables.map(function(t){ return t.id===id
+    ? Object.assign({},t,{occupied:true,party:party,seatedAt:Date.now(),seatNote:note}) : t; });
+  tblStore(); closeM('m-seat'); renderTables();
+}
+function tblCloseOpen(id){
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  var mins=t.seatedAt?Math.round((Date.now()-t.seatedAt)/60000):0;
+  document.getElementById('close-tid').value=id;
+  document.getElementById('close-title').innerHTML='Close '+esc(t.name)+
+    ' <button class="mclose" onclick="closeM(\'m-close\')">&times;</button>';
+  document.getElementById('close-info').innerHTML='Party of <b>'+(t.party||t.seats)+'</b>'+
+    (mins?(' &middot; seated <b>'+mins+' min</b>'):'')+
+    (t.seatNote?(' &middot; '+esc(t.seatNote)):'');
+  document.getElementById('close-check').value='';
+  openM('m-close');
+  setTimeout(function(){var c=document.getElementById('close-check'); if(c)c.focus();},90);
+}
+function tblCloseConfirm(){
+  turnsLoad();
+  var id=+document.getElementById('close-tid').value;
+  var t=tables.filter(function(x){return x.id===id;})[0]; if(!t) return;
+  var check=parseFloat(document.getElementById('close-check').value)||0;
+  var mins=t.seatedAt?Math.round((Date.now()-t.seatedAt)/60000):0;
+  turns.push({
+    id:(turns.reduce(function(m,x){return Math.max(m,x.id||0);},0))+1,
+    date:today(), table:t.name, area:t.area||'Main',
+    seats:t.seats||0, party:t.party||t.seats||0,
+    minutes:mins, check:check, note:t.seatNote||''
+  });
+  turnsStore();
+  tables=tables.map(function(x){ return x.id===id
+    ? Object.assign({},x,{occupied:false,party:0,seatedAt:0,seatNote:''}) : x; });
+  tblStore(); closeM('m-close'); renderTables();
+}
+
+function turnsToPnl(){
+  var tt=turnsToday();
+  if(!tt.length){ alert('No turns recorded today yet.'); return; }
+  var cov=tt.reduce(function(n,x){return n+(x.party||0);},0);
+  var chk=tt.reduce(function(n,x){return n+(x.check||0);},0);
+  go('pnl');
+  setTimeout(function(){
+    if(typeof addPnl==='function') addPnl();
+    setTimeout(function(){
+      var d=document.getElementById('pnl-date'), c=document.getElementById('pnl-cov-in'),
+          r=document.getElementById('pnl-rev-in');
+      if(d) d.value=today();
+      if(c) c.value=cov;
+      if(r && chk && !parseFloat(r.value)) r.value=chk.toFixed(2);
+      if(typeof pnlCoversCalc==='function') pnlCoversCalc();
+    },240);
+  },240);
+}
+
+function turnsToday(){
+  turnsLoad();
+  var d=today();
+  return turns.filter(function(x){return x.date===d;});
 }
 function tblAddArea(){ document.getElementById('area-name').value=''; openM('m-area');
   setTimeout(function(){var n=document.getElementById('area-name'); if(n)n.focus();},90); }
