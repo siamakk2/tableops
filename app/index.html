@@ -2541,10 +2541,9 @@ function stopVoice(){
          The endpoint returns that workspace read-only; there is no admin write. */
       var payload={token:tok(),action:'pull'};
       if(window.__SUPPORT_MODE__===true){
-        var sec=''; try{ sec=sessionStorage.getItem('rb_admin')||''; }catch(e){}
         var who=''; try{ who=new URLSearchParams(location.search).get('support')||''; }catch(e){}
-        if(!sec||!who){ rbSupportBanner('Could not authenticate — reopen from the client list.'); return false; }
-        payload={secret:sec, as:who, action:'pull', reason:'support view'};
+        if(!who||!tok()){ rbSupportBanner('Sign in to your own ResBizAI account first, then reopen support view.'); return false; }
+        payload={token:tok(), as:who, action:'pull'};
       }
       var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify(payload)});

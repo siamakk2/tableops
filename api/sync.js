@@ -1,13 +1,13 @@
 // Server-side persistence for ResBizAI workspaces.
 // POST { token, action: "pull" }                 -> { ok, data: { key: [...] } }
 // POST { token, action: "push", key, data }      -> { ok }
-// POST { secret, as, action: "pull" }            -> { ok, data, readOnly:true }
+// POST { token, as, action: "pull" }             -> { ok, data, readOnly:true }
 //
 // The caller's Supabase access token identifies them; the service key is never
 // exposed to the browser and a user can only ever touch their own rows.
 //
-// Support view is the one exception and it is deliberately narrow: an operator
-// holding ADMIN_SECRET may READ one named workspace. There is no admin write
+// Support view is the one exception and it is deliberately narrow: a signed-in
+// operator listed in public.admins may READ one named workspace. There is no admin write
 // path at all — support must never be able to alter a customer's numbers — and
 // every admin read is written to admin_audit before the data is returned.
 
@@ -71,35 +71,50 @@ module.exports = async function handler(req, res) {
   var H = { 'Content-Type': 'application/json', 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
   var body = readBody(req);
 
-  // ---- support view: read-only, audited, admin-secret gated --------------
-  // Placed before the token check because a support operator is authenticated
-  // by ADMIN_SECRET, not by the customer's session.
+  // ---- support view: read-only, audited, identity-gated -------------------
+  // Authorised by WHO the caller is, not by a shared secret. A secret held in
+  // browser storage is stealable by any XSS and is invisible to everyone but
+  // the person who set it; a signed Supabase token checked against an
+  // allow-list in the database is neither.
   if (body.as) {
-    var ADMIN_SECRET = process.env.ADMIN_SECRET;
-    if (!ADMIN_SECRET) {
-      return res.status(200).json({ ok: false,
-        error: 'Support view is not configured: ADMIN_SECRET is missing in Vercel.' });
+    var supTok = String(body.token || '').trim();
+    if (!supTok) return res.status(401).json({ ok: false, error: 'Not signed in.' });
+
+    var opEmail = '';
+    try {
+      var sur = await fetch(base + '/auth/v1/user', {
+        headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + supTok }
+      });
+      if (!sur.ok) return res.status(401).json({ ok: false, error: 'Session expired — sign in again.' });
+      var su = await sur.json();
+      opEmail = String((su && su.email) || '').toLowerCase().trim();
+    } catch (e) {
+      return res.status(401).json({ ok: false, error: 'Could not verify your session.' });
     }
-    if (!secretMatches(body.secret, ADMIN_SECRET)) {
-      await audit(base, H, 'support_read_denied', String(body.as).toLowerCase(), 'bad secret');
-      return res.status(401).json({ ok: false, error: 'Not authorised.' });
+    if (!opEmail) return res.status(401).json({ ok: false, error: 'Could not identify your account.' });
+
+    var adr = await fetch(base + '/rest/v1/admins?email=eq.'
+      + encodeURIComponent(opEmail) + '&select=email', { headers: H });
+    var admins = adr.ok ? await adr.json() : [];
+    if (!Array.isArray(admins) || !admins.length) {
+      await audit(base, H, 'support_read_denied', String(body.as).toLowerCase(), 'not an admin: ' + opEmail);
+      return res.status(403).json({ ok: false, error: 'Your account is not authorised for support view.' });
     }
+
     var target = String(body.as).toLowerCase().trim();
-    if (!isEmail(target)) {
-      return res.status(400).json({ ok: false, error: 'Invalid account.' });
-    }
+    if (!isEmail(target)) return res.status(400).json({ ok: false, error: 'Invalid account.' });
+
     if ((body.action || 'pull') !== 'pull') {
       // Deliberate: there is no admin write. Support looks, it does not touch.
-      await audit(base, H, 'support_write_blocked', target, String(body.action));
+      await audit(base, H, 'support_write_blocked', target, opEmail + ' tried ' + String(body.action));
       return res.status(403).json({ ok: false,
         error: 'Support view is read-only. Ask the account owner to make this change.' });
     }
 
-    var logged = await audit(base, H, 'support_read', target, body.reason || 'support view');
+    var logged = await audit(base, H, 'support_read', target, 'viewed by ' + opEmail);
     if (!logged) {
       // Fail closed. An unlogged look at a customer's finances is not acceptable.
-      return res.status(200).json({ ok: false,
-        error: 'Could not record the access log — read refused.' });
+      return res.status(200).json({ ok: false, error: 'Could not record the access log — read refused.' });
     }
 
     var ar2 = await fetch(base + '/rest/v1/workspace?user_email=eq.'
@@ -111,7 +126,7 @@ module.exports = async function handler(req, res) {
       if (x && x.key) { aout[x.key] = x.data; astamps[x.key] = x.updated_at; }
     });
     return res.status(200).json({ ok: true, data: aout, updated: astamps,
-                                  readOnly: true, viewing: target });
+                                  readOnly: true, viewing: target, operator: opEmail });
   }
 
   // ---- identify the caller from their own access token -------------------
