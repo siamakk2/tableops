@@ -2483,6 +2483,14 @@ function stopVoice(){
 <script src="/knowledge.js"></script>
 <script id="sync-js">
 (function(){
+  window.rbSupportBanner=function(msg){
+    var b=document.querySelector('.supbar'); if(!b) return;
+    var w=document.getElementById('rb-sup-warn');
+    if(!w){ w=document.createElement('span'); w.id='rb-sup-warn';
+      w.style.cssText='background:#fff;color:#8b2f1a;border-radius:6px;padding:4px 10px;font-weight:700;';
+      b.insertBefore(w,b.querySelector('.sup-x')); }
+    w.textContent=msg;
+  };
   var QUEUE={}, TIMER=null, INFLIGHT=false;
   function tok(){ try{ return (curUser&&curUser.token)||JSON.parse(localStorage.getItem('to2_sess')||'{}').access||''; }catch(e){ return ''; } }
   function skipPush(){ try{ return (typeof isDemo==='function'&&isDemo()) || (window.__SUPPORT_MODE__===true) || !tok(); }catch(e){ return true; } }
@@ -2529,10 +2537,23 @@ function stopVoice(){
   // Pull server data at sign-in; server wins when it has more records.
   window.syncPull=async function(){ if(skipPull()) return false;
     try{
+      /* Support view authenticates with ADMIN_SECRET against a named account.
+         The endpoint returns that workspace read-only; there is no admin write. */
+      var payload={token:tok(),action:'pull'};
+      if(window.__SUPPORT_MODE__===true){
+        var sec=''; try{ sec=sessionStorage.getItem('rb_admin')||''; }catch(e){}
+        var who=''; try{ who=new URLSearchParams(location.search).get('support')||''; }catch(e){}
+        if(!sec||!who){ rbSupportBanner('Could not authenticate — reopen from the client list.'); return false; }
+        payload={secret:sec, as:who, action:'pull', reason:'support view'};
+      }
       var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token:tok(),action:'pull'})});
+        body:JSON.stringify(payload)});
       var j=await r.json();
-      if(!j.ok||!j.data) return false;
+      /* Surface a failed support read. Silently showing an empty workspace is
+         what made a missing menu look like a missing feature. */
+      if(!j.ok){ if(window.__SUPPORT_MODE__===true) rbSupportBanner(j.error||'Could not load that workspace.'); return false; }
+      if(j.readOnly===true) window.__READ_ONLY__=true;
+      if(!j.data) return false;
       var stores={staff:'staff',inv:'inv',prep:'prep',e86:'e86',pnl:'pnl',menu:'menu',
                   invoices:'invoices',locations:'locations'};
       var pulled=0, pushedBack=false;

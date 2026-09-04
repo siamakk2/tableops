@@ -1,8 +1,15 @@
 // Server-side persistence for ResBizAI workspaces.
 // POST { token, action: "pull" }                 -> { ok, data: { key: [...] } }
 // POST { token, action: "push", key, data }      -> { ok }
+// POST { secret, as, action: "pull" }            -> { ok, data, readOnly:true }
+//
 // The caller's Supabase access token identifies them; the service key is never
 // exposed to the browser and a user can only ever touch their own rows.
+//
+// Support view is the one exception and it is deliberately narrow: an operator
+// holding ADMIN_SECRET may READ one named workspace. There is no admin write
+// path at all — support must never be able to alter a customer's numbers — and
+// every admin read is written to admin_audit before the data is returned.
 
 function readBody(req) {
   var b = req.body;
@@ -13,6 +20,39 @@ function readBody(req) {
 
 var KEYS = ['staff', 'inv', 'prep', 'e86', 'pnl', 'menu', 'invoices', 'locations', 'rest',
             'tables', 'tblareas', 'turns'];
+
+var crypto = require('crypto');
+
+// Constant-time comparison. A plain === leaks the secret one character at a
+// time to anyone willing to measure response latency.
+function secretMatches(given, expected) {
+  if (!given || !expected) return false;
+  var a = Buffer.from(String(given));
+  var b = Buffer.from(String(expected));
+  if (a.length !== b.length) {
+    // Still burn a comparison so length is not distinguishable by timing.
+    crypto.timingSafeEqual(b, b);
+    return false;
+  }
+  return crypto.timingSafeEqual(a, b);
+}
+
+function isEmail(v) {
+  return typeof v === 'string' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) && v.length < 255;
+}
+
+// Append-only record of who looked at whose data. Written before the response
+// so a read cannot succeed silently if the audit write fails.
+async function audit(base, H, action, targetEmail, reason) {
+  try {
+    var r = await fetch(base + '/rest/v1/admin_audit', {
+      method: 'POST',
+      headers: Object.assign({}, H, { 'Prefer': 'return=minimal' }),
+      body: JSON.stringify({ action: action, target_email: targetEmail, reason: reason || null })
+    });
+    return r.ok;
+  } catch (e) { return false; }
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,6 +70,49 @@ module.exports = async function handler(req, res) {
   var base = SUPABASE_URL.replace(/\/$/, '');
   var H = { 'Content-Type': 'application/json', 'apikey': KEY, 'Authorization': 'Bearer ' + KEY };
   var body = readBody(req);
+
+  // ---- support view: read-only, audited, admin-secret gated --------------
+  // Placed before the token check because a support operator is authenticated
+  // by ADMIN_SECRET, not by the customer's session.
+  if (body.as) {
+    var ADMIN_SECRET = process.env.ADMIN_SECRET;
+    if (!ADMIN_SECRET) {
+      return res.status(200).json({ ok: false,
+        error: 'Support view is not configured: ADMIN_SECRET is missing in Vercel.' });
+    }
+    if (!secretMatches(body.secret, ADMIN_SECRET)) {
+      await audit(base, H, 'support_read_denied', String(body.as).toLowerCase(), 'bad secret');
+      return res.status(401).json({ ok: false, error: 'Not authorised.' });
+    }
+    var target = String(body.as).toLowerCase().trim();
+    if (!isEmail(target)) {
+      return res.status(400).json({ ok: false, error: 'Invalid account.' });
+    }
+    if ((body.action || 'pull') !== 'pull') {
+      // Deliberate: there is no admin write. Support looks, it does not touch.
+      await audit(base, H, 'support_write_blocked', target, String(body.action));
+      return res.status(403).json({ ok: false,
+        error: 'Support view is read-only. Ask the account owner to make this change.' });
+    }
+
+    var logged = await audit(base, H, 'support_read', target, body.reason || 'support view');
+    if (!logged) {
+      // Fail closed. An unlogged look at a customer's finances is not acceptable.
+      return res.status(200).json({ ok: false,
+        error: 'Could not record the access log — read refused.' });
+    }
+
+    var ar2 = await fetch(base + '/rest/v1/workspace?user_email=eq.'
+      + encodeURIComponent(target) + '&select=key,data,updated_at', { headers: H });
+    if (!ar2.ok) return res.status(200).json({ ok: false, error: 'Could not load that workspace.' });
+    var arows = await ar2.json();
+    var aout = {}, astamps = {};
+    if (Array.isArray(arows)) arows.forEach(function (x) {
+      if (x && x.key) { aout[x.key] = x.data; astamps[x.key] = x.updated_at; }
+    });
+    return res.status(200).json({ ok: true, data: aout, updated: astamps,
+                                  readOnly: true, viewing: target });
+  }
 
   // ---- identify the caller from their own access token -------------------
   var email = '';
