@@ -2592,8 +2592,21 @@ function stopVoice(){
     setTimeout(async function(){
       var got=await window.syncPull();
       if(!got) await window.syncSeed();
+      /* renderAll() is the function that draws inventory, menu, staff, prep and P&L.
+         This called refreshAll(), which does not exist anywhere in the app — so a
+         successful pull updated the arrays and left every screen showing the empty
+         state until the next full reload. The typeof guard hid it completely. */
+      try{ if(typeof renderAll==='function') renderAll(); }catch(e){}
       try{ if(typeof renderDash==='function') renderDash(); }catch(e){}
-      try{ if(typeof refreshAll==='function') refreshAll(); }catch(e){}
+      try{ if(typeof renderInvoices==='function') renderInvoices(); }catch(e){}
+      try{ if(typeof renderOnb==='function') renderOnb(); }catch(e){}
+      /* Restaurant name comes from the pulled rest record, not the local fallback. */
+      try{
+        var _R=loadRest();
+        var _rn=document.getElementById('rest-name'); if(_rn&&_R.name) _rn.textContent=_R.name;
+        var _rs=document.getElementById('rest-sub');
+        if(_rs) _rs.textContent=[_R.city,_R.cuisine].filter(Boolean).join(' \u00b7 ')||'Add your details in Settings';
+      }catch(e){}
     },400);
   }
   ['gateEnter','enterApp'].forEach(function(n){
