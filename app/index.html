@@ -3716,37 +3716,54 @@ async function digRender(){
   }
   window.rbTranslate = walk;
 
+  /* Always-visible language pill. It is fixed to the viewport rather than injected
+     into the sidebar: the sidebar does not exist on the sign-in screen and is
+     off-canvas on phones, so a sidebar-mounted control is invisible exactly when
+     someone most needs it. */
   function toggle(){
-    var foot = document.querySelector('.sb-foot') || document.querySelector('.sidebar');
-    if (!foot || document.getElementById('rb-lang-sw')) return;
+    if (document.getElementById('rb-lang-sw')) return;
+    if (!document.body) return;
+    var cur = lang();
     var d = document.createElement('div');
     d.id = 'rb-lang-sw';
-    d.style.cssText = 'display:flex;gap:6px;justify-content:center;padding:8px 0 4px;font-size:11px;font-weight:700;letter-spacing:.04em;';
-    d.innerHTML = '<span data-l="en" style="cursor:pointer;padding:2px 7px;border-radius:5px;">EN</span>' +
-                  '<span data-l="it" style="cursor:pointer;padding:2px 7px;border-radius:5px;">IT</span>';
-    var cur = lang();
-    d.querySelectorAll('span').forEach(function(s){
-      if (s.getAttribute('data-l') === cur){ s.style.background='rgba(255,117,24,.22)'; s.style.color='#ffb27a'; }
-      else { s.style.color='#a89a8c'; }
+    d.setAttribute('aria-label','Language / Lingua');
+    d.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483600;display:flex;gap:2px;' +
+      'padding:4px;border-radius:999px;background:rgba(24,14,9,.82);backdrop-filter:blur(6px);' +
+      '-webkit-backdrop-filter:blur(6px);box-shadow:0 4px 16px rgba(0,0,0,.32);' +
+      'font-family:system-ui,-apple-system,sans-serif;font-size:11px;font-weight:800;letter-spacing:.05em;';
+    ['en','it'].forEach(function(code){
+      var s = document.createElement('span');
+      s.textContent = code.toUpperCase();
+      s.style.cssText = 'cursor:pointer;padding:5px 10px;border-radius:999px;line-height:1;' +
+        (code === cur ? 'background:#ff7518;color:#fff;' : 'color:#c8b6a8;');
       s.onclick = function(){
-        try { localStorage.setItem('rb_lang', s.getAttribute('data-l')); } catch(e){}
+        try { localStorage.setItem('rb_lang', code); } catch(e){}
         location.reload();
       };
+      d.appendChild(s);
     });
-    foot.appendChild(d);
+    document.body.appendChild(d);
   }
 
   function boot(){
     toggle();
-    if (lang() !== 'it') return;
-    document.documentElement.setAttribute('lang','it');
-    walk(document.body);
+    var italian = lang() === 'it';
+    if (italian){
+      document.documentElement.setAttribute('lang','it');
+      walk(document.body);
+    }
+    /* The observer runs in BOTH languages. Previously it only started for Italian,
+       so an English user never got the pill re-placed after the app shell rendered. */
     var pending = false;
     new MutationObserver(function(){
       if (pending) return;
       pending = true;
-      requestAnimationFrame(function(){ pending = false; walk(document.body); toggle(); });
-    }).observe(document.body, {childList:true, subtree:true, characterData:true});
+      requestAnimationFrame(function(){
+        pending = false;
+        if (italian) walk(document.body);
+        toggle();
+      });
+    }).observe(document.body, {childList:true, subtree:true, characterData:italian});
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
