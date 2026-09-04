@@ -1538,6 +1538,9 @@ function openBilling(btn){
     .catch(function(){if(btn){btn.disabled=false;btn.textContent='Manage billing';}alert('Server error.');});
 }
 function restoreSession(){
+      /* Support mode boots after this runs; without this guard its async fetch
+         resolves later and overwrites curUser with the support agent's account. */
+      try{ if(new URLSearchParams(location.search).get('support')) return; }catch(e){}
   var s; try{ s=JSON.parse(localStorage.getItem('to2_sess')||'null'); }catch(e){ s=null; }
   if(!s || !s.refresh){ return; }
   fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
@@ -2482,7 +2485,11 @@ function stopVoice(){
 (function(){
   var QUEUE={}, TIMER=null, INFLIGHT=false;
   function tok(){ try{ return (curUser&&curUser.token)||JSON.parse(localStorage.getItem('to2_sess')||'{}').access||''; }catch(e){ return ''; } }
-  function skip(){ try{ return (typeof isDemo==='function'&&isDemo()) || (window.__SUPPORT_MODE__===true) || !tok(); }catch(e){ return true; } }
+  function skipPush(){ try{ return (typeof isDemo==='function'&&isDemo()) || (window.__SUPPORT_MODE__===true) || !tok(); }catch(e){ return true; } }
+  /* Reading is allowed in support mode; writing never is. A support agent must not
+     be able to overwrite a customer's workspace from their own browser. */
+  function skipPull(){ try{ return (typeof isDemo==='function'&&isDemo()) || !tok(); }catch(e){ return true; } }
+  function skip(){ return skipPush(); }
 
   function badge(state){
     var el=document.getElementById('sync-dot'); if(!el) return;
@@ -2520,8 +2527,7 @@ function stopVoice(){
   }
 
   // Pull server data at sign-in; server wins when it has more records.
-  window.syncPull=async function(){
-    if(skip()) return false;
+  window.syncPull=async function(){ if(skipPull()) return false;
     try{
       var r=await fetch('/api/sync',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token:tok(),action:'pull'})});
