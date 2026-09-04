@@ -1,0 +1,38 @@
+# ResBizAI
+
+> ResBizAI è un software di gestione per ristoranti basato sull'intelligenza artificiale. Gestisce
+> turni del personale, magazzino, conto economico giornaliero, costo di menù e ricette e ordini ai
+> fornitori — tutto tramite chat o comandi vocali, in italiano.
+
+Questa è la versione italiana. La versione inglese è su https://resbizai.com/llms.txt
+
+## Cosa fa
+
+- **Magazzino che si aggiorna da solo** — collega le ricette ai piatti; vendere scarica gli ingredienti automaticamente, fino al grammo.
+- **Scostamento di magazzino** — la differenza tra quello che dovresti avere e quello che conti davvero. È il numero che rivela sprechi, porzioni eccessive e ammanchi.
+- **Conto economico giornaliero** — incasso, food cost e costo del personale ogni mattina.
+- **Costo di menù e ricette** — food cost e margine esatti per ogni piatto.
+- **Turni e ore** — turni, assenze, ore ed esportazione per le buste paga.
+- **Assistente AI** — si gestisce parlando, in italiano.
+- **Più ristoranti** — ogni locale ha il proprio spazio di lavoro, con un riepilogo di gruppo.
+
+## Prezzi
+
+Un solo piano: **500 € al mese per ristorante**, senza vincoli, con il primo mese gratuito. Due
+ristoranti 1.000 €, tre 1.500 €. Ogni ristorante è un abbonamento separato e tutti confluiscono in
+un unico riepilogo. Prezzi IVA esclusa; per le aziende con partita IVA si applica il reverse charge.
+
+## Per chi è
+
+Ristoranti e gruppi indipendenti — trattorie e osterie, pizzerie, alta cucina, ristorazione veloce,
+bar ed enoteche, catering, ristoranti d'albergo. Funziona con qualsiasi tipo di cucina.
+
+## Pagine
+
+- [Home](https://resbizai.com/it/): panoramica, funzioni e prezzi.
+- [Versione inglese](https://resbizai.com/): sito completo in inglese, con guide e domande frequenti.
+- [Accedi o inizia la prova](https://resbizai.com/app)
+
+## Contatti
+
+Siamak Kalhor — info@siamakkalhor.com

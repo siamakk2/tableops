@@ -8,9 +8,10 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 
 - [ResBizAI home](https://resbizai.com/): What ResBizAI does and who it is for.
 - [Start free trial](https://resbizai.com/app?signup=1): Try it with your own numbers.
+- [Restaurant365 alternative](https://resbizai.com/restaurant365-alternative/): How ResBizAI compares with Restaurant365 for independent operators.
 - [Frequently asked questions](https://resbizai.com/faq/): Food cost, inventory variance, prime cost, daily P&L, pricing and setup — answered.
-- [Privacy policy](https://resbizai.com/privacy.html): How restaurant data is handled.
-- [Terms of service](https://resbizai.com/terms.html): Terms of use.
+- [Privacy policy](https://resbizai.com/privacy): How restaurant data is handled.
+- [Terms of service](https://resbizai.com/terms): Terms of use.
 
 ## Guides for restaurant operators
 
@@ -27,6 +28,14 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 - **Switch without re-typing** — import your item list straight from Restaurant365, MarginEdge, Toast or any spreadsheet; the format is detected and previewed before anything saves.
 - **Works on every device** — inventory, menu, P&L and staff sync to the server, so a phone and a laptop show the same numbers.
 - **Built for independents** — no enterprise contract, no consultant required.
+
+## Languages
+
+An Italian version of this site is at https://resbizai.com/it/ and its machine-readable summary at https://resbizai.com/it/llms.txt
+
+## Pricing
+
+One plan: **$500 per restaurant, per month**, month to month, with the first month free. That covers the entire platform for one restaurant — AI assistant and voice, inventory that tracks itself, staff scheduling, daily P&L, and menu and recipe costing. No enterprise agreement, no per-module pricing, no implementation fee. Cancel anytime. Pricing is per restaurant: two restaurants are $1,000 per month, three are $1,500. Each is a separate subscription, and all of them roll up into one dashboard. [See pricing](https://resbizai.com/#pricing)
 
 ## Who it is for
 

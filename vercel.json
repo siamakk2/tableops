@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/it/",
+      "destination": "/it/index.html"
+    },
+    {
+      "source": "/it",
+      "destination": "/it/index.html"
+    },
+    {
       "source": "/app",
       "destination": "/app/index.html"
     },
@@ -11,6 +19,10 @@
     {
       "source": "/privacy",
       "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
     }
   ],
   "headers": [
