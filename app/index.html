@@ -407,6 +407,12 @@ h1,h2,h3{letter-spacing:-0.012em;}
 .supbar .sup-x:hover{background:rgba(255,255,255,.28)}
 body.supmode{padding-top:var(--supbar-h,38px)}
 body.supmode .sb{top:var(--supbar-h,38px)}
+/* The menu button is fixed at top:10px. Without this it sits underneath the
+   support bar, which in portrait is the only way into the navigation. */
+body.supmode .mburger{top:calc(var(--supbar-h,38px) + 8px)}
+/* Give the bar room to wrap on a phone rather than clipping its own contents. */
+@media(max-width:760px){.supbar{padding:8px 12px;font-size:12px;gap:8px;line-height:1.35}
+  .supbar .sup-x{margin-left:auto;padding:5px 10px;font-size:11.5px}}
 </style>
 <style id="imp-css">
 .imp-bd{display:none;position:fixed;inset:0;background:rgba(20,12,8,.6);z-index:400}
