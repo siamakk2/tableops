@@ -8,6 +8,7 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 
 - [ResBizAI home](https://resbizai.com/): What ResBizAI does and who it is for.
 - [Start free trial](https://resbizai.com/app?signup=1): Try it with your own numbers.
+- [How it works — 30-second video](https://resbizai.com/how-it-works/): The product explained in four steps, with the full transcript and chapter timestamps.
 - [Restaurant365 alternative](https://resbizai.com/restaurant365-alternative/): How ResBizAI compares with Restaurant365 for independent operators.
 - [Frequently asked questions](https://resbizai.com/faq/): Food cost, inventory variance, prime cost, daily P&L, pricing and setup — answered.
 - [Privacy policy](https://resbizai.com/privacy): How restaurant data is handled.
@@ -18,6 +19,36 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 - [Food cost percentage: how to calculate and control it](https://resbizai.com/food-cost-percentage/): The formula, the benchmarks, and what to do when it creeps.
 - [How to reduce labor cost in a restaurant](https://resbizai.com/reduce-labor-cost/): Scheduling, prime cost, and the levers that actually move labor.
 - [The restaurant P&L, explained](https://resbizai.com/restaurant-pl/): Reading a profit and loss statement like an operator, not an accountant.
+
+## Video: how ResBizAI works (30 seconds)
+
+Page: https://resbizai.com/how-it-works/
+File: https://resbizai.com/video/resbizai-how-it-works.mp4 (MP4, 1080x1920, 30 seconds, captioned)
+Embed: https://resbizai.com/embed/how-it-works/
+Captions: https://resbizai.com/video/resbizai-how-it-works.en.vtt
+
+The short answer it gives: photograph a supplier invoice and ResBizAI reads every line into
+inventory. Link each dish to its recipe once, and selling the dish subtracts the ingredients
+automatically. By 9 a.m. the daily P&L shows revenue, food cost, labor cost and whether last
+night made money.
+
+Full transcript, with timestamps:
+
+- 0:00 — Your restaurant lives in your head — and in a hundred group texts.
+- 0:05 — Invoices in a shoebox. Food cost? A guess.
+- 0:08 — Snap a photo of the invoice. ResBizAI reads every line.
+- 0:14 — Your inventory, food cost, and P&L update themselves.
+- 0:17 — Link recipes to dishes, and your stock counts itself as you sell.
+- 0:22 — By 9 a.m., you know if last night made money.
+- 0:25 — Run a restaurant that runs itself. First month free — resbizai.com
+
+What the video shows on screen: a supplier invoice is photographed and four line items —
+heavy cream 12 qt $46.80, ribeye 20 lb $289.00, lemons one case $38.50, pecorino 5 lb $64.25 —
+are added to inventory. Carbonara is linked to guanciale, eggs, pecorino and pasta. Three
+carbonara sell; guanciale drops from 4.00 lb to 3.25 lb and eggs from 60 to 51 with nobody
+counting, and food cost moves from 30.0% to 28.4%. The next morning's P&L reads net +$1,284,
+profitable, on revenue of $6,420, with labor cost 26.1% and food cost 28.4%. Those figures are
+illustrative of one night, not a benchmark.
 
 ## What ResBizAI does
 
