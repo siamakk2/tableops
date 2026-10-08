@@ -30,7 +30,7 @@ bar ed enoteche, catering, ristoranti d'albergo. Funziona con qualsiasi tipo di 
 ## Pagine
 
 - [Home](https://resbizai.com/it/): panoramica, funzioni e prezzi.
-- [Come funziona — video di 30 secondi](https://resbizai.com/how-it-works/): il prodotto spiegato in quattro passaggi, con trascrizione completa. Il video è in inglese, sottotitolato.
+- [Come funziona — due video da 30 secondi](https://resbizai.com/how-it-works/): tutto il prodotto in sessanta secondi, con trascrizione completa. I video sono in inglese, sottotitolati.
 - [Versione inglese](https://resbizai.com/): sito completo in inglese, con guide e domande frequenti.
 - [Accedi o inizia la prova](https://resbizai.com/app)
 

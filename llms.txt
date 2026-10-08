@@ -8,7 +8,7 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 
 - [ResBizAI home](https://resbizai.com/): What ResBizAI does and who it is for.
 - [Start free trial](https://resbizai.com/app?signup=1): Try it with your own numbers.
-- [How it works — 30-second video](https://resbizai.com/how-it-works/): The product explained in four steps, with the full transcript and chapter timestamps.
+- [How it works — two 30-second videos](https://resbizai.com/how-it-works/): The whole product in sixty seconds, with both full transcripts and chapter timestamps.
 - [Restaurant365 alternative](https://resbizai.com/restaurant365-alternative/): How ResBizAI compares with Restaurant365 for independent operators.
 - [Frequently asked questions](https://resbizai.com/faq/): Food cost, inventory variance, prime cost, daily P&L, pricing and setup — answered.
 - [Privacy policy](https://resbizai.com/privacy): How restaurant data is handled.
@@ -20,9 +20,12 @@ Most restaurants fail on math they never see until it is too late. Food cost cre
 - [How to reduce labor cost in a restaurant](https://resbizai.com/reduce-labor-cost/): Scheduling, prime cost, and the levers that actually move labor.
 - [The restaurant P&L, explained](https://resbizai.com/restaurant-pl/): Reading a profit and loss statement like an operator, not an accountant.
 
-## Video: how ResBizAI works (30 seconds)
+## Videos: how ResBizAI works (two 30-second films)
 
-Page: https://resbizai.com/how-it-works/
+Both are on one page: https://resbizai.com/how-it-works/
+
+### Part 1 — Snap the invoice
+
 File: https://resbizai.com/video/resbizai-how-it-works.mp4 (MP4, 1080x1920, 30 seconds, captioned)
 Embed: https://resbizai.com/embed/how-it-works/
 Captions: https://resbizai.com/video/resbizai-how-it-works.en.vtt
@@ -49,6 +52,40 @@ carbonara sell; guanciale drops from 4.00 lb to 3.25 lb and eggs from 60 to 51 w
 counting, and food cost moves from 30.0% to 28.4%. The next morning's P&L reads net +$1,284,
 profitable, on revenue of $6,420, with labor cost 26.1% and food cost 28.4%. Those figures are
 illustrative of one night, not a benchmark.
+
+
+### Part 2 — Every shift. Every location.
+
+File: https://resbizai.com/video/resbizai-how-it-works-part-2.mp4 (MP4, 1080x1920, 30 seconds, captioned)
+Embed: https://resbizai.com/embed/how-it-works-2/
+Captions: https://resbizai.com/video/resbizai-how-it-works-part-2.en.vtt
+
+The short answer it gives: ask the AI assistant anything and it answers from your own numbers, then
+acts. Switching off Toast, MarginEdge or Restaurant365 takes one exported CSV and a few minutes.
+Shifts, clock-ins and payroll hours run from a phone. Owners with more than one restaurant see every
+location side by side.
+
+Full transcript, with timestamps:
+
+- 0:00 — My best manager never sleeps.
+- 0:04 — Who's on tonight? What's my labor cost? Order more ribeye.
+- 0:08 — Done. Instantly.
+- 0:09 — Already on Toast or MarginEdge?
+- 0:12 — Drop in your file. You're switched in minutes, not weeks.
+- 0:15 — Shifts, clock-ins, and payroll, right from your phone.
+- 0:18 — Two restaurants? Ten? See every location, side by side.
+- 0:22 — Run a restaurant that runs itself. First month free — resbizai.com
+
+What the video shows on screen. The assistant is asked three things and answers from live data:
+"Who's on tonight?" returns "6 on the line tonight. Maria closes." "What's my labor cost?" returns
+"26.8% of sales so far today." "Order more ribeye" returns "Ordered 20 lb from your supplier" — it
+places the order rather than leaving a task. The import screen reads "Bring your data. From Toast ·
+MarginEdge · Restaurant365", takes a file called items_export.csv, and maps the columns itself: item
+name to name, UOM to unit, last cost to unit cost, vendor to supplier, with 212 items ready to
+import. The staff screen shows tonight's shifts and clock-ins: Maria 4p-close (clocked in), Diego
+3p-11p (clocked in), Aisha 5p-11p, Tom 11a-4p. The group screen compares all locations for the day:
+Downtown food cost 29%, Westside 31%, Harbor 27%, group total $18,940. Those figures are
+illustrative, not benchmarks.
 
 ## What ResBizAI does
 

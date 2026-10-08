@@ -31,6 +31,10 @@
     {
       "source": "/embed/how-it-works",
       "destination": "/embed/how-it-works/index.html"
+    },
+    {
+      "source": "/embed/how-it-works-2",
+      "destination": "/embed/how-it-works-2/index.html"
     }
   ],
   "headers": [
